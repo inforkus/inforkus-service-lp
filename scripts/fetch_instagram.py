@@ -5,7 +5,7 @@ tok = os.environ.get('IG_TOKEN')
 if not tok:
     print('IG_TOKEN が未登録のため終了'); sys.exit(0)
 q = urllib.parse.urlencode({'fields': 'id,caption,media_type,media_url,thumbnail_url,permalink,timestamp', 'limit': '6', 'access_token': tok})
-data = json.load(urllib.request.urlopen('https://graph.instagram.com/me/media?' + q, timeout=30))['data']
+data = json.load(urllib.request.urlopen('https://graph.facebook.com/v26.0/17841436033327681/media?' + q, timeout=30))['data']
 out = pathlib.Path('ig'); out.mkdir(exist_ok=True)
 items, keep = [], set()
 for m in data:
