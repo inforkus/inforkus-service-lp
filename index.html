@@ -1,0 +1,1025 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>inforkus｜見慣れたものに、新しい見方をアップデート。</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Inter:ital,wght@1,800;1,900&family=JetBrains+Mono:wght@500;700&family=Noto+Sans+JP:wght@400;500;700;900&display=swap">
+<style>
+/* 色だけ inforkusデザインシステムの採用5色。ほかは v002 の試作値 */
+:root{
+  --paper:#FFFFFF;--ink:#2B2825;--core:#1C6047;--accent:#C15332;--muted:#A7A196;
+  --line:rgba(43,40,37,.08);--line-d:rgba(255,255,255,.07);
+  --core-10:rgba(28,96,71,.10);--ink-60:rgba(43,40,37,.6);
+  --sans:"Noto Sans JP",system-ui,sans-serif;--dot:"DotGothic16",var(--sans);
+  --mono:"JetBrains Mono",ui-monospace,monospace;--en:"Inter",var(--sans);
+  --col:440px;--ease:cubic-bezier(.2,.7,.2,1);--pop:cubic-bezier(.3,1.6,.5,1);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--paper);color:var(--ink);font:400 15px/1.8 var(--sans);-webkit-font-smoothing:antialiased;font-feature-settings:"palt" 1;overflow-x:hidden}
+body.is-locked{overflow:hidden}
+img{display:block;max-width:100%;height:auto}
+a{color:inherit;text-decoration:none}
+ul,ol{list-style:none}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+:focus-visible{outline:3px solid var(--core);outline-offset:3px}
+
+/* ---------- 背景の方眼 ---------- */
+.grid-w{background-color:var(--paper);background-image:linear-gradient(to right,var(--line) 1px,transparent 1px),linear-gradient(to bottom,var(--line) 1px,transparent 1px);background-size:24px 24px}
+.grid-d{background-color:var(--ink);color:var(--paper);background-image:linear-gradient(to right,var(--line-d) 1px,transparent 1px),linear-gradient(to bottom,var(--line-d) 1px,transparent 1px);background-size:24px 24px}
+
+/* ---------- PC の3列（左：ステータス／中央：本文／右：マップ） ---------- */
+.shell{min-height:100vh}
+.side{display:none}
+.lp{position:relative;max-width:var(--col);margin:0 auto;background:var(--paper);overflow:hidden}
+@media (min-width:1080px){
+  .shell{display:grid;grid-template-columns:1fr var(--col) 1fr}
+  .lp{border-inline:2px solid var(--ink);width:100%}
+  .side{display:flex;flex-direction:column;justify-content:center;gap:28px;position:sticky;top:0;height:100vh;padding:40px clamp(24px,3vw,56px)}
+  .side--l{align-items:flex-end;text-align:right}
+  .side--r{align-items:flex-start}
+  .hud-m{display:none!important}
+}
+.side__logo img{width:200px}
+.side__catch{font:900 26px/1.5 var(--sans);letter-spacing:.02em}
+.side__catch b{color:var(--core)}
+
+/* ---------- RPG のウィンドウ ---------- */
+.win{position:relative;background:var(--ink);color:var(--paper);border:3px solid var(--paper);outline:3px solid var(--ink);border-radius:10px;font-family:var(--dot);padding:14px 16px}
+.win__ttl{position:absolute;top:-14px;left:14px;padding:0 8px;background:var(--ink);border:2px solid var(--paper);border-radius:4px;font:400 12px/20px var(--dot);letter-spacing:.1em}
+
+/* ステータス（左パネル・スマホ下部） */
+.status{width:260px;text-align:left}
+.status__row{display:flex;justify-content:space-between;align-items:baseline;font-size:14px}
+.status__lv{font-size:28px;line-height:1}
+.bar{position:relative;height:10px;margin-top:8px;background:rgba(255,255,255,.14);border-radius:2px;overflow:hidden}
+.bar i{position:absolute;inset:0 auto 0 0;width:0;background:var(--paper);transition:width .6s var(--ease)}
+.bar i::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent 0 6px,rgba(43,40,37,.35) 6px 7px)}
+.status__exp{margin-top:4px;font-size:12px;color:var(--muted);text-align:right}
+.status__sk{margin-top:12px;padding-top:10px;border-top:1px dashed rgba(255,255,255,.25);font-size:13px;line-height:1.7;min-height:60px}
+.status__sk li{animation:pop .5s var(--pop) both}
+.status__sk li::before{content:"✦ "}
+.status__sk .none{color:var(--muted)}
+
+/* 音のボタン */
+.snd{display:inline-flex;align-items:center;gap:10px;height:44px;padding:0 16px;border:2px solid var(--ink);border-radius:999px;background:var(--paper);font:700 13px/1 var(--mono);letter-spacing:.06em;transition:background .2s,color .2s}
+.snd[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+.eq{display:flex;align-items:flex-end;gap:2px;height:14px}
+.eq i{width:3px;height:30%;background:currentColor;border-radius:1px}
+.snd[aria-pressed="true"] .eq i{animation:eq .9s ease-in-out infinite}
+.eq i:nth-child(2){animation-delay:-.3s!important}.eq i:nth-child(3){animation-delay:-.6s!important}.eq i:nth-child(4){animation-delay:-.15s!important}
+@keyframes eq{0%,100%{height:25%}50%{height:100%}}
+
+/* 右のマップ */
+.map{font-family:var(--dot)}
+.map__ttl{font:700 12px/1 var(--mono);letter-spacing:.2em;color:var(--core)}
+.map ol{margin-top:14px;display:grid;gap:6px}
+.map a{display:flex;align-items:center;gap:8px;font-size:16px;color:var(--ink-60);transition:color .2s,transform .2s var(--ease)}
+.map a::before{content:"▶";font-size:11px;opacity:0;transform:translateX(-6px);transition:.2s var(--ease)}
+.map a:hover,.map a.is-cur{color:var(--ink);transform:translateX(4px)}
+.map a.is-cur::before,.map a:hover::before{opacity:1;transform:none}
+.map a.is-cur::before{animation:blink 1s steps(2) infinite}
+.side__cta{display:inline-flex;align-items:center;gap:8px;height:52px;padding:0 24px;border-radius:999px;background:var(--core);color:var(--paper);font:700 15px/1 var(--sans);transition:transform .2s var(--ease)}
+.side__cta:hover{transform:translateY(-2px)}
+
+/* スマホ下部の HUD */
+.hud-m{position:fixed;z-index:40;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom));display:flex;align-items:center;gap:12px;padding:8px 8px 8px 14px;border-radius:12px;outline-width:2px;border-width:2px}
+.hud-m .lv{font-size:16px;white-space:nowrap}
+.hud-m .bar{flex:1;margin:0}
+.hud-m .snd{height:36px;padding:0 12px;border-color:var(--paper);background:transparent;color:var(--paper)}
+.hud-m .snd[aria-pressed="true"]{background:var(--paper);color:var(--ink)}
+.side__snd{display:flex;gap:8px;justify-content:flex-end}
+.se{gap:6px}
+.se .lvl{display:flex;gap:2px;align-items:flex-end;height:12px}
+.se .lvl i{width:3px;background:currentColor;opacity:.25;border-radius:1px}
+.se .lvl i:nth-child(1){height:40%}.se .lvl i:nth-child(2){height:70%}.se .lvl i:nth-child(3){height:100%}
+.se[data-lv="1"] .lvl i:nth-child(1),.se[data-lv="2"] .lvl i:nth-child(-n+2),.se[data-lv="3"] .lvl i{opacity:1}
+
+/* ---------- 共通部品 ---------- */
+.sec{position:relative;padding:72px 20px}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;font:700 12px/1 var(--mono);letter-spacing:.2em;color:var(--core)}
+.grid-d .eyebrow{color:var(--muted)}
+.eyebrow::before{content:"";width:8px;height:8px;background:currentColor;transform:rotate(45deg)}
+.h2{margin-top:14px;font:900 28px/1.45 var(--sans);letter-spacing:.01em}
+.lead{margin-top:14px}
+/* 帯の見出し */
+.bars{display:flex;flex-direction:column;align-items:flex-start;gap:6px}
+.bars .b{display:inline-block;padding:2px 10px;background:var(--ink);color:var(--paper);font:900 26px/1.4 var(--sans);transform-origin:left;clip-path:inset(0 100% 0 0);transition:clip-path .6s var(--ease)}
+.bars .b--core{background:var(--core)}
+.bars .b--plain{background:none;color:var(--ink);padding-inline:0}
+.is-in .bars .b,.bars.is-in .b{clip-path:inset(0 0 0 0)}
+.bars .b:nth-child(2){transition-delay:.15s}.bars .b:nth-child(3){transition-delay:.3s}
+
+.btn{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:10px;height:60px;padding:0 28px;border-radius:999px;font:700 16px/1 var(--sans);overflow:hidden;transition:transform .2s var(--ease)}
+.btn--accent{background:var(--accent);color:var(--paper);box-shadow:0 4px 0 var(--ink)}
+.btn--accent:hover{transform:translateY(-2px)}
+.btn--accent:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}
+.btn--accent::after{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 30%,rgba(255,255,255,.45) 50%,transparent 70%);transform:translateX(-120%);animation:sheen 3.2s ease-in-out infinite}
+@keyframes sheen{0%,60%{transform:translateX(-120%)}100%{transform:translateX(120%)}}
+
+/* 出現 */
+.rv{opacity:0;transform:translateY(18px);transition:opacity .6s var(--ease),transform .6s var(--ease)}
+.rv.is-in{opacity:1;transform:none}
+@keyframes pop{0%{opacity:0;transform:scale(.6)}100%{opacity:1;transform:none}}
+@keyframes blink{50%{opacity:0}}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@keyframes marquee{to{transform:translateX(-50%)}}
+
+/* ---------- 流れる帯 ---------- */
+.ticker{overflow:hidden;white-space:nowrap;background:var(--ink);color:var(--paper);border-block:2px solid var(--ink)}
+.ticker--core{background:var(--core)}
+.ticker__track{display:inline-flex;animation:marquee 24s linear infinite}
+.ticker--core .ticker__track{animation-direction:reverse}
+.ticker span{display:inline-flex;align-items:center;gap:18px;padding:10px 18px;font:900 italic 20px/1 var(--en);letter-spacing:-.01em}
+.ticker span::after{content:"✦";font-style:normal;font-size:14px;color:var(--muted)}
+
+/* ---------- はじめる画面 ---------- */
+.start{position:fixed;inset:0;z-index:100;display:grid;place-items:center;text-align:center;padding:24px;transition:opacity .5s,visibility .5s}
+.start.is-out{opacity:0;visibility:hidden}
+.start__in{display:grid;justify-items:center;gap:20px;width:min(420px,100%)}
+.start__logo{width:220px}
+.start__torch{width:150px;animation:bob 2.4s ease-in-out infinite}
+.start__press{font:400 22px/1 var(--dot);letter-spacing:.2em;animation:blink 1.1s steps(2) infinite}
+.start__menu{width:100%;text-align:left;padding:20px 18px 14px}
+.start__menu button{display:grid;grid-template-columns:18px 1fr;column-gap:10px;align-items:center;width:100%;padding:8px 6px;font:400 18px/1.4 var(--dot);text-align:left}
+.start__menu button::before{content:"▶";font-size:13px;opacity:0}
+.start__menu button:hover::before,.start__menu button:focus-visible::before{opacity:1;animation:blink 1s steps(2) infinite}
+.start__menu button:focus-visible{outline:0}
+.start__menu small{grid-column:2;margin-top:2px;font:400 12px/1.6 var(--sans);color:var(--muted)}
+.start__flash{position:fixed;inset:0;z-index:101;background:var(--paper);opacity:0;pointer-events:none}
+.start__flash.is-on{animation:flash .6s ease-out}
+@keyframes flash{0%{opacity:0}20%{opacity:1}100%{opacity:0}}
+
+/* ---------- ファーストビュー ---------- */
+.fv{padding:28px 20px 0;overflow:hidden}
+.fv__hd{display:flex;justify-content:space-between;align-items:center}
+.fv__hd img{width:120px}
+.fv__ver{font:700 11px/1 var(--mono);padding:6px 8px;border:1.5px solid var(--ink);border-radius:4px}
+.term{margin-top:20px;background:var(--ink);color:#EDEBE7;border-radius:10px;padding:10px 14px 14px;font:500 12px/1.8 var(--mono);box-shadow:0 10px 24px rgba(43,40,37,.25)}
+.term__dots{display:flex;gap:6px;margin-bottom:6px}
+.term__dots i{width:9px;height:9px;border-radius:50%;background:var(--muted)}
+.term__dots i:first-child{background:var(--accent)}.term__dots i:nth-child(3){background:var(--core)}
+.term .p{color:var(--muted)}
+.term .ok{color:var(--paper);font-weight:700}
+.term .cur::after{content:"▌";animation:blink 1s steps(2) infinite}
+.term__prog{display:flex;align-items:center;gap:8px}
+.term__prog .bar{flex:1;margin:0;height:8px}
+.term__line{min-height:1.8em}
+.fv__h{margin-top:28px}
+.fv__h .b{font-size:32px}
+.fv__p{margin-top:16px;font-weight:500}
+.fv__stage{position:relative;margin:12px -20px 0;height:330px}
+.fv__ring{position:absolute;left:50%;top:58%;width:300px;height:300px;translate:-50% -50%;border-radius:50%;border:2px dashed var(--muted);animation:spin 40s linear infinite}
+.fv__ring::before{content:"";position:absolute;inset:28px;border-radius:50%;border:1.5px solid var(--core-10);background:radial-gradient(circle,var(--core-10),transparent 70%)}
+@keyframes spin{to{rotate:360deg}}
+.fv__stage img{position:absolute;bottom:0;left:50%;width:106%;max-width:none;translate:-50% 0}
+.spark{position:absolute;width:14px;height:14px;color:var(--core);animation:twinkle 2.4s ease-in-out infinite}
+.spark::before,.spark::after{content:"";position:absolute;left:50%;top:50%;background:currentColor;translate:-50% -50%;border-radius:2px}
+.spark::before{width:100%;height:3px}.spark::after{width:3px;height:100%}
+@keyframes twinkle{0%,100%{transform:scale(.3) rotate(0);opacity:0}50%{transform:scale(1) rotate(45deg);opacity:1}}
+.fv__msg{position:relative;z-index:2;display:flex;gap:12px;align-items:flex-start;margin:-28px 0 0}
+.face{flex:0 0 56px;height:56px;border-radius:8px;background:var(--paper);border:2px solid var(--paper);overflow:hidden}
+.face img{width:100%;height:100%;object-fit:cover;object-position:top}
+.msg__name{font-size:12px;color:var(--muted)}
+.msg__txt{font-size:15px;line-height:1.7;min-height:3.4em}
+.msg__next{position:absolute;right:12px;bottom:6px;font-size:12px;animation:bob 1s ease-in-out infinite}
+.fv__cta{display:grid;gap:12px;padding:28px 0 40px}
+.fv__cta .btn{width:100%}
+.fv__cta small{text-align:center;font:400 12px/1.6 var(--dot);color:var(--ink-60)}
+
+/* ---------- ABOUT ---------- */
+.name{display:grid;gap:12px;margin-top:28px}
+.stat{display:grid;grid-template-columns:72px 1fr;gap:14px;align-items:center;padding:14px;border:2px solid var(--ink);border-radius:10px;background:var(--paper);box-shadow:4px 4px 0 var(--ink)}
+.stat__ic{display:grid;place-items:center;height:72px;border-radius:8px;background:var(--core-10)}
+.stat__ic svg{width:52px;height:40px}
+.stat__ic path,.stat__ic line{stroke:var(--core);stroke-width:2.5;fill:none;stroke-linecap:round;stroke-dasharray:80;stroke-dashoffset:80;transition:stroke-dashoffset 1s var(--ease) .2s}
+.stat__ic circle{fill:var(--core)}
+.stat.is-in .stat__ic path{stroke-dashoffset:0}
+.stat__en{font:900 italic 20px/1.2 var(--en);letter-spacing:-.01em}
+.stat__ja{font:700 13px/1.5 var(--sans);color:var(--core)}
+.stat__p{margin-top:4px;font-size:13px;line-height:1.7}
+
+/* パーティのカルーセル */
+.party{margin-top:56px}
+.party__hd{display:flex;justify-content:space-between;align-items:flex-end}
+.party__ttl{font:400 20px/1.3 var(--dot)}
+.car__nav{display:flex;gap:8px}
+.car__btn{display:grid;place-items:center;width:40px;height:40px;border:2px solid var(--ink);border-radius:50%;background:var(--paper);transition:background .2s,color .2s}
+.car__btn:hover{background:var(--ink);color:var(--paper)}
+.car{margin:16px -20px 0;display:flex;gap:14px;padding:6px 20px 14px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;scroll-padding-inline:20px}
+.car::-webkit-scrollbar{display:none}
+.mem{flex:0 0 82%;scroll-snap-align:start;border:2px solid var(--ink);border-radius:14px;overflow:hidden;background:var(--paper);box-shadow:4px 4px 0 var(--ink)}
+.mem__art{position:relative;height:250px;display:flex;align-items:flex-end;justify-content:center;background:var(--core)}
+.mem__art::before{content:"";position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,.18) 1.5px,transparent 1.5px);background-size:14px 14px}
+.mem__art img{position:relative;height:235px;width:auto;transition:transform .5s var(--ease)}
+.mem:hover .mem__art img{transform:translateY(-6px) scale(1.03)}
+.mem__job{position:absolute;top:12px;left:12px;padding:4px 10px;background:var(--paper);color:var(--ink);border-radius:999px;font:700 12px/1.4 var(--sans)}
+.mem__lv{position:absolute;top:12px;right:12px;font:400 14px/1 var(--dot);color:var(--paper);padding:6px 8px;border:2px solid var(--paper);border-radius:6px}
+.mem__body{padding:14px 16px 18px}
+.mem__name{font:900 20px/1.3 var(--sans)}
+.mem__p{margin-top:4px;font-size:13px;line-height:1.7}
+.meter{display:grid;grid-template-columns:56px 1fr 28px;gap:8px;align-items:center;margin-top:8px;font:400 12px/1 var(--dot)}
+.meter .bar{margin:0;height:8px;background:var(--line)}
+.meter .bar i{background:var(--core)}
+.meter .bar i::after{background:repeating-linear-gradient(90deg,transparent 0 6px,rgba(255,255,255,.45) 6px 7px)}
+.meter b{font-weight:400;text-align:right}
+.car__dots{display:flex;justify-content:center;gap:8px;margin-top:4px}
+.car__dots button{width:10px;height:10px;border-radius:2px;background:var(--muted);transform:rotate(45deg);transition:background .2s,transform .2s}
+.car__dots button[aria-current="true"]{background:var(--core);transform:rotate(45deg) scale(1.3)}
+
+/* ---------- アップデートのお知らせ（三つの軸） ---------- */
+.upd__head{display:flex;gap:14px;align-items:center}
+.upd__head img{width:96px;animation:bob 3s ease-in-out infinite}
+.upd__ver{font:700 14px/1 var(--mono);color:var(--muted)}
+.upd__ver b{font-size:30px;color:var(--paper);letter-spacing:.02em}
+.grid-d .h2 em{font-style:normal;color:var(--accent)}
+.tree{position:relative;margin-top:28px;display:grid;gap:22px;padding-left:34px}
+.tree::before{content:"";position:absolute;left:11px;top:10px;bottom:10px;width:2px;background:rgba(255,255,255,.18)}
+.tree__fill{position:absolute;left:11px;top:10px;width:2px;height:0;background:var(--paper);transition:height 1.2s var(--ease)}
+.node{position:relative;padding:16px;border:2px solid rgba(255,255,255,.22);border-radius:10px;background:rgba(255,255,255,.03);transition:border-color .5s,background .5s,transform .5s var(--pop)}
+.node::before{content:"🔒";position:absolute;left:-34px;top:14px;display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:var(--ink);border:2px solid rgba(255,255,255,.3);font-size:11px;transition:.4s}
+.node.is-on{border-color:var(--paper);background:rgba(255,255,255,.07);transform:scale(1.02)}
+.node.is-on::before{content:"✓";background:var(--paper);color:var(--ink);border-color:var(--paper);font:700 13px/1 var(--mono)}
+.node__tag{display:inline-block;padding:2px 8px;border-radius:4px;background:rgba(255,255,255,.12);font:700 11px/1.6 var(--mono);letter-spacing:.1em;color:var(--muted)}
+.node.is-on .node__tag{background:var(--accent);color:var(--paper)}
+.node.is-on .node__tag::after{content:" NEW"}
+.node__en{margin-top:8px;font:900 italic 24px/1.1 var(--en)}
+.node__pair{margin-top:4px;font:400 15px/1.4 var(--dot);color:var(--muted)}
+.node__pair span{color:var(--paper)}
+.node__p{margin-top:8px;font-size:13px;line-height:1.75;color:#EDEBE7}
+.patch{margin-top:28px;padding:18px 16px 14px;font-size:13px}
+.patch li{display:flex;gap:10px;padding:6px 0;border-bottom:1px dashed rgba(255,255,255,.18);line-height:1.6}
+.patch li:last-child{border:0}
+.patch .k{flex:0 0 44px;font:700 11px/1.9 var(--mono);color:var(--muted)}
+
+/* ---------- 対応範囲（バトル） ---------- */
+.battle{margin-top:28px;border:2px solid var(--ink);border-radius:14px;overflow:hidden;box-shadow:4px 4px 0 var(--ink)}
+.field{position:relative;height:270px;padding-top:56px;display:grid;place-items:center;background:linear-gradient(var(--paper) 62%,var(--core-10) 62%);background-color:var(--paper)}
+.field::after{content:"";position:absolute;left:50%;bottom:34px;width:150px;height:18px;translate:-50% 0;border-radius:50%;background:rgba(43,40,37,.14)}
+.enemy{position:relative;z-index:1;width:150px;transition:opacity .8s,transform .8s,filter .8s;animation:bob 2.2s ease-in-out infinite}
+.enemy.is-hit{animation:hit .4s steps(2) 1}
+@keyframes hit{0%{transform:translateX(-8px);filter:brightness(2)}50%{transform:translateX(8px);filter:none}100%{transform:none}}
+.enemy.is-down{opacity:0;transform:scale(.3) rotate(25deg);filter:blur(2px)}
+.enemy__hp{position:absolute;z-index:2;top:12px;left:12px;right:12px;padding:8px 12px}
+.enemy__hp .row{display:flex;justify-content:space-between;font-size:13px}
+.enemy__hp .bar{height:8px;margin-top:6px}
+.enemy__hp .bar i{width:100%}
+.dmg{position:absolute;z-index:3;left:50%;top:44%;font:400 34px/1 var(--dot);color:var(--ink);text-shadow:2px 2px 0 var(--paper),-2px -2px 0 var(--paper),2px -2px 0 var(--paper),-2px 2px 0 var(--paper);animation:dmg 1s var(--ease) forwards;pointer-events:none}
+@keyframes dmg{0%{opacity:0;transform:translate(-50%,10px) scale(.6)}20%{opacity:1;transform:translate(-50%,-10px) scale(1.2)}100%{opacity:0;transform:translate(-50%,-50px)}}
+.chest{position:absolute;z-index:1;width:140px;opacity:0;transform:scale(.4) translateY(30px);transition:.7s var(--pop)}
+.chest.is-on{opacity:1;transform:none}
+.cmd{border-radius:0;outline:0;border:0;border-top:3px solid var(--ink);padding:14px 14px 16px}
+.cmd__log{min-height:3.2em;font-size:15px;line-height:1.6}
+.cmd__tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:12px}
+.cmd__tabs button{position:relative;padding:10px 4px 8px 18px;border:2px solid rgba(255,255,255,.3);border-radius:8px;font:400 15px/1.2 var(--dot);text-align:left;transition:border-color .2s,background .2s}
+.cmd__tabs button small{display:block;font:400 10px/1.4 var(--sans);color:var(--muted)}
+.cmd__tabs button::before{content:"▶";position:absolute;left:5px;top:12px;font-size:10px;opacity:0}
+.cmd__tabs button:hover::before,.cmd__tabs button[aria-selected="true"]::before{opacity:1}
+.cmd__tabs button[aria-selected="true"]{border-color:var(--paper);background:rgba(255,255,255,.1)}
+.cmd__tabs button.is-done::after{content:"✓";position:absolute;right:6px;top:6px;font:700 11px/1 var(--mono);color:var(--muted)}
+.cmd__panel{margin-top:12px;display:grid;grid-template-columns:1fr 1fr;gap:6px 10px}
+.cmd__panel[hidden]{display:none}
+.cmd__panel li{font:400 14px/1.5 var(--dot);padding:4px 0 4px 16px;position:relative;animation:pop .35s var(--pop) both}
+.cmd__panel li::before{content:"・";position:absolute;left:0}
+.cmd__panel li:nth-child(2){animation-delay:.04s}.cmd__panel li:nth-child(3){animation-delay:.08s}.cmd__panel li:nth-child(4){animation-delay:.12s}.cmd__panel li:nth-child(5){animation-delay:.16s}.cmd__panel li:nth-child(6){animation-delay:.2s}
+.svc__etc{margin-top:16px;font:400 13px/1.6 var(--dot);color:var(--ink-60);text-align:right}
+
+/* ---------- 進め方（クエスト） ---------- */
+.quest{position:relative;margin-top:28px;display:grid;gap:14px}
+.quest::before{content:"";position:absolute;left:23px;top:20px;bottom:20px;border-left:2px dashed var(--muted)}
+.q{position:relative;display:grid;grid-template-columns:48px 1fr;gap:14px;align-items:start}
+.q__no{position:relative;z-index:1;display:grid;place-items:center;width:48px;height:48px;border-radius:12px;border:2px solid var(--ink);background:var(--paper);font:700 14px/1 var(--mono);transition:background .4s,color .4s,transform .4s var(--pop)}
+.q.is-clear .q__no{background:var(--core);color:var(--paper);border-color:var(--core);transform:rotate(-6deg)}
+.q__card{position:relative;padding:12px 14px;border:2px solid var(--ink);border-radius:10px;background:var(--paper)}
+.q__tag{font:700 11px/1.6 var(--mono);letter-spacing:.14em;color:var(--core)}
+.q__ttl{font:900 17px/1.4 var(--sans)}
+.q__txt{margin-top:4px;font-size:13px;line-height:1.75}
+.q__stamp{position:absolute;right:10px;top:10px;padding:2px 8px;border:2px solid var(--core);border-radius:4px;color:var(--core);font:700 11px/1.4 var(--mono);letter-spacing:.12em;transform:rotate(8deg) scale(2);opacity:0;transition:.35s var(--pop)}
+.q.is-clear .q__stamp{opacity:1;transform:rotate(8deg) scale(1)}
+.q--goal .q__card{background:var(--core);border-color:var(--core);color:var(--paper)}
+.q--goal .q__tag{color:var(--paper)}
+.q--goal .q__stamp{border-color:var(--paper);color:var(--paper)}
+.goal__art{display:flex;align-items:flex-end;justify-content:center;gap:4px;margin-top:10px}
+.goal__art img{width:110px}
+.goal__art img:last-child{width:120px;animation:bob 1.6s ease-in-out infinite}
+
+/* ---------- 締め ---------- */
+.close{padding-bottom:0;text-align:center}
+.close .bars{align-items:center}
+.close .bars .b--plain{color:var(--paper)}
+.close__p{margin-top:18px;font-size:14px;color:#EDEBE7}
+.choice{margin:28px auto 0;max-width:360px;text-align:left;padding:18px 16px 12px}
+.choice__q{font-size:16px;line-height:1.7;min-height:3.4em}
+.choice__btns{display:grid;gap:4px;margin-top:8px}
+.choice__btns button,.choice__btns a{display:flex;gap:10px;align-items:center;padding:8px 4px;font:400 18px/1.3 var(--dot);text-align:left}
+.choice__btns button::before,.choice__btns a::before{content:"▶";font-size:12px;opacity:0}
+.choice__btns :is(button,a):hover::before,.choice__btns :is(button,a):focus-visible::before{opacity:1;animation:blink 1s steps(2) infinite}
+.choice__btns :focus-visible{outline:0}
+.close__cta{margin-top:28px;opacity:.35;pointer-events:none;transition:opacity .4s}
+.close__cta.is-on{opacity:1;pointer-events:auto}
+.close__art{position:relative;margin:36px -20px 0}
+.close__art::before{content:"";position:absolute;left:50%;top:40%;width:340px;height:340px;translate:-50% -50%;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.18),transparent 65%)}
+.close__art img{position:relative}
+
+.ft{padding:28px 20px calc(96px + env(safe-area-inset-bottom));background:var(--ink);color:var(--muted);border-top:1px solid rgba(255,255,255,.12);display:flex;justify-content:space-between;align-items:center;font:400 12px/1 var(--mono)}
+.ft img{width:110px}
+@media (min-width:1080px){.ft{padding-bottom:28px}}
+
+/* ---------- レベルアップの演出 ---------- */
+.fx{position:fixed;inset:0;z-index:90;pointer-events:none}
+/* v003：画面を覆わず、右上（スマホは上）の隅に出す */
+.lvup{position:fixed;z-index:91;top:16px;right:16px;width:300px;padding:14px 16px 14px;overflow:hidden;pointer-events:none;opacity:0;visibility:hidden;transform:translateX(calc(100% + 32px));transition:transform .45s var(--pop),opacity .3s,visibility .45s}
+.lvup.is-on{opacity:1;visibility:visible;transform:none}
+.lvup__rays{position:absolute;right:-60px;top:-90px;width:240px;height:240px;background:repeating-conic-gradient(rgba(255,255,255,.12) 0 8deg,transparent 8deg 22deg);border-radius:50%;mask:radial-gradient(circle,#000 15%,transparent 70%);-webkit-mask:radial-gradient(circle,#000 15%,transparent 70%)}
+.lvup.is-on .lvup__rays{animation:spin 8s linear infinite}
+.lvup__box{position:relative;display:grid;grid-template-columns:auto 1fr;column-gap:12px;align-items:center}
+.lvup__t{grid-row:span 2;font:900 italic 30px/1 var(--en);letter-spacing:-.02em;color:var(--paper);text-shadow:2px 2px 0 var(--core)}
+.lvup.is-on .lvup__t{animation:lvt .7s var(--pop) both}
+@keyframes lvt{0%{transform:scale(1.8);opacity:0}60%{transform:scale(.94);opacity:1}100%{transform:none}}
+.lvup__s{font:400 16px/1.2 var(--dot);color:var(--muted)}
+.lvup__s b{font-weight:400;color:var(--paper)}
+.lvup__m{grid-column:1/-1;margin-top:10px;padding-top:8px;border-top:1px dashed rgba(255,255,255,.25);font-size:14px;line-height:1.5}
+.lvup.is-on .lvup__s,.lvup.is-on .lvup__m{animation:pop .45s var(--pop) .25s both}
+.lvup__bar{position:absolute;left:0;bottom:0;height:3px;width:100%;background:var(--paper);transform-origin:left}
+.lvup.is-on .lvup__bar{animation:lvbar 2.6s linear both}
+@keyframes lvbar{from{transform:scaleX(1)}to{transform:scaleX(0)}}
+@media (max-width:1079px){.lvup{left:12px;right:12px;top:calc(12px + env(safe-area-inset-top));width:auto;transform:translateY(calc(-100% - 24px))}}
+.expfloat{position:fixed;z-index:92;font:400 16px/1 var(--dot);color:var(--core);text-shadow:1px 1px 0 var(--paper),-1px -1px 0 var(--paper);pointer-events:none;animation:expf 1.2s var(--ease) forwards}
+@keyframes expf{0%{opacity:0;transform:translateY(8px)}20%{opacity:1}100%{opacity:0;transform:translateY(-36px)}}
+.toast{position:fixed;z-index:92;left:50%;bottom:84px;translate:-50% 0;width:min(380px,calc(100% - 24px));font-size:15px;opacity:0;transform:translateY(16px);transition:.35s var(--ease);pointer-events:none}
+.toast.is-on{opacity:1;transform:none}
+@media (min-width:1080px){.toast{bottom:28px}}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+  .rv{opacity:1;transform:none}
+  .bars .b{clip-path:none}
+  .stat__ic path{stroke-dashoffset:0}
+  html{scroll-behavior:auto}
+}
+</style>
+</head>
+<body class="is-locked">
+
+<!-- ===== はじめる画面 ===== -->
+<div class="start grid-d" id="start" role="dialog" aria-modal="true" aria-label="はじめる">
+  <div class="start__in">
+    <img class="start__logo" src="assets/inforkus-logo-full-white.svg" alt="inforkus あたらしい視点で、つながる知識。" width="220" height="57">
+    <img class="start__torch" src="assets/torch_TC07.webp" alt="" width="150" height="171">
+    <p class="start__press">PRESS START</p>
+    <div class="win start__menu">
+      <span class="win__ttl">MENU</span>
+      <button type="button" data-start="on">音ありで はじめる<small>BGM「これもレベルアップ」と効果音が小さな音で流れます</small></button>
+      <button type="button" data-start="off">音なしで はじめる<small>あとから画面のボタンで音をつけられます</small></button>
+    </div>
+  </div>
+</div>
+<div class="start__flash" id="flash"></div>
+
+<canvas class="fx" id="fx" aria-hidden="true"></canvas>
+<div class="win lvup" id="lvup" aria-live="polite">
+  <div class="lvup__rays"></div>
+  <div class="lvup__box">
+    <p class="lvup__t">LEVEL UP!</p>
+    <p class="lvup__s">Lv.<b id="lvFrom">1</b> ▶ Lv.<b id="lvTo">2</b></p>
+    <p class="lvup__m" id="lvMsg">新しい見方 を おぼえた！</p>
+  </div>
+  <span class="lvup__bar"></span>
+</div>
+<div class="win toast" id="toast" role="status"></div>
+
+<div class="shell">
+
+  <!-- ===== 左：ステータス ===== -->
+  <aside class="side side--l grid-w" aria-label="ステータス">
+    <a class="side__logo" href="#top"><img src="assets/inforkus-logo-full-color.svg" alt="inforkus" width="200" height="52"></a>
+    <p class="side__catch">見慣れたものに、<br><b>新しい見方</b>を<br>アップデート。</p>
+    <div class="win status">
+      <span class="win__ttl">STATUS</span>
+      <div class="status__row"><span>あなた</span><span class="status__lv">Lv.<span class="js-lv">1</span></span></div>
+      <div class="bar"><i class="js-exp"></i></div>
+      <p class="status__exp">EXP <span class="js-expn">0</span> / <span class="js-expmax">100</span></p>
+      <ul class="status__sk js-skills"><li class="none">まだ ありません</li></ul>
+    </div>
+    <div class="side__snd">
+      <button class="snd js-snd" type="button" aria-pressed="false" aria-label="BGM のオンオフ"><span class="eq"><i></i><i></i><i></i><i></i></span><span class="snd__txt">BGM OFF</span></button>
+      <button class="snd se js-se" type="button" data-lv="1" aria-label="効果音の大きさ（押すたびに 小・中・大・なし）"><span class="lvl"><i></i><i></i><i></i></span><span class="se__txt">SE 小</span></button>
+    </div>
+  </aside>
+
+  <!-- ===== 中央：本文 ===== -->
+  <main class="lp" id="top">
+
+    <section class="fv grid-w" id="fv" data-sec>
+      <div class="fv__hd">
+        <img src="assets/inforkus-logo-full-color.svg" alt="inforkus" width="120" height="31">
+        <span class="fv__ver">ver.<span id="ver">1.0.0</span></span>
+      </div>
+
+      <div class="term" aria-label="アップデートの表示">
+        <div class="term__dots" aria-hidden="true"><i></i><i></i><i></i></div>
+        <div class="term__line"><span class="p">$</span> inforkus --update</div>
+        <div class="term__line" id="t1"></div>
+        <div class="term__line term__prog"><div class="bar"><i id="tbar"></i></div><span id="tpct">0%</span></div>
+        <div class="term__line ok" id="t2"></div>
+      </div>
+
+      <h1 class="fv__h bars rv">
+        <span class="b b--plain">見慣れたものに、</span>
+        <span class="b b--core">新しい見方を</span>
+        <span class="b">アップデート。</span>
+      </h1>
+      <p class="fv__p rv">焦点を合わせて核を見つけ、そこから広げて形にする。業務の仕組みづくりと、伝わる図と動画の制作を、inforkus がひとつながりで引き受けます。</p>
+
+      <div class="fv__stage" aria-hidden="true">
+        <span class="fv__ring"></span>
+        <i class="spark" style="left:12%;top:22%"></i>
+        <i class="spark" style="right:14%;top:14%;animation-delay:.8s"></i>
+        <i class="spark" style="left:22%;top:62%;animation-delay:1.5s;color:var(--muted)"></i>
+        <i class="spark" style="right:8%;top:52%;animation-delay:2s"></i>
+        <img src="assets/hero_G01_v2.webp" alt="" width="1400" height="935">
+      </div>
+
+      <div class="win fv__msg">
+        <span class="face"><img src="assets/face_torch_TC90.webp" alt="" width="240" height="241"></span>
+        <div>
+          <p class="msg__name">トーチ</p>
+          <p class="msg__txt" id="heroMsg"></p>
+        </div>
+        <span class="msg__next" aria-hidden="true">▼</span>
+      </div>
+
+      <div class="fv__cta">
+        <a class="btn btn--accent" href="#contact">冒険の相談をする <span aria-hidden="true">→</span></a>
+        <small>スクロールすると経験値がたまって、レベルアップします</small>
+      </div>
+    </section>
+
+    <div class="ticker" aria-hidden="true"><div class="ticker__track" data-ticker="LEVEL UP,UPDATE,FOCUS,FORK US,INFO"></div></div>
+
+    <!-- ===== ABOUT ===== -->
+    <section class="sec grid-w" id="about" data-sec data-exp="40">
+      <p class="eyebrow rv">WHO WE ARE</p>
+      <h2 class="bars rv" style="margin-top:14px">
+        <span class="b b--plain">inforkus とは？</span>
+        <span class="b b--core">焦点を合わせ、広げて、</span>
+        <span class="b">核を見つける。</span>
+      </h2>
+      <p class="lead rv">名前には三つの意味を重ねています。収束して終わらず、発散し続けもしない。その往復から、次の理解やつながりが生まれます。</p>
+
+      <ul class="name">
+        <li class="stat rv">
+          <span class="stat__ic"><svg viewBox="0 0 52 40" aria-hidden="true"><path d="M4 6 L40 20 M4 20 L40 20 M4 34 L40 20"/><circle cx="44" cy="20" r="5"/></svg></span>
+          <div><p class="stat__en">Focus</p><p class="stat__ja">焦点を合わせる</p><p class="stat__p">散らばった情報から、いま見るべき一点を決める。</p></div>
+        </li>
+        <li class="stat rv">
+          <span class="stat__ic"><svg viewBox="0 0 52 40" aria-hidden="true"><circle cx="9" cy="20" r="5"/><path d="M12 20 L48 6 M12 20 L48 20 M12 20 L48 34"/></svg></span>
+          <div><p class="stat__en">Fork us</p><p class="stat__ja">分かれて、広がる</p><p class="stat__p">一点から、別の見方や隣の分野への道を開く。</p></div>
+        </li>
+        <li class="stat rv">
+          <span class="stat__ic"><svg viewBox="0 0 52 40" aria-hidden="true"><path d="M3 6 L22 20 M3 34 L22 20 M30 20 L49 6 M30 20 L49 34"/><circle cx="26" cy="20" r="6"/></svg></span>
+          <div><p class="stat__en">Info</p><p class="stat__ja">核となる情報</p><p class="stat__p">往復のなかで見つかる大事な情報を、伝わる形にする。</p></div>
+        </li>
+      </ul>
+
+      <div class="party rv">
+        <div class="party__hd">
+          <p class="party__ttl">パーティ紹介</p>
+          <div class="car__nav">
+            <button class="car__btn" type="button" data-car="prev" aria-label="前のメンバー"><svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M9 2 4 7l5 5" stroke="currentColor" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+            <button class="car__btn" type="button" data-car="next" aria-label="次のメンバー"><svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="m5 2 5 5-5 5" stroke="currentColor" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+          </div>
+        </div>
+        <div class="car" id="car" tabindex="0" aria-label="パーティのメンバー（横にスワイプ）">
+          <article class="mem">
+            <div class="mem__art"><span class="mem__job">#案内役</span><span class="mem__lv">Lv.12</span><img src="assets/aoi_HT01.webp" alt="手のひらで示して案内する aoi" width="640" height="960" loading="lazy"></div>
+            <div class="mem__body">
+              <h3 class="mem__name">aoi</h3>
+              <p class="mem__p">見慣れたものの「いつもと違う見方」を、やさしい言葉で案内する。</p>
+              <div class="meter"><span>具体</span><div class="bar"><i data-w="70"></i></div><b>70</b></div>
+              <div class="meter"><span>ことば</span><div class="bar"><i data-w="90"></i></div><b>90</b></div>
+            </div>
+          </article>
+          <article class="mem">
+            <div class="mem__art"><span class="mem__job">#解説役</span><span class="mem__lv">Lv.15</span><img src="assets/akari_AK03_v2.webp" alt="手のひらで示して解説するあかり" width="640" height="926" loading="lazy"></div>
+            <div class="mem__body">
+              <h3 class="mem__name">あかり</h3>
+              <p class="mem__p">複雑な関係や手順を、図と順番に分けて解きほぐす。</p>
+              <div class="meter"><span>抽象</span><div class="bar"><i data-w="85"></i></div><b>85</b></div>
+              <div class="meter"><span>しくみ</span><div class="bar"><i data-w="80"></i></div><b>80</b></div>
+            </div>
+          </article>
+          <article class="mem">
+            <div class="mem__art"><span class="mem__job">#灯す役</span><span class="mem__lv">Lv.??</span><img src="assets/torch_TC07.webp" alt="灯火の尾で照らすトーチ" width="640" height="731" loading="lazy" style="height:190px;margin-bottom:24px"></div>
+            <div class="mem__body">
+              <h3 class="mem__name">トーチ</h3>
+              <p class="mem__p">小さな灯火で足もとを照らし、次の一歩へつなぐ。</p>
+              <div class="meter"><span>ひかり</span><div class="bar"><i data-w="95"></i></div><b>95</b></div>
+              <div class="meter"><span>げんき</span><div class="bar"><i data-w="75"></i></div><b>75</b></div>
+            </div>
+          </article>
+          <article class="mem">
+            <div class="mem__art"><span class="mem__job">#助っ人</span><span class="mem__lv">Lv.AI</span><img src="assets/item_robot_HO10.webp" alt="書類を抱えた助っ人ロボ" width="480" height="476" loading="lazy" style="height:180px;margin-bottom:32px"></div>
+            <div class="mem__body">
+              <h3 class="mem__name">助っ人ロボ</h3>
+              <p class="mem__p">AI の力で、くり返しの作業を引き受ける。判断は人が持つ。</p>
+              <div class="meter"><span>はやさ</span><div class="bar"><i data-w="92"></i></div><b>92</b></div>
+              <div class="meter"><span>きろく</span><div class="bar"><i data-w="88"></i></div><b>88</b></div>
+            </div>
+          </article>
+        </div>
+        <div class="car__dots" id="carDots" role="tablist" aria-label="メンバーの位置"></div>
+      </div>
+    </section>
+
+    <div class="ticker ticker--core" aria-hidden="true"><div class="ticker__track" data-ticker="PERSPECTIVE,CORE,DESIGN,NEW SKILL"></div></div>
+
+    <!-- ===== アップデートのお知らせ（三つの軸） ===== -->
+    <section class="sec grid-d" id="update" data-sec data-exp="40">
+      <div class="upd__head rv">
+        <img src="assets/item_scroll_HO11.webp" alt="" width="96" height="96">
+        <div><p class="eyebrow">UPDATE NOTE</p><p class="upd__ver">ver.<b id="updVer">1.0.0</b></p></div>
+      </div>
+      <h2 class="h2 rv">考え方が<br><em>アップデート</em>されました。</h2>
+      <p class="lead rv" style="color:#EDEBE7">一度やれば終わる工程ではなく、捉え直しながら往復する三つの軸。スクロールすると順に解放されます。</p>
+
+      <div class="tree" id="tree">
+        <span class="tree__fill" id="treeFill"></span>
+        <div class="node" data-skill="Perspective">
+          <span class="node__tag">SKILL 01</span>
+          <p class="node__en">Perspective</p>
+          <p class="node__pair"><span>具体</span> ⇄ <span>抽象</span></p>
+          <p class="node__p">現場の具体を知り、全体の構造を捉える。視座を上げ下げして、多方面から見る。</p>
+        </div>
+        <div class="node" data-skill="Core">
+          <span class="node__tag">SKILL 02</span>
+          <p class="node__en">Core</p>
+          <p class="node__pair"><span>定数</span> ⇄ <span>変数</span></p>
+          <p class="node__p">変えてはいけないものと、変えてよいものを見極める。ぶれない核を決めてから、変化に合わせる。</p>
+        </div>
+        <div class="node" data-skill="Design">
+          <span class="node__tag">SKILL 03</span>
+          <p class="node__en">Design</p>
+          <p class="node__pair"><span>想像</span> ⇄ <span>創造</span></p>
+          <p class="node__p">頭の中で描いたものを、相手に伝わる形として創る。図・動き・言葉を組み合わせて届ける。</p>
+        </div>
+      </div>
+
+      <div class="win patch rv">
+        <span class="win__ttl">PATCH NOTE</span>
+        <ul>
+          <li><span class="k">ADD</span>具体と抽象を行き来して、見落としていた原因を見つけやすくなりました。</li>
+          <li><span class="k">ADD</span>変えない核を先に決めるので、途中で方針がぶれにくくなりました。</li>
+          <li><span class="k">UP</span>頭の中のイメージが、図と動きで伝わるようになりました。</li>
+          <li><span class="k">FIX</span>「何から手をつければいいか分からない」状態を解消しました。</li>
+        </ul>
+      </div>
+    </section>
+
+    <div class="ticker" aria-hidden="true"><div class="ticker__track" data-ticker="SERVICE,BATTLE,LEVEL UP,UPDATE"></div></div>
+
+    <!-- ===== 対応範囲（バトル） ===== -->
+    <section class="sec grid-w" id="service" data-sec data-exp="40">
+      <p class="eyebrow rv">SERVICE</p>
+      <h2 class="h2 rv">困りごとを、<br>コマンドで片づける。</h2>
+      <p class="lead rv">コマンドを選ぶと、その領域でできることが出てきます。三つ全部を選ぶと…？</p>
+
+      <div class="battle rv" id="battle">
+        <div class="field">
+          <div class="win enemy__hp">
+            <div class="row"><span>手作業スライム</span><span>HP <span id="hpN">100</span></span></div>
+            <div class="bar"><i id="hpBar"></i></div>
+          </div>
+          <img class="enemy" id="enemy" src="assets/enemy_slime_HO09.webp" alt="書類をくわえた手作業スライム" width="480" height="470">
+          <img class="chest" id="chest" src="assets/item_chest_HO04.webp" alt="光る宝箱" width="480" height="476">
+        </div>
+        <div class="win cmd">
+          <p class="cmd__log" id="log" aria-live="polite">手作業スライム が あらわれた！<br>どうする？</p>
+          <div class="cmd__tabs" role="tablist" aria-label="コマンド">
+            <button type="button" role="tab" id="tab-a" aria-controls="pa" aria-selected="false" data-dmg="34" data-say="「整える」！ 業務に すじみちが とおった！">整える<small>しくみ</small></button>
+            <button type="button" role="tab" id="tab-b" aria-controls="pb" aria-selected="false" data-dmg="33" data-say="「伝える」！ 見えなかった関係が 見えた！">伝える<small>図と動画</small></button>
+            <button type="button" role="tab" id="tab-c" aria-controls="pc" aria-selected="false" data-dmg="33" data-say="「届ける」！ 必要な人のもとへ 届いた！">届ける<small>発信</small></button>
+          </div>
+          <ul class="cmd__panel" id="pa" role="tabpanel" aria-labelledby="tab-a" hidden>
+            <li>業務フローの整理</li><li>Excel 管理表</li><li>VBA・マクロ</li><li>Power Query</li><li>AI で仕組み化</li><li>データ集計・分析</li>
+          </ul>
+          <ul class="cmd__panel" id="pb" role="tabpanel" aria-labelledby="tab-b" hidden>
+            <li>図解の制作</li><li>ショート動画</li><li>解説動画（横長）</li><li>動画編集</li><li>商品・人物の撮影</li><li>画像の修正</li>
+          </ul>
+          <ul class="cmd__panel" id="pc" role="tabpanel" aria-labelledby="tab-c" hidden>
+            <li>LP 制作</li><li>HTML メール</li><li>MA・CRM の運用</li><li>SNS 用の画像</li><li>サムネイル</li><li>ほか ご相談</li>
+          </ul>
+        </div>
+      </div>
+      <p class="svc__etc">and more…</p>
+    </section>
+
+    <!-- ===== 進め方（クエスト） ===== -->
+    <section class="sec grid-w" id="flow" data-sec data-exp="40" style="border-top:2px solid var(--ink)">
+      <p class="eyebrow rv">QUEST LOG</p>
+      <h2 class="h2 rv">ご相談から、<br>形になるまでの冒険。</h2>
+      <p class="lead rv">焦点を合わせる（収束）と、広げて考える（発散）を往復しながら進みます。</p>
+      <ol class="quest">
+        <li class="q"><span class="q__no">01</span><div class="q__card"><span class="q__stamp">CLEAR</span><p class="q__tag">CONTACT</p><h3 class="q__ttl">お問い合わせ</h3><p class="q__txt">困っていることや作りたいものを、一言でお送りください。まとまっていなくても大丈夫です。</p></div></li>
+        <li class="q"><span class="q__no">02</span><div class="q__card"><span class="q__stamp">CLEAR</span><p class="q__tag">FOCUS</p><h3 class="q__ttl">ヒアリング</h3><p class="q__txt">オンラインで現状と目的を伺い、いちばん効くところに焦点を合わせます。</p></div></li>
+        <li class="q"><span class="q__no">03</span><div class="q__card"><span class="q__stamp">CLEAR</span><p class="q__tag">FORK</p><h3 class="q__ttl">広げて考える</h3><p class="q__txt">仕組みで解くか、図や動画で伝えるか。いくつかの道筋を並べて比べます。</p></div></li>
+        <li class="q"><span class="q__no">04</span><div class="q__card"><span class="q__stamp">CLEAR</span><p class="q__tag">FOCUS</p><h3 class="q__ttl">ご提案</h3><p class="q__txt">道筋を一つに絞り、内容・進め方・期間・費用をまとめてご提案します。</p></div></li>
+        <li class="q"><span class="q__no">05</span><div class="q__card"><span class="q__stamp">CLEAR</span><p class="q__tag">DESIGN</p><h3 class="q__ttl">制作</h3><p class="q__txt">途中で一度お見せし、方向を合わせながら仕上げます。</p></div></li>
+        <li class="q q--goal" data-goal><span class="q__no">06</span><div class="q__card"><span class="q__stamp">LEVEL UP</span><p class="q__tag">LOOP</p><h3 class="q__ttl">振り返って、次のレベルへ</h3><p class="q__txt">使って分かったことを持ち寄り、次の改善へつなげます。</p>
+          <div class="goal__art" aria-hidden="true"><img src="assets/akari_good_AK09_v2.webp" alt="" width="560" height="840" loading="lazy"><img src="assets/aoi_jump_E05.webp" alt="" width="560" height="850" loading="lazy"></div></div></li>
+      </ol>
+    </section>
+
+    <div class="ticker ticker--core" aria-hidden="true"><div class="ticker__track" data-ticker="NEXT QUEST,CONTACT,LEVEL UP"></div></div>
+
+    <!-- ===== 締め ===== -->
+    <section class="sec grid-d close" id="contact" data-sec data-exp="40">
+      <p class="eyebrow rv">CONTACT</p>
+      <h2 class="bars rv" style="margin-top:14px">
+        <span class="b b--plain">小さな光を、</span>
+        <span class="b b--core">次の誰かへ。</span>
+      </h2>
+      <p class="close__p rv">気づいたことを形にして渡すと、受け取った人がまた次へつないでくれる。その最初の一歩を、一緒に。</p>
+
+      <div class="win choice rv">
+        <span class="win__ttl">？</span>
+        <p class="choice__q" id="choiceQ">冒険の準備は できた？</p>
+        <div class="choice__btns">
+          <button type="button" data-choice="yes">はい</button>
+          <button type="button" data-choice="no">まだ ちょっと…</button>
+        </div>
+      </div>
+      <a class="btn btn--accent close__cta" id="closeCta" href="#">相談フォームへ <span aria-hidden="true">→</span></a>
+
+      <div class="close__art rv"><img src="assets/close_G06_v2.webp" alt="笑顔で手を振るあかり・トーチ・aoi" width="1200" height="795" loading="lazy"></div>
+    </section>
+
+    <footer class="ft"><img src="assets/inforkus-logo-full-white.svg" alt="inforkus" width="110" height="28"><span>© 2026 inforkus</span></footer>
+  </main>
+
+  <!-- ===== 右：マップ ===== -->
+  <aside class="side side--r grid-w" aria-label="ページ内のマップ">
+    <nav class="map">
+      <p class="map__ttl">MAP</p>
+      <ol>
+        <li><a href="#fv">はじまりの町</a></li>
+        <li><a href="#about">inforkus とは</a></li>
+        <li><a href="#update">アップデート</a></li>
+        <li><a href="#service">バトル</a></li>
+        <li><a href="#flow">クエスト</a></li>
+        <li><a href="#contact">つぎの冒険へ</a></li>
+      </ol>
+    </nav>
+    <a class="side__cta" href="#contact">相談する <span aria-hidden="true">→</span></a>
+  </aside>
+</div>
+
+<!-- スマホ下部の HUD -->
+<div class="win hud-m" aria-label="ステータス">
+  <span class="lv">Lv.<span class="js-lv">1</span></span>
+  <div class="bar"><i class="js-exp"></i></div>
+  <button class="snd js-snd" type="button" aria-pressed="false" aria-label="BGM のオンオフ"><span class="eq"><i></i><i></i><i></i><i></i></span><span class="snd__txt">OFF</span></button>
+  <button class="snd se js-se" type="button" data-lv="1" aria-label="効果音の大きさ（押すたびに 小・中・大・なし）"><span class="lvl"><i></i><i></i><i></i></span><span class="se__txt">小</span></button>
+</div>
+
+<script>
+(() => {
+  const $ = (s, r = document) => r.querySelector(s);
+  const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+  const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const wait = (ms) => new Promise((r) => setTimeout(r, RM ? 0 : ms));
+
+  /* ===== 音：BGM「これもレベルアップ」と効果音（inforkus_se_rpg_v1） ===== */
+  /* v004：http で開いたときは Web Audio で鳴らす（iPhone は audio 要素の音量を変えられず、操作のあとの音も止められるため） */
+  const AC = /^https?:$/.test(location.protocol) && (window.AudioContext || window.webkitAudioContext);
+  const SE_NAMES = ['levelup', 'cursor', 'confirm', 'item', 'skill', 'save', 'coin', 'clear'];
+  const Sound = {
+    on: false,
+    bgm: new Audio('assets/audio/bgm_koremo_levelup.mp3'),
+    se: {}, buf: {}, ctx: null, bgmGain: null,
+    vol: 0.22,
+    seLv: 1, // 0 なし・1 小・2 中・3 大
+    seGain: [0, 0.35, 0.6, 1],
+    init() {
+      this.bgm.loop = true; this.bgm.volume = this.vol; this.bgm.preload = 'auto'; this.bgm.setAttribute('playsinline', '');
+      if (!AC) SE_NAMES.forEach((n) => { const a = new Audio(`assets/audio/se_${n}.mp3`); a.preload = 'auto'; this.se[n] = a; });
+      $$('.js-snd').forEach((b) => b.addEventListener('click', () => this.set(!this.on)));
+      const saved = localStorage.getItem('ifk-se'); if (saved !== null) this.seLv = +saved;
+      $$('.js-se').forEach((b) => b.addEventListener('click', () => { this.unlock(); this.setSe((this.seLv + 1) % 4); this.play('confirm', 0.6); }));
+      this.setSe(this.seLv);
+    },
+    unlock() { // 押した操作の中で呼ぶ
+      if (!AC) return;
+      if (!this.ctx) {
+        this.ctx = new AC();
+        this.bgmGain = this.ctx.createGain(); this.bgmGain.gain.value = this.vol;
+        this.ctx.createMediaElementSource(this.bgm).connect(this.bgmGain).connect(this.ctx.destination);
+        this.bgm.volume = 1;
+        SE_NAMES.forEach((n) => fetch(`assets/audio/se_${n}.mp3`).then((r) => r.arrayBuffer())
+          .then((d) => new Promise((ok, ng) => this.ctx.decodeAudioData(d, ok, ng))).then((b) => { this.buf[n] = b; }).catch(() => {}));
+      }
+      if (this.ctx.state !== 'running') this.ctx.resume();
+    },
+    set(on) {
+      this.on = on;
+      if (on) { this.unlock(); this.bgm.play().catch(() => {}); } else this.bgm.pause();
+      $$('.js-snd').forEach((b) => {
+        b.setAttribute('aria-pressed', on);
+        const t = b.querySelector('.snd__txt');
+        t.textContent = b.closest('.hud-m') ? (on ? 'ON' : 'OFF') : (on ? 'BGM ON' : 'BGM OFF');
+      });
+    },
+    setSe(lv) {
+      this.seLv = lv; localStorage.setItem('ifk-se', lv);
+      const name = ['なし', '小', '中', '大'][lv];
+      $$('.js-se').forEach((b) => {
+        b.dataset.lv = lv;
+        b.querySelector('.se__txt').textContent = b.closest('.hud-m') ? name : 'SE ' + name;
+      });
+    },
+    play(n, v = 0.5) {
+      if (!this.on || !this.seLv) return;
+      const g = Math.min(1, v * this.seGain[this.seLv]);
+      if (this.ctx) {
+        if (!this.buf[n]) return;
+        const src = this.ctx.createBufferSource(), gain = this.ctx.createGain();
+        src.buffer = this.buf[n]; gain.gain.value = g; src.connect(gain).connect(this.ctx.destination); src.start();
+      } else if (this.se[n]) {
+        const a = this.se[n].cloneNode(); a.volume = g; a.play().catch(() => {});
+      }
+    },
+    duck(ms) {
+      if (!this.on) return;
+      const setV = (x) => { if (this.bgmGain) this.bgmGain.gain.setTargetAtTime(x, this.ctx.currentTime, 0.1); else this.bgm.volume = x; };
+      setV(this.vol * 0.5);
+      clearTimeout(this._d); this._d = setTimeout(() => setV(this.vol), ms);
+    },
+  };
+  Sound.init();
+  let lastCur = 0;
+  const cursor = () => { const t = performance.now(); if (Sound.seLv >= 2 && t - lastCur > 120) { lastCur = t; Sound.play('cursor', 0.2); } };
+
+  /* ===== 粒子（レベルアップ・宝箱） ===== */
+  const cv = $('#fx'), cx = cv.getContext('2d');
+  let parts = [], raf = 0;
+  const fit = () => { cv.width = innerWidth * devicePixelRatio; cv.height = innerHeight * devicePixelRatio; };
+  fit(); addEventListener('resize', fit);
+  const COLORS = ['#1C6047', '#C15332', '#A7A196', '#2B2825'];
+  function burst(x, y, n = 60, spread = 9) {
+    if (RM) return;
+    for (let i = 0; i < n; i++) {
+      const a = Math.random() * Math.PI * 2, s = Math.random() * spread + 2;
+      parts.push({ x, y, vx: Math.cos(a) * s, vy: Math.sin(a) * s - 3, life: 1, size: Math.random() * 6 + 3,
+        c: COLORS[i % COLORS.length], star: Math.random() < 0.35, rot: Math.random() * 6 });
+    }
+    if (!raf) raf = requestAnimationFrame(tick);
+  }
+  function tick() {
+    const d = devicePixelRatio;
+    cx.clearRect(0, 0, cv.width, cv.height);
+    parts = parts.filter((p) => p.life > 0);
+    parts.forEach((p) => {
+      p.x += p.vx; p.y += p.vy; p.vy += 0.25; p.vx *= 0.98; p.life -= 0.013; p.rot += 0.1;
+      cx.globalAlpha = Math.max(0, p.life); cx.fillStyle = p.c;
+      cx.save(); cx.translate(p.x * d, p.y * d); cx.rotate(p.rot);
+      const s = p.size * d;
+      if (p.star) { cx.fillRect(-s, -s / 5, s * 2, s / 2.5); cx.fillRect(-s / 5, -s, s / 2.5, s * 2); }
+      else cx.fillRect(-s / 2, -s / 2, s, s);
+      cx.restore();
+    });
+    raf = parts.length ? requestAnimationFrame(tick) : 0;
+    if (!raf) cx.clearRect(0, 0, cv.width, cv.height);
+  }
+
+  /* ===== 経験値とレベル ===== */
+  const MSG = ['', '', '新しい見方 を おぼえた！', '焦点の合わせ方 を おぼえた！', '仕組みの力 を手に入れた！',
+    '冒険の進め方 が わかった！', '次の誰かへ 光をわたせるようになった！', 'すべての見方 を マスターした！'];
+  const LV = { exp: 0, lv: 1, max: 7, per: 100 };
+  const queue = []; let showing = false;
+  function hud() {
+    const inLv = LV.lv >= LV.max ? LV.per : LV.exp - (LV.lv - 1) * LV.per;
+    $$('.js-lv').forEach((e) => (e.textContent = LV.lv >= LV.max ? 'MAX' : LV.lv));
+    $$('.js-exp').forEach((e) => (e.style.width = Math.min(100, inLv / LV.per * 100) + '%'));
+    $$('.js-expn').forEach((e) => (e.textContent = LV.exp));
+    $$('.js-expmax').forEach((e) => (e.textContent = Math.min(LV.lv, LV.max - 1) * LV.per));
+  }
+  function floatExp(n) {
+    const anchor = $$('.js-exp').find((e) => e.offsetParent) || document.body;
+    const r = anchor.getBoundingClientRect();
+    const s = document.createElement('span');
+    s.className = 'expfloat'; s.textContent = `+${n} EXP`;
+    s.style.left = r.left + r.width / 2 - 30 + 'px'; s.style.top = r.top - 24 + 'px';
+    document.body.appendChild(s); setTimeout(() => s.remove(), 1300);
+  }
+  function gain(n) {
+    if (LV.lv >= LV.max) return;
+    LV.exp += n; floatExp(n);
+    const next = Math.min(LV.max, 1 + Math.floor(LV.exp / LV.per));
+    while (LV.lv < next) { queue.push([LV.lv, LV.lv + 1]); LV.lv++; }
+    hud(); runQueue();
+  }
+  async function runQueue() {
+    if (showing || !queue.length) return;
+    showing = true;
+    const [from, to] = queue.shift();
+    $('#lvFrom').textContent = from; $('#lvTo').textContent = to >= LV.max ? 'MAX' : to;
+    $('#lvMsg').textContent = MSG[to] || MSG[MSG.length - 1];
+    const el = $('#lvup'); el.classList.remove('is-on'); void el.offsetWidth; el.classList.add('is-on');
+    Sound.duck(2200); Sound.play('levelup', 0.55);
+    setTimeout(() => { const lr = el.getBoundingClientRect(); burst(lr.left + 50, lr.top + lr.height / 2, 36, 6); }, RM ? 0 : 420);
+    const v = $('#ver'); if (v) v.textContent = `1.${to - 1}.0`;
+    await wait(2600);
+    el.classList.remove('is-on'); await wait(450);
+    showing = false; runQueue();
+  }
+  const skills = $('.js-skills');
+  function learn(name) {
+    const none = skills.querySelector('.none'); if (none) none.remove();
+    const li = document.createElement('li'); li.textContent = name; skills.appendChild(li);
+  }
+  let toastT;
+  function toast(html) {
+    const t = $('#toast'); t.innerHTML = html; t.classList.add('is-on');
+    clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('is-on'), 2400);
+  }
+  hud();
+
+  /* ===== 文字を1字ずつ出す ===== */
+  async function type(el, text, speed = 45) {
+    el.textContent = '';
+    if (RM) { el.textContent = text; return; }
+    el.classList.add('cur');
+    for (const ch of text) { el.textContent += ch; await wait(speed); }
+    el.classList.remove('cur');
+  }
+
+  /* ===== はじめる画面 → ファーストビューの演出 ===== */
+  async function heroSequence() {
+    await type($('#t1'), '> 新しい見方 を ダウンロード中...', 38);
+    const bar = $('#tbar'), pct = $('#tpct');
+    for (let p = 0; p <= 100; p += 4) { bar.style.width = p + '%'; pct.textContent = p + '%'; await wait(28); }
+    await type($('#t2'), '> アップデート完了：ver.1.0.0 ▶ 1.1.0', 30);
+    $('#ver').textContent = '1.1.0';
+    Sound.play('save', 0.5);
+    await type($('#heroMsg'), 'ようこそ！ スクロールすると 経験値が たまって、レベルアップしていくよ。', 40);
+  }
+  $$('[data-start]').forEach((b) => {
+    b.addEventListener('mouseenter', cursor);
+    b.addEventListener('click', () => {
+      Sound.set(b.dataset.start === 'on');
+      Sound.play('confirm', 0.6);
+      $('#flash').classList.add('is-on');
+      $('#start').classList.add('is-out');
+      document.body.classList.remove('is-locked');
+      setTimeout(heroSequence, RM ? 0 : 500);
+    });
+  });
+  $('[data-start="on"]').focus({ preventScroll: true });
+
+  /* ===== 出現 ===== */
+  const io = new IntersectionObserver((es) => es.forEach((e) => {
+    if (e.isIntersecting) { e.target.classList.add('is-in'); io.unobserve(e.target); }
+  }), { rootMargin: '0px 0px -12% 0px' });
+  $$('.rv').forEach((el) => io.observe(el));
+
+  /* ===== 節に入ったら経験値 ===== */
+  const ioExp = new IntersectionObserver((es) => es.forEach((e) => {
+    if (e.isIntersecting && !document.body.classList.contains('is-locked')) {
+      gain(+e.target.dataset.exp); ioExp.unobserve(e.target);
+    }
+  }), { threshold: 0.25 });
+  $$('[data-exp]').forEach((el) => ioExp.observe(el));
+
+  /* ===== 流れる帯 ===== */
+  $$('[data-ticker]').forEach((t) => {
+    const words = t.dataset.ticker.split(',');
+    const html = words.map((w) => `<span>${w}</span>`).join('');
+    t.innerHTML = html.repeat(6);
+  });
+
+  /* ===== パーティのカルーセル ===== */
+  const car = $('#car'), cards = $$('.mem', car), dots = $('#carDots');
+  cards.forEach((c, i) => {
+    const d = document.createElement('button');
+    d.type = 'button'; d.setAttribute('aria-label', `${i + 1}人目`);
+    d.addEventListener('click', () => go(i)); dots.appendChild(d);
+  });
+  let idx = 0;
+  const go = (i) => { idx = (i + cards.length) % cards.length; car.scrollTo({ left: cards[idx].offsetLeft - 20, behavior: RM ? 'auto' : 'smooth' }); };
+  $$('[data-car]').forEach((b) => b.addEventListener('click', () => { cursor(); go(idx + (b.dataset.car === 'next' ? 1 : -1)); }));
+  const ioCar = new IntersectionObserver((es) => es.forEach((e) => {
+    if (e.intersectionRatio > 0.6) {
+      idx = cards.indexOf(e.target);
+      $$('button', dots).forEach((d, i) => d.setAttribute('aria-current', i === idx));
+      $$('.bar i', e.target).forEach((b) => (b.style.width = b.dataset.w + '%'));
+    }
+  }), { root: car, threshold: [0.6] });
+  cards.forEach((c) => ioCar.observe(c));
+  let auto = setInterval(() => go(idx + 1), 4200);
+  const stop = () => { clearInterval(auto); auto = 0; };
+  ['pointerdown', 'focusin', 'wheel', 'touchstart'].forEach((ev) => car.addEventListener(ev, stop, { passive: true }));
+  if (RM) stop();
+
+  /* ===== スキルツリー（三つの軸） ===== */
+  const nodes = $$('.node'), fill = $('#treeFill'), tree = $('#tree');
+  let unlocked = 0;
+  const ioNode = new IntersectionObserver((es) => es.forEach((e) => {
+    if (!e.isIntersecting || e.target.classList.contains('is-on')) return;
+    e.target.classList.add('is-on'); ioNode.unobserve(e.target); unlocked++;
+    const r = e.target.getBoundingClientRect(), tr = tree.getBoundingClientRect();
+    fill.style.height = (r.top - tr.top + 24) + 'px';
+    const name = e.target.dataset.skill;
+    learn(name); Sound.play('skill', 0.45);
+    toast(`スキル『${name}』を おぼえた！`);
+    burst(r.left + 20, r.top + 20, 24, 5);
+    $('#updVer').textContent = `1.${unlocked}.0`;
+    gain(30);
+  }), { threshold: 0.7 });
+  nodes.forEach((n) => ioNode.observe(n));
+
+  /* ===== バトル（対応範囲のタブ） ===== */
+  let hp = 100, won = false;
+  const tabs = $$('.cmd__tabs [role="tab"]');
+  const log = $('#log');
+  tabs.forEach((t) => {
+    t.addEventListener('mouseenter', cursor);
+    t.addEventListener('click', async () => {
+      tabs.forEach((x) => { x.setAttribute('aria-selected', x === t); $('#' + x.getAttribute('aria-controls')).hidden = x !== t; });
+      Sound.play('confirm', 0.5);
+      if (t.classList.contains('is-done') || won) { log.textContent = t.dataset.say; return; }
+      t.classList.add('is-done');
+      const dmg = +t.dataset.dmg; hp = Math.max(0, hp - dmg);
+      const en = $('#enemy'); en.classList.remove('is-hit'); void en.offsetWidth; en.classList.add('is-hit');
+      const n = document.createElement('span'); n.className = 'dmg'; n.textContent = dmg;
+      $('.field').appendChild(n); setTimeout(() => n.remove(), 1000);
+      $('#hpN').textContent = hp; $('#hpBar').style.width = hp + '%';
+      log.textContent = t.dataset.say;
+      if (hp === 0) {
+        won = true; await wait(900);
+        en.classList.add('is-down'); Sound.play('clear', 0.6);
+        await wait(700);
+        $('#chest').classList.add('is-on');
+        const r = $('#chest').getBoundingClientRect(); burst(r.left + r.width / 2, r.top + r.height / 2, 70, 8);
+        Sound.play('item', 0.6);
+        log.innerHTML = '手作業スライム は すっきり片づいた！<br>宝箱から『自由な時間』を 手に入れた！';
+        learn('自由な時間'); gain(100);
+      }
+    });
+    t.addEventListener('keydown', (e) => {
+      const i = tabs.indexOf(t);
+      if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+        const j = (i + (e.key === 'ArrowRight' ? 1 : -1) + tabs.length) % tabs.length; tabs[j].focus();
+      }
+    });
+  });
+
+  /* ===== クエスト ===== */
+  const ioQ = new IntersectionObserver((es) => es.forEach((e) => {
+    if (!e.isIntersecting) return;
+    const q = e.target; q.classList.add('is-clear'); ioQ.unobserve(q);
+    if (q.hasAttribute('data-goal')) {
+      Sound.play('clear', 0.5);
+      const r = q.getBoundingClientRect(); burst(r.left + r.width / 2, r.top + 40, 60, 8);
+      learn('クエストの進め方'); gain(60);
+    } else { Sound.play('coin', 0.2); gain(15); }
+  }), { threshold: 0.8 });
+  $$('.q').forEach((q) => ioQ.observe(q));
+
+  /* ===== はい／いいえ ===== */
+  let saidYes = false;
+  $$('[data-choice]').forEach((b) => {
+    b.addEventListener('mouseenter', cursor);
+    b.addEventListener('click', () => {
+      Sound.play('confirm', 0.5);
+      if (b.dataset.choice === 'yes') {
+        type($('#choiceQ'), 'いいね！ 下のボタンから、冒険の相談を送ってね。', 35);
+        $('#closeCta').classList.add('is-on');
+        if (!saidYes) { saidYes = true; learn('つぎの冒険'); gain(200); }
+      } else {
+        type($('#choiceQ'), 'だいじょうぶ。準備ができたら、いつでもここで待ってるよ。', 40);
+      }
+    });
+  });
+
+  /* ===== 右のマップ：いま見ている節 ===== */
+  const links = $$('.map a'), secs = links.map((a) => $(a.getAttribute('href')));
+  let ticking = false;
+  addEventListener('scroll', () => {
+    if (ticking) return; ticking = true;
+    requestAnimationFrame(() => {
+      ticking = false;
+      const mid = innerHeight * 0.45; let cur = 0;
+      secs.forEach((s, i) => { if (s.getBoundingClientRect().top < mid) cur = i; });
+      links.forEach((a, i) => a.classList.toggle('is-cur', i === cur));
+    });
+  }, { passive: true });
+  links[0].classList.add('is-cur');
+  links.forEach((a) => a.addEventListener('mouseenter', cursor));
+})();
+</script>
+</body>
+</html>
