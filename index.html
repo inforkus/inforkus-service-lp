@@ -5,6 +5,20 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>inforkus｜見慣れたものに、新しい見方をアップデート。</title>
 <meta name="robots" content="noindex">
+<!-- v010：共有カード（OGP）。検索に出さない noindex はそのまま -->
+<meta name="description" content="焦点を合わせて核を見つけ、そこから広げて形にする。業務の仕組みづくりと、伝わる図と動画の制作を、inforkus がひとつながりで引き受けます。">
+<meta property="og:title" content="inforkus｜見慣れたものに、新しい見方をアップデート。">
+<meta property="og:description" content="業務の仕組みづくりと、伝わる図と動画の制作を、inforkus がひとつながりで引き受けます。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://inforkus.github.io/inforkus-service-lp/">
+<meta property="og:image" content="https://inforkus.github.io/inforkus-service-lp/assets/ogp.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="ja_JP">
+<meta property="og:site_name" content="inforkus">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="inforkus｜見慣れたものに、新しい見方をアップデート。">
+<meta name="twitter:description" content="業務の仕組みづくりと、伝わる図と動画の制作を、inforkus がひとつながりで引き受けます。">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Inter:ital,wght@0,700;0,800;1,800;1,900&family=JetBrains+Mono:wght@500;700&family=Noto+Sans+JP:wght@400;500;700;900&display=swap">
@@ -481,11 +495,13 @@ body.is-menu{overflow:hidden}
 .rv.eyebrow.is-in::before,.rv.is-in .eyebrow::before{transform:none}
 
 /* スクロールで進む図解（sticky の舞台） */
-.story{--vu:min(1vh,11px);position:relative;height:calc(var(--sh,320) * var(--vu));margin:36px calc(50% - min(540px,50vw - 20px)) 0}
+/* v010：舞台は内容の高さで sticky（top は JS で画面の中央寄せ）。後ろの .story__run が進む距離 */
+.story{--vu:min(1vh,11px);position:relative;margin:24px calc(50% - min(540px,50vw - 20px)) 0}
 @supports (height:1svh){.story{--vu:min(1svh,11px)}}
-.story--upd{--sh:330}
-@media (max-width:767px){.story{--sh:240}.story--upd{--sh:260}}
-.story__stage{position:sticky;top:0;height:calc(100 * var(--vu));display:flex;flex-direction:column;justify-content:center;gap:14px;padding:76px 0 104px}
+.story__run{height:calc(var(--sh,170) * var(--vu))}
+.story--upd{--sh:190}
+@media (max-width:767px){.story{--sh:150}.story--upd{--sh:170}}
+.story__stage{position:sticky;top:var(--st,72px);display:flex;flex-direction:column;justify-content:center;gap:14px;padding:8px 0;z-index:1}
 .steps{display:flex;gap:6px}
 .step{flex:1;min-width:0;padding-top:7px;border-top:3px solid rgba(43,40,37,.12);font:700 10px/1.3 var(--mono);letter-spacing:.1em;color:var(--ink-60);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:border-color .4s,color .4s}
 .step.is-on{border-color:var(--core);color:var(--core)}
@@ -494,10 +510,10 @@ body.is-menu{overflow:hidden}
 .step.is-lock::after{content:" ・LOCK"}
 .step.is-on.is-lock::after{content:" ✓"}
 .story__body{display:grid;gap:14px;align-items:center}
-@media (min-width:900px){.story__body{grid-template-columns:1.35fr 1fr;gap:40px}}
+@media (min-width:900px){.story__body{grid-template-columns:1.5fr 1fr;gap:40px}}
 .story__fig{position:relative;display:grid}
 .story__fig>*{grid-area:1/1}
-.story__fig svg{display:block;width:100%;height:auto;max-height:calc(50 * var(--vu))}
+.story__fig svg{display:block;width:100%;height:auto;max-height:calc(58 * var(--vu))}
 .caps{display:grid}
 .caps>*{grid-area:1/1;opacity:0;transform:translateY(14px);transition:opacity .5s var(--ease),transform .5s var(--ease);pointer-events:none}
 .caps>.is-cur{opacity:1;transform:none;pointer-events:auto}
@@ -564,12 +580,16 @@ body.is-menu{overflow:hidden}
 @keyframes cfPulse{50%{transform:scale(1.12)}}
 
 /* 事業内容：ジョブを選ぶ画面 */
-.jobs{display:grid;gap:14px;margin-top:28px}
-@media (min-width:640px){.jobs{grid-template-columns:1fr 1fr}}
-@media (min-width:1080px){.jobs{grid-template-columns:repeat(4,1fr);margin-inline:calc(50% - min(540px,50vw - 20px))}}
+/* v010：PC（900px〜）は左に縦リスト・右に詳細の窓。スマホは押したカードの直下に窓が開く */
+.biz{margin-top:28px}
+.jobs{display:grid;gap:14px}
+@media (min-width:900px){.biz{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:32px;align-items:start;margin-inline:calc(50% - min(540px,50vw - 20px))}}
+.only-pc{display:none}
+@media (min-width:900px){.only-pc{display:inline}.only-sp{display:none}}
 .job{position:relative;display:grid;grid-template-columns:76px 1fr;gap:4px 14px;align-content:start;padding:16px;border:2px solid var(--ink);border-radius:14px;background:var(--paper);box-shadow:4px 4px 0 var(--ink);text-align:left;transition:transform .25s var(--pop),box-shadow .25s,border-color .25s,opacity .6s var(--ease)}
 .job:hover{transform:translateY(-3px);box-shadow:6px 7px 0 var(--ink)}
-.job[aria-pressed="true"]{border-color:var(--core);box-shadow:4px 4px 0 var(--core)}
+.job[aria-expanded="true"]{border-color:var(--core);box-shadow:4px 4px 0 var(--core)}
+.job:focus-visible{outline:3px solid var(--core);outline-offset:3px}
 .job.rv:not(.is-in){transform:translateY(18px)}
 .job__no{grid-column:1/-1;font:700 11px/1 var(--mono);letter-spacing:.16em;color:var(--core)}
 .job__ic{grid-row:2/span 3;display:grid;place-items:center;width:76px;height:76px;border-radius:12px;background:var(--tint-c)}
@@ -579,8 +599,22 @@ body.is-menu{overflow:hidden}
 .job__tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}
 .job__tags i{padding:4px 6px;border-radius:4px;background:var(--tint-k);color:var(--ink-60);font:700 10px/1 var(--mono);font-style:normal}
 .job__sel{position:absolute;top:12px;right:12px;padding:4px 7px;border-radius:4px;background:var(--core);color:var(--paper);font:400 11px/1 var(--dot);opacity:0;transform:scale(.6);transition:.3s var(--pop)}
-.job[aria-pressed="true"] .job__sel{opacity:1;transform:none}
-@media (min-width:1080px){.job{grid-template-columns:1fr}.job__ic{grid-row:auto;width:100%;height:100px;margin:6px 0 8px}}
+.job[aria-expanded="true"] .job__sel{opacity:1;transform:none}
+.job__sel b{font-weight:400}
+@media (max-width:899px){
+  .job__sel{opacity:1;transform:none;background:var(--tint-c);color:var(--core)}
+  .job__chev{display:inline-block;transition:transform .3s var(--ease)}
+  .job[aria-expanded="true"] .job__sel{background:var(--core);color:var(--paper)}
+  .job[aria-expanded="true"] .job__chev{transform:rotate(180deg)}
+}
+@media (min-width:900px){
+  .job{grid-template-columns:64px 1fr;padding:14px 16px;cursor:pointer}
+  .job__ic{width:64px;height:64px}
+  .job__ic svg{width:48px;height:48px}
+  .job:hover{transform:translateX(4px);box-shadow:6px 4px 0 var(--ink)}
+  .job[aria-expanded="true"]{transform:translateX(10px)}
+  .job[aria-expanded="true"]::after{content:"";position:absolute;right:-22px;top:50%;width:14px;height:20px;translate:0 -50%;background:var(--core);clip-path:polygon(0 0,100% 50%,0 100%)}
+}
 .ji *{transform-box:fill-box;transform-origin:center}
 .ji .s{fill:none;stroke:var(--core);stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
 .ji .f{fill:var(--core)}
@@ -596,10 +630,24 @@ body.is-menu{overflow:hidden}
 @keyframes jiBlink{0%,100%{opacity:.25}40%{opacity:1}}
 .ji .cell{animation:jiCell 3.6s ease-in-out infinite;animation-delay:calc(var(--d,0) * .18s)}
 @keyframes jiCell{0%,8%{opacity:.15}28%,78%{opacity:1}100%{opacity:.15}}
-.jobinfo{margin-top:26px;padding:20px 16px 14px}
-.jobinfo__t{font-size:16px;line-height:1.6}
-.jobinfo ul{display:grid;grid-template-columns:1fr 1fr;gap:4px 12px;margin-top:10px}
-@media (min-width:768px){.jobinfo ul{grid-template-columns:repeat(3,1fr)}}
+.jobinfo{padding:22px 16px 14px}
+.jobinfo[hidden]{display:none}
+@media (max-width:899px){.jobinfo{margin:-4px 0 6px;animation:jobOpen .35s var(--ease) both}.jobinfo .jobinfo__hd,.jobinfo .jobinfo__tags{display:none}.jobinfo .jobinfo__t{margin-top:0}}
+@media (min-width:900px){.jobinfo{position:sticky;top:96px;padding:26px 24px 22px}}
+@keyframes jobOpen{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:none}}
+.jobinfo__in.is-sw{animation:jobSw .4s var(--ease) both}
+@keyframes jobSw{from{opacity:0;transform:translateX(14px)}to{opacity:1;transform:none}}
+.jobinfo__hd{display:grid;grid-template-columns:84px 1fr;gap:16px;align-items:center;padding-bottom:14px;border-bottom:1px dashed rgba(255,255,255,.25)}
+.jobinfo__ic{display:grid;place-items:center;width:84px;height:84px;border-radius:12px;background:var(--paper)}
+.jobinfo__ic svg{width:62px;height:62px;overflow:visible}
+.jobinfo__name{font:400 22px/1.4 var(--dot)}
+.jobinfo__p{margin-top:4px;font:400 14px/1.75 var(--sans);color:rgba(255,255,255,.86)}
+.jobinfo__t{margin-top:12px;font-size:14px;line-height:1.6;color:var(--muted)}
+.jobinfo__t::before{content:"▶ ";font-size:10px;color:var(--paper)}
+.jobinfo ul{display:grid;grid-template-columns:1fr;gap:4px 12px;margin-top:6px}
+@media (min-width:480px){.jobinfo ul{grid-template-columns:1fr 1fr}}
+.jobinfo__tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px}
+.jobinfo__tags i{padding:4px 8px;border-radius:4px;border:1px solid rgba(255,255,255,.3);color:rgba(255,255,255,.86);font:700 11px/1 var(--mono);font-style:normal}
 .jobinfo li{position:relative;padding-left:16px;font:400 14px/1.6 var(--dot);animation:pop .35s var(--pop) both;animation-delay:calc(var(--i) * 40ms)}
 .jobinfo li::before{content:"・";position:absolute;left:0}
 .media{display:grid;gap:28px;margin-top:40px}
@@ -650,6 +698,101 @@ body.is-menu{overflow:hidden}
 .ft{padding-bottom:calc(124px + env(safe-area-inset-bottom))}
 .toast{bottom:104px}
 
+
+/* ===== v010：About（何をしているか・名前の由来・プロフィール） ===== */
+.does{display:grid;gap:14px;margin-top:28px;list-style:none;counter-reset:none}
+@media (min-width:900px){.does{grid-template-columns:repeat(3,1fr);gap:28px;margin-inline:calc(50% - min(540px,50vw - 20px))}}
+.do{position:relative;display:grid;grid-template-columns:96px 1fr;gap:2px 14px;align-content:start;padding:16px;border:2px solid var(--ink);border-radius:14px;background:var(--paper);box-shadow:4px 4px 0 var(--ink);transition-delay:calc(var(--d,0) * 90ms)}
+.do__ic{grid-row:span 3;display:grid;place-items:center;height:76px;border-radius:10px;background:var(--tint-c)}
+.do__ic svg{width:78px;height:52px;overflow:visible}
+.do__no{font:700 11px/1.4 var(--mono);letter-spacing:.12em;color:var(--core)}
+.do__no b{display:block;margin-top:2px;font:900 22px/1.25 var(--sans);letter-spacing:.02em;color:var(--ink)}
+.do__no small{display:inline-block;margin-top:4px;padding:1px 8px;border-radius:999px;background:var(--core-10);font:700 11px/1.6 var(--sans);letter-spacing:.04em;color:var(--core)}
+.do__p{font-size:14px;line-height:1.7}
+.do__ex{margin-top:4px;padding-top:6px;border-top:1px dashed var(--muted);font:400 12px/1.6 var(--dot);color:var(--ink-60)}
+@media (min-width:900px){
+  .do{grid-template-columns:1fr;padding:18px 18px 16px}
+  .do__ic{grid-row:auto;height:92px;margin-bottom:8px}
+  .do:not(:last-child)::after{content:"";position:absolute;right:-24px;top:58px;width:20px;height:12px;background:var(--core);clip-path:polygon(0 35%,60% 35%,60% 0,100% 50%,60% 100%,60% 65%,0 65%)}
+}
+@media (max-width:899px){.do:not(:last-child)::after{content:"";position:absolute;left:62px;bottom:-14px;width:2px;height:12px;background:var(--core)}}
+/* 小さな図：整える＝ばらばらの箱が一列に／伝える＝絡まった線が図に／届ける＝一つから三つへ */
+.di .w{fill:var(--paper);stroke:var(--ink);stroke-width:2}
+.di .w.c,.di .f{fill:var(--core);stroke:none}
+.di .s{fill:none;stroke:var(--core);stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+.di-a .w{transform-box:fill-box;transform-origin:center;transform:translate(var(--x),var(--y)) rotate(var(--r));transition:transform .7s var(--pop) calc(.3s + var(--d) * .12s)}
+.di-a .ar{opacity:0;transition:opacity .4s .9s}
+.is-in .di-a .w{transform:none}
+.is-in .di-a .ar{opacity:1}
+.di-b .tg{stroke:var(--muted);stroke-dasharray:1;stroke-dashoffset:0;transition:stroke-dashoffset .8s var(--ease) .4s,opacity .4s 1s}
+.di-b .nd{opacity:0;transform:translateY(6px);transition:opacity .5s .9s,transform .5s var(--pop) .9s}
+.is-in .di-b .tg{stroke-dashoffset:1;opacity:0}
+.is-in .di-b .nd{opacity:1;transform:none}
+.di-c .pk{opacity:0}
+.is-in .di-c .pk{animation:send 2.4s var(--ease) calc(.5s + var(--d) * .25s) infinite}
+@keyframes send{0%{opacity:0;transform:translate(-34px,var(--y))}15%{opacity:1}70%{opacity:1;transform:none}100%{opacity:0;transform:none}}
+.does__more{margin-top:14px;text-align:right;font-size:13px}
+.does__more a{color:var(--core);font-weight:700;text-decoration:underline;text-underline-offset:4px}
+.story--about{margin-top:56px}
+.origin{padding-top:18px;border-top:2px solid var(--ink)}
+.story__hd{display:flex;justify-content:space-between;align-items:baseline;padding-bottom:10px;border-bottom:1px solid rgba(255,255,255,.18);font:400 20px/1.4 var(--dot)}
+.story__hd span{font:700 13px/1 var(--mono);color:var(--muted)}
+.story__hd b{margin-left:4px;font-size:20px;color:var(--paper)}
+.origin__ttl{font:900 22px/1.3 var(--sans)}
+.origin__ttl::before{content:"? ";font:400 20px var(--dot);color:var(--core)}
+.origin__p{margin-top:6px;font-size:14px;line-height:1.7;color:var(--ink-60)}
+.prof{margin-top:36px;padding:22px 18px 14px}
+.prof__hd{display:flex;gap:14px;align-items:center}
+.prof__name{font:900 italic 26px/1.1 var(--en);letter-spacing:-.01em}
+.prof__yomi{margin-top:4px;font-size:13px;color:var(--muted)}
+.prof__dl{display:grid;gap:0;margin-top:12px}
+.prof__dl div{display:grid;grid-template-columns:5.5em 1fr;gap:10px;padding:8px 0;border-top:1px dashed rgba(255,255,255,.22);font-size:15px;line-height:1.6}
+.prof__dl dt{color:var(--muted)}
+.prof__dl dt::before{content:"▶ ";font-size:10px;color:var(--paper)}
+@media (min-width:900px){.prof{display:grid;grid-template-columns:220px 1fr;gap:24px;align-items:center;padding:24px 24px 16px}.prof__dl{margin-top:0}}
+@media (min-width:900px){.cap__en{font-size:40px}.cap__ja{font-size:17px}.cap__p{font-size:16px}.story .node__p{font-size:14.5px}.origin__ttl{font-size:26px}}
+/* ===== v010：Update（日本語の見出し・効果の1行） ===== */
+.node__ja{margin-top:10px;font:900 24px/1.35 var(--sans);letter-spacing:.02em}
+.node__ja+.node__en{margin-top:2px;font:800 italic 14px/1.2 var(--en);color:var(--muted)}
+.node__fx{margin-top:12px;padding:10px 12px;border-radius:8px;background:rgba(255,255,255,.08);border-left:3px solid var(--paper);font-size:14px;line-height:1.6}
+.node__fx b{display:block;font:400 12px/1.5 var(--dot);color:var(--muted)}
+.node.is-on .node__fx{border-color:var(--core);background:rgba(28,96,71,.35)}
+/* ===== v010：ご相談フォーム（RPG の窓） ===== */
+.qform{margin:44px auto 0;max-width:600px;padding:28px 18px 20px;text-align:left;scroll-margin-top:80px}
+.qform__h{font:400 22px/1.4 var(--dot)}
+.qform__lead{margin-top:6px;font:400 14px/1.75 var(--sans);color:rgba(255,255,255,.86)}
+.qf{margin-top:18px;border:0;min-width:0}
+.qf__lb{display:block;padding:0;font:400 16px/1.5 var(--dot)}
+.qf__lb em{margin-left:6px;padding:1px 6px;border-radius:4px;border:1px solid rgba(255,255,255,.4);font:400 11px/1.4 var(--dot);font-style:normal;color:var(--muted);vertical-align:2px}
+.qf__in{display:block;width:100%;margin-top:6px;padding:12px 14px;border:2px solid var(--paper);border-radius:8px;background:var(--paper);color:var(--ink);font:400 16px/1.6 var(--sans);transition:box-shadow .2s}
+.qf__in::placeholder{color:var(--muted)}
+.qf__in:focus{outline:0;box-shadow:0 0 0 3px var(--ink),0 0 0 6px var(--core)}
+textarea.qf__in{resize:vertical;min-height:150px}
+.qf__in[aria-invalid="true"]{border-style:dashed;border-color:var(--muted);box-shadow:0 0 0 3px var(--ink),0 0 0 5px var(--paper)}
+.qf__err{min-height:0;margin-top:4px;font:400 13px/1.5 var(--dot);color:var(--paper)}
+.qf__err:not(:empty)::before{content:"✕ "}
+.qf__opts{display:grid;gap:6px;margin-top:6px}
+@media (min-width:640px){.qf__opts{grid-template-columns:1fr 1fr}}
+.qf__opt{position:relative;display:flex;align-items:center;gap:8px;padding:9px 8px;border:1px solid rgba(255,255,255,.18);border-radius:6px;font:400 16px/1.4 var(--dot);cursor:pointer;transition:border-color .2s,background .2s}
+.qf__opt:hover{border-color:rgba(255,255,255,.5)}
+.qf__opt input{position:absolute;opacity:0;width:1px;height:1px}
+.qf__opt span::before{content:"▶";display:inline-block;width:1.2em;font-size:12px;opacity:0}
+.qf__opt:hover span::before{opacity:.5}
+.qf__opt input:checked+span{color:var(--paper)}
+.qf__opt input:checked+span::before{opacity:1;animation:blink 1s steps(2) infinite}
+.qf__opt input:focus-visible+span{outline:2px solid var(--paper);outline-offset:4px;border-radius:2px}
+.qf__opt:has(input:checked){background:rgba(255,255,255,.1);border-color:var(--paper)}
+fieldset.qf[aria-invalid="true"] .qf__opts{outline:2px dashed var(--muted);outline-offset:4px;border-radius:6px}
+.qform__pv{margin-top:18px;font:400 12px/1.7 var(--sans);color:var(--muted)}
+.qform__send{display:flex;width:100%;margin-top:12px}
+.qform__send:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.qform__send:disabled::after{display:none}
+.qform__note{margin-top:10px;min-height:1.5em;font:400 13px/1.5 var(--dot);text-align:center;color:var(--muted)}
+.qdone{margin:44px auto 0;max-width:600px;padding:30px 20px 22px;text-align:center;outline:0;animation:pop .5s var(--pop) both}
+.qdone[hidden]{display:none}
+.qdone__t{font:400 clamp(18px,5vw,24px)/1.5 var(--dot);min-height:1.5em;white-space:nowrap}
+.qdone__p{margin-top:8px;font:400 14px/1.8 var(--sans);color:rgba(255,255,255,.86)}
+.close{padding-bottom:64px}
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none!important;transition:none!important}
   .rv{opacity:1;transform:none}
@@ -663,8 +806,9 @@ body.is-menu{overflow:hidden}
   .eyebrow::after,.rv.eyebrow::before,.rv .eyebrow::before{transform:none}
   .sec::before{clip-path:none}
   .chap__line,.chap__t,.car[data-sp],.close__art img{transform:none;opacity:1}
-  .story{height:auto}
-  .story__stage{position:relative;height:auto;padding:0}
+  .story__run{display:none}
+  .story__stage{position:relative;top:auto;height:auto;padding:0}
+  .di-a .w,.di-b .nd{transform:none}.di-a .ar,.di-b .nd{opacity:1}.di-b .tg{opacity:0}
   .story__fig,.caps{gap:16px}
   .story__fig>*,.caps>*{grid-area:auto;opacity:1;transform:none}
   .seek__tip,.seek__rail,.seek__thumb{transition:none}
@@ -784,16 +928,43 @@ body.is-menu{overflow:hidden}
       <p class="en" data-sp>About</p>
       <p class="eyebrow rv">WHO WE ARE</p>
       <h2 class="bars rv" style="margin-top:14px">
-        <span class="b b--plain">inforkus とは？</span>
-        <span class="b b--core">焦点を合わせ、広げて、</span>
-        <span class="b">核を見つける。</span>
+        <span class="b b--plain">inforkus は、</span>
+        <span class="b b--core">整えて、伝えて、</span>
+        <span class="b">届けるまでを一緒に。</span>
       </h2>
-      <p class="lead rv">名前には三つの意味を重ねています。収束して終わらず、発散し続けもしない。その往復から、次の理解やつながりが生まれます。</p>
+      <p class="lead rv">業務の仕組みづくりと、伝わる図・動画・Web の制作を、inforkus がひとつながりで引き受けます。</p>
 
-      <!-- v009：スクロールで進む図解（Focus → Fork us → Info → 名前） -->
-      <div class="story" id="aboutStory">
+      <!-- v010：何をしているかを先に（Service の三つのコマンドと同じ並び） -->
+      <ol class="does">
+        <li class="do rv" style="--d:0">
+          <span class="do__ic"><svg class="di di-a" viewBox="0 0 96 64" aria-hidden="true"><rect class="w" x="6" y="22" width="20" height="16" rx="3" style="--x:-4px;--y:-14px;--r:-20deg;--d:0"/><rect class="w" x="38" y="22" width="20" height="16" rx="3" style="--x:6px;--y:14px;--r:16deg;--d:1"/><rect class="w c" x="70" y="22" width="20" height="16" rx="3" style="--x:-6px;--y:-12px;--r:24deg;--d:2"/><path class="s ar" d="M28 30 H36 M60 30 H68"/><path class="s" d="M10 50 H86" style="opacity:.35"/></svg></span>
+          <p class="do__no">01 <b>整える</b><small>しくみ</small></p>
+          <p class="do__p">ばらばらの作業を、ひとつの流れにします。</p>
+          <p class="do__ex">業務の整理・Excel・VBA・AI の小さなツール</p>
+        </li>
+        <li class="do rv" style="--d:1">
+          <span class="do__ic"><svg class="di di-b" viewBox="0 0 96 64" aria-hidden="true"><path class="s tg" d="M12 40 C24 8 34 58 46 26 S64 52 58 18 S80 46 86 30" pathLength="1"/><rect class="f nd" x="38" y="6" width="20" height="12" rx="3"/><path class="s nd" d="M48 18 V26 M24 26 H72 M24 26 V34 M48 26 V34 M72 26 V34"/><rect class="w nd" x="14" y="36" width="20" height="12" rx="3"/><rect class="w nd" x="38" y="36" width="20" height="12" rx="3"/><rect class="w nd" x="62" y="36" width="20" height="12" rx="3"/></svg></span>
+          <p class="do__no">02 <b>伝える</b><small>図と動画</small></p>
+          <p class="do__p">絡まった関係をほどいて、一目でわかる図と動画にします。</p>
+          <p class="do__ex">図解・ショート動画・解説動画・撮影</p>
+        </li>
+        <li class="do rv" style="--d:2">
+          <span class="do__ic"><svg class="di di-c" viewBox="0 0 96 64" aria-hidden="true"><rect class="f" x="6" y="20" width="22" height="24" rx="4"/><path class="s" d="M28 32 C44 32 46 12 62 12 M28 32 H62 M28 32 C44 32 46 52 62 52" style="opacity:.35"/><circle class="f pk" cx="62" cy="12" r="4" style="--y:20px;--d:0"/><circle class="f pk" cx="62" cy="32" r="4" style="--y:0px;--d:1"/><circle class="f pk" cx="62" cy="52" r="4" style="--y:-20px;--d:2"/><rect class="w" x="70" y="5" width="20" height="14" rx="3"/><rect class="w" x="70" y="25" width="20" height="14" rx="3"/><rect class="w" x="70" y="45" width="20" height="14" rx="3"/></svg></span>
+          <p class="do__no">03 <b>届ける</b><small>発信</small></p>
+          <p class="do__p">ひとつの形から、LP・メール・SNS へ届けます。</p>
+          <p class="do__ex">LP・HTML メール・SNS 用の画像</p>
+        </li>
+      </ol>
+      <p class="does__more rv"><a href="#service">三つのコマンドは Service で試せます <span aria-hidden="true">→</span></a></p>
+
+      <!-- v010：名前の由来は図解1つに集約（Focus → Fork us → Info → 名前） -->
+      <div class="story story--about" id="aboutStory">
         <div class="story__stage">
-          <ol class="steps" aria-hidden="true"><li class="step">01 FOCUS</li><li class="step">02 FORK US</li><li class="step">03 INFO</li><li class="step">04 NAME</li></ol>
+          <div class="origin">
+            <p class="origin__ttl">名前の由来</p>
+            <p class="origin__p">inforkus（インフォーカス）は、三つの言葉を重ねた名前です。スクロールすると順に見られます。</p>
+          </div>
+          <ol class="steps" aria-hidden="true"><li class="step">01 Focus</li><li class="step">02 Fork us</li><li class="step">03 Info</li><li class="step">04 名前</li></ol>
           <div class="story__body">
             <div class="story__fig">
               <svg class="brand" id="brand" viewBox="0 0 640 410" role="img" aria-label="散らばった点が一点に集まり、そこから枝が広がり、往復の中で核が光り、inforkus の名前になる図">
@@ -814,29 +985,30 @@ body.is-menu{overflow:hidden}
               </svg>
             </div>
             <div class="caps" aria-live="polite">
-              <div class="cap"><p class="cap__no">STEP 01</p><p class="cap__en">Focus</p><p class="cap__ja">焦点を合わせる</p><p class="cap__p">散らばった情報から、いま見るべき一点を決める。</p></div>
-              <div class="cap"><p class="cap__no">STEP 02</p><p class="cap__en">Fork us</p><p class="cap__ja">分かれて、広がる</p><p class="cap__p">その一点から、別の見方や隣の分野へ道を開く。</p></div>
-              <div class="cap"><p class="cap__no">STEP 03</p><p class="cap__en">Info</p><p class="cap__ja">核となる情報</p><p class="cap__p">集めては広げる。その往復の中で、大事な情報が光る。</p></div>
-              <div class="cap cap--fin"><p class="cap__no">STEP 04</p><p class="cap__en">inforkus</p><p class="cap__ja">三つを、ひとつの名前に</p><p class="cap__p">Info と Fork us が重なり、読むと Focus。集めて、広げて、核を見つけて、伝わる形にします。</p></div>
+              <div class="cap"><p class="cap__no">STEP 01</p><p class="cap__en">Focus</p><p class="cap__ja">焦点を合わせる</p><p class="cap__p">散らばった情報から、見るべき一点を決める。</p></div>
+              <div class="cap"><p class="cap__no">STEP 02</p><p class="cap__en">Fork us</p><p class="cap__ja">分かれて、広がる</p><p class="cap__p">その一点から、別の見方へ道を広げる。</p></div>
+              <div class="cap"><p class="cap__no">STEP 03</p><p class="cap__en">Info</p><p class="cap__ja">核となる情報</p><p class="cap__p">集めて、広げる。その往復の中で、大事な情報が見つかる。</p></div>
+              <div class="cap cap--fin"><p class="cap__no">STEP 04</p><p class="cap__en">inforkus</p><p class="cap__ja">三つを、ひとつの名前に</p><p class="cap__p">Info と Fork us を重ねて inforkus。読むと「インフォーカス」です。</p></div>
             </div>
           </div>
         </div>
+        <div class="story__run" aria-hidden="true"></div>
       </div>
 
-      <ul class="name">
-        <li class="stat rv">
-          <span class="stat__ic"><svg viewBox="0 0 52 40" aria-hidden="true"><path d="M4 6 L40 20 M4 20 L40 20 M4 34 L40 20"/><circle cx="44" cy="20" r="5"/></svg></span>
-          <div><p class="stat__en">Focus</p><p class="stat__ja">焦点を合わせる</p><p class="stat__p">散らばった情報から、いま見るべき一点を決める。</p></div>
-        </li>
-        <li class="stat rv">
-          <span class="stat__ic"><svg viewBox="0 0 52 40" aria-hidden="true"><circle cx="9" cy="20" r="5"/><path d="M12 20 L48 6 M12 20 L48 20 M12 20 L48 34"/></svg></span>
-          <div><p class="stat__en">Fork us</p><p class="stat__ja">分かれて、広がる</p><p class="stat__p">一点から、別の見方や隣の分野への道を開く。</p></div>
-        </li>
-        <li class="stat rv">
-          <span class="stat__ic"><svg viewBox="0 0 52 40" aria-hidden="true"><path d="M3 6 L22 20 M3 34 L22 20 M30 20 L49 6 M30 20 L49 34"/><circle cx="26" cy="20" r="6"/></svg></span>
-          <div><p class="stat__en">Info</p><p class="stat__ja">核となる情報</p><p class="stat__p">往復のなかで見つかる大事な情報を、伝わる形にする。</p></div>
-        </li>
-      </ul>
+      <!-- v010：重なっていた3枚のカードを、RPG のステータス窓のプロフィールに置き換え（事実だけ） -->
+      <div class="win prof rv">
+        <span class="win__ttl">STATUS</span>
+        <div class="prof__hd">
+          <span class="face"><img src="assets/face_torch_TC90.webp" alt="" width="240" height="241" loading="lazy"></span>
+          <div><p class="prof__name">inforkus</p><p class="prof__yomi">インフォーカス</p></div>
+        </div>
+        <dl class="prof__dl">
+          <div><dt>ことば</dt><dd>あたらしい視点で、つながる知識。</dd></div>
+          <div><dt>しごと</dt><dd>整える・伝える・届ける</dd></div>
+          <div><dt>はっしん</dt><dd>YouTube（2026年10月〜）・X・Instagram</dd></div>
+          <div><dt>なかま</dt><dd>aoi・あかり・トーチ・助っ人ロボ</dd></div>
+        </dl>
+      </div>
 
       <div class="party rv">
         <div class="party__hd">
@@ -891,12 +1063,13 @@ body.is-menu{overflow:hidden}
       </div>
       <p class="en" data-sp style="margin-top:28px">Update</p>
       <h2 class="h2 rv">考え方が<br><em>アップデート</em>されました。</h2>
-      <p class="lead rv" style="color:rgba(255,255,255,.86)">一度やれば終わる工程ではなく、捉え直しながら往復する三つの軸。スクロールすると順に解放されます。</p>
+      <p class="lead rv" style="color:rgba(255,255,255,.86)">inforkus が仕事を進めるときの、三つの考え方です。それぞれ、ご相談いただく側に良いことがあります。スクロールすると一つずつ解放されます。</p>
 
-      <!-- v009：スクロールで進む図解（三つの軸） -->
+      <!-- v010：スクロールで進む図解（三つの考え方）。日本語の見出しを先に、効果を1行で -->
       <div class="story story--upd" id="updStory">
         <div class="story__stage">
-          <ol class="steps" aria-hidden="true"><li class="step is-lock">01 Perspective</li><li class="step is-lock">02 Core</li><li class="step is-lock">03 Design</li></ol>
+          <p class="story__hd">三つの考え方<span>ver.<b class="js-updver">1.0.0</b></span></p>
+          <ol class="steps" aria-hidden="true"><li class="step is-lock">01 視点</li><li class="step is-lock">02 核</li><li class="step is-lock">03 形にする</li></ol>
           <div class="story__body">
             <div class="story__fig">
               <svg class="ufig" id="ufA" viewBox="0 0 640 360" role="img" aria-label="視点が具体と抽象のあいだを往復し、高く上がるほど広く見える図">
@@ -956,36 +1129,41 @@ body.is-menu{overflow:hidden}
               </svg>
             </div>
             <div class="caps" aria-live="polite">
-              <div class="node" data-skill="Perspective">
+              <div class="node" data-skill="視点の上げ下げ">
                 <span class="node__tag">SKILL 01</span>
+                <h3 class="node__ja">視点を上げ下げする</h3>
                 <p class="node__en">Perspective</p>
                 <p class="node__pair"><span>具体</span> ⇄ <span>抽象</span></p>
-                <p class="node__p">現場の具体を知り、全体の構造を捉える。視点を上げ下げして、いろいろな方向から見る。</p>
+                <p class="node__p">現場の細かいところを知り、少し引いて全体の形をつかむ。いろいろな方向から見ます。</p>
+                <p class="node__fx"><b>→ こうなります</b>見落としていた原因が、見つかりやすくなります。</p>
               </div>
-              <div class="node" data-skill="Core">
+              <div class="node" data-skill="変えない核">
                 <span class="node__tag">SKILL 02</span>
+                <h3 class="node__ja">変えない核を決める</h3>
                 <p class="node__en">Core</p>
                 <p class="node__pair"><span>定数</span> ⇄ <span>変数</span></p>
-                <p class="node__p">変えてはいけないものと、変えてよいものを見極める。ぶれない核を決めてから、変化に合わせる。</p>
+                <p class="node__p">変えてはいけないものと、変えてよいものを分けます。核を先に決めてから、変化に合わせます。</p>
+                <p class="node__fx"><b>→ こうなります</b>途中で方針がぶれにくくなります。</p>
               </div>
-              <div class="node" data-skill="Design">
+              <div class="node" data-skill="形にする力">
                 <span class="node__tag">SKILL 03</span>
+                <h3 class="node__ja">頭の中を形にする</h3>
                 <p class="node__en">Design</p>
                 <p class="node__pair"><span>想像</span> ⇄ <span>創造</span></p>
-                <p class="node__p">頭の中で描いたものを、相手に伝わる形として創る。図・動き・言葉を組み合わせて届ける。</p>
+                <p class="node__p">頭の中で描いたものを、図・動き・言葉にして、相手に伝わる形で作ります。</p>
+                <p class="node__fx"><b>→ こうなります</b>頭の中のイメージが、図と動きで伝わります。</p>
               </div>
             </div>
           </div>
         </div>
+        <div class="story__run" aria-hidden="true"></div>
       </div>
 
       <div class="win patch rv">
         <span class="win__ttl">PATCH NOTE</span>
         <ul>
-          <li><span class="k">ADD</span>具体と抽象を行き来して、見落としていた原因を見つけやすくなりました。</li>
-          <li><span class="k">ADD</span>変えない核を先に決めるので、途中で方針がぶれにくくなりました。</li>
-          <li><span class="k">UP</span>頭の中のイメージが、図と動きで伝わるようになりました。</li>
           <li><span class="k">FIX</span>「何から手をつければいいか分からない」状態を解消しました。</li>
+          <li><span class="k">NOTE</span>三つは一度で終わる手順ではありません。行き来しながら、何度でも使います。</li>
         </ul>
       </div>
     </section>
@@ -1076,32 +1254,34 @@ body.is-menu{overflow:hidden}
       <p class="en" data-sp>Business</p>
       <p class="eyebrow rv">BUSINESS</p>
       <h2 class="h2 rv">四つの仕事から、<br>合うものを選ぶ。</h2>
-      <p class="lead rv">カードを選ぶと、その仕事でできることが下に出ます。</p>
+      <p class="lead rv"><span class="only-pc">左のカードを選ぶと、右の窓に「できること」が出ます。</span><span class="only-sp">カードを押すと、そのすぐ下に「できること」が開きます。</span></p>
 
-      <div class="jobs" id="jobs">
-        <button class="job rv" type="button" data-job="0" aria-pressed="true">
-          <span class="job__no">JOB 01</span><span class="job__sel">選択中</span>
+      <!-- v010：PC は左に4つの縦リスト＋右に詳細の窓（sticky）。スマホは押したカードの直下に開くアコーディオン -->
+      <div class="biz" id="biz">
+      <div class="jobs" id="jobs" role="group" aria-label="四つの仕事">
+        <button class="job rv" type="button" data-job="0" aria-expanded="false" aria-controls="jobinfo">
+          <span class="job__no">JOB 01</span><span class="job__sel" aria-hidden="true"><b class="only-pc">選択中</b><b class="only-sp job__chev">▼</b></span>
           <span class="job__ic"><svg class="ji" viewBox="0 0 60 60" aria-hidden="true"><rect class="s" x="6" y="14" width="40" height="30" rx="7"/><polygon class="f play" points="21,22 21,36 33,29"/><circle class="f up" cx="52" cy="20" r="3" style="--d:0"/><circle class="f up" cx="48" cy="34" r="2.5" style="--d:1"/><circle class="f up" cx="54" cy="44" r="2" style="--d:2"/><path class="s" d="M14 52 H38"/></svg></span>
           <span class="job__name">YouTube・SNS運用</span>
           <span class="job__p">YouTube のショートと通常の動画を、企画から投稿まで。2026年10月から続けています。</span>
           <span class="job__tags"><i>#YouTube</i><i>#ショート</i><i>#X</i><i>#Instagram</i></span>
         </button>
-        <button class="job rv" type="button" data-job="1" aria-pressed="false">
-          <span class="job__no">JOB 02</span><span class="job__sel">選択中</span>
+        <button class="job rv" type="button" data-job="1" aria-expanded="false" aria-controls="jobinfo">
+          <span class="job__no">JOB 02</span><span class="job__sel" aria-hidden="true"><b class="only-pc">選択中</b><b class="only-sp job__chev">▼</b></span>
           <span class="job__ic"><svg class="ji" viewBox="0 0 60 60" aria-hidden="true"><rect class="s" x="4" y="10" width="52" height="40" rx="5"/><path class="s" d="M4 19 H56"/><circle class="f" cx="10" cy="14.5" r="1.6"/><circle class="f" cx="15" cy="14.5" r="1.6"/><path class="s" d="M10 44 L22 31 L30 38 L38 28 L50 44"/><circle class="s spin" cx="44" cy="27" r="4" style="stroke-dasharray:4 3"/><rect class="w flash" x="5" y="20" width="50" height="29"/></svg></span>
           <span class="job__name">写真撮影・WEB制作</span>
           <span class="job__p">商品・広報の撮影と画像の修正。LP や HTML メールも作ります。</span>
           <span class="job__tags"><i>#撮影</i><i>#LP</i><i>#WEB</i><i>#HTMLメール</i></span>
         </button>
-        <button class="job rv" type="button" data-job="2" aria-pressed="false">
-          <span class="job__no">JOB 03</span><span class="job__sel">選択中</span>
+        <button class="job rv" type="button" data-job="2" aria-expanded="false" aria-controls="jobinfo">
+          <span class="job__no">JOB 03</span><span class="job__sel" aria-hidden="true"><b class="only-pc">選択中</b><b class="only-sp job__chev">▼</b></span>
           <span class="job__ic"><svg class="ji" viewBox="0 0 60 60" aria-hidden="true"><rect class="s" x="12" y="12" width="36" height="36" rx="6"/><path class="s" d="M20 6 V12 M30 6 V12 M40 6 V12 M20 48 V54 M30 48 V54 M40 48 V54 M6 22 H12 M6 38 H12 M48 22 H54 M48 38 H54"/><path class="s" d="M22 36 L30 24 L38 36 Z" style="stroke-width:2"/><circle class="f blink" cx="30" cy="24" r="3.5" style="--d:0"/><circle class="f blink" cx="22" cy="36" r="3.5" style="--d:1"/><circle class="f blink" cx="38" cy="36" r="3.5" style="--d:2"/></svg></span>
           <span class="job__name">AI開発プログラム</span>
           <span class="job__p">AI を使った、業務用の小さなツールを作ります。いまは自分の仕事で使うものが中心です。</span>
           <span class="job__tags"><i>#AI</i><i>#自動化</i><i>#ツール開発</i></span>
         </button>
-        <button class="job rv" type="button" data-job="3" aria-pressed="false">
-          <span class="job__no">JOB 04</span><span class="job__sel">選択中</span>
+        <button class="job rv" type="button" data-job="3" aria-expanded="false" aria-controls="jobinfo">
+          <span class="job__no">JOB 04</span><span class="job__sel" aria-hidden="true"><b class="only-pc">選択中</b><b class="only-sp job__chev">▼</b></span>
           <span class="job__ic"><svg class="ji" viewBox="0 0 60 60" aria-hidden="true"><rect class="s" x="6" y="8" width="48" height="44" rx="5"/><path class="s" d="M6 20 H54 M6 32 H54 M22 8 V52 M38 8 V52" style="stroke-width:2"/><rect class="f cell" x="25" y="23" width="10" height="6" style="--d:0"/><rect class="f cell" x="41" y="23" width="10" height="6" style="--d:1"/><rect class="f cell" x="25" y="35" width="10" height="6" style="--d:2"/><rect class="f cell" x="41" y="35" width="10" height="6" style="--d:3"/><rect class="f cell" x="25" y="44" width="26" height="5" style="--d:5"/></svg></span>
           <span class="job__name">業務効率化Excel</span>
           <span class="job__p">Excel・VBA・Power Query で、管理表と作業の自動化。</span>
@@ -1109,10 +1289,15 @@ body.is-menu{overflow:hidden}
         </button>
       </div>
 
-      <div class="win jobinfo rv" aria-live="polite">
+      <div class="win jobinfo" id="jobinfo" role="region" aria-labelledby="jobNo" aria-live="polite">
         <span class="win__ttl" id="jobNo">JOB 01</span>
-        <p class="jobinfo__t" id="jobT">YouTube・SNS運用 で できること</p>
-        <ul id="jobList"></ul>
+        <div class="jobinfo__in" id="jobIn">
+          <div class="jobinfo__hd"><span class="jobinfo__ic" id="jobIc"></span><div><p class="jobinfo__name" id="jobName"></p><p class="jobinfo__p" id="jobP"></p></div></div>
+          <p class="jobinfo__t" id="jobT">できること</p>
+          <ul id="jobList"></ul>
+          <p class="jobinfo__tags" id="jobTags"></p>
+        </div>
+      </div>
       </div>
 
       <!-- 動画と SNS（中身は下のスクリプトの VIDEOS / SNS、latest.json と instagram.json。空なら隠す） -->
@@ -1175,9 +1360,50 @@ body.is-menu{overflow:hidden}
           <button type="button" data-choice="no">まだ ちょっと…</button>
         </div>
       </div>
-      <a class="btn btn--accent close__cta" id="closeCta" href="#">相談フォームへ <span aria-hidden="true">→</span></a>
+      <a class="btn btn--accent close__cta" id="closeCta" href="#contactForm">相談フォームへ <span aria-hidden="true">→</span></a>
 
       <div class="close__art rv" data-sp><img src="assets/close_G06_v2.webp" alt="笑顔で手を振るあかり・トーチ・aoi" width="1200" height="795" loading="lazy"></div>
+
+      <!-- v010：ご相談フォーム（送り先は Google フォーム。設定はスクリプト先頭の GFORM） -->
+      <form class="win qform rv" id="contactForm" novalidate aria-labelledby="qfTtl">
+        <span class="win__ttl" id="qfTtl">ぼうけんの しょ</span>
+        <p class="qform__h">ご相談フォーム</p>
+        <p class="qform__lead">書いて送ると、inforkus に届きます。返信は、いただいたメールアドレスへお送りします。</p>
+        <div class="qf">
+          <label class="qf__lb" for="qfName">お名前 <em>必須</em></label>
+          <input class="qf__in" id="qfName" name="name" type="text" autocomplete="name" maxlength="80" required aria-describedby="qfNameErr">
+          <p class="qf__err" id="qfNameErr"></p>
+        </div>
+        <div class="qf">
+          <label class="qf__lb" for="qfEmail">メールアドレス <em>必須</em></label>
+          <input class="qf__in" id="qfEmail" name="email" type="email" inputmode="email" autocomplete="email" maxlength="200" required aria-describedby="qfEmailErr" placeholder="example@mail.com">
+          <p class="qf__err" id="qfEmailErr"></p>
+        </div>
+        <fieldset class="qf" id="qfKind" aria-describedby="qfKindErr">
+          <legend class="qf__lb">ご相談の種類 <em>必須</em></legend>
+          <div class="qf__opts">
+            <label class="qf__opt"><input type="radio" name="kind" value="YouTube・SNS運用"><span>YouTube・SNS運用</span></label>
+            <label class="qf__opt"><input type="radio" name="kind" value="写真撮影・WEB制作"><span>写真撮影・WEB制作</span></label>
+            <label class="qf__opt"><input type="radio" name="kind" value="AI開発プログラム"><span>AI開発プログラム</span></label>
+            <label class="qf__opt"><input type="radio" name="kind" value="業務効率化Excel"><span>業務効率化Excel</span></label>
+            <label class="qf__opt"><input type="radio" name="kind" value="その他"><span>その他</span></label>
+          </div>
+          <p class="qf__err" id="qfKindErr"></p>
+        </fieldset>
+        <div class="qf">
+          <label class="qf__lb" for="qfMsg">ご相談内容 <em>必須</em></label>
+          <textarea class="qf__in" id="qfMsg" name="msg" rows="6" maxlength="3000" required aria-describedby="qfMsgErr" placeholder="困っていること・作りたいものを、わかる範囲で書いてください。"></textarea>
+          <p class="qf__err" id="qfMsgErr"></p>
+        </div>
+        <p class="qform__pv">送っていただいた内容は、ご相談への返信にだけ使います。</p>
+        <button class="btn btn--accent qform__send" id="qfSend" type="submit">この内容で おくる <span aria-hidden="true">→</span></button>
+        <p class="qform__note" id="qfNote" role="status"></p>
+      </form>
+      <div class="win qdone" id="qfDone" tabindex="-1" hidden>
+        <span class="win__ttl">セーブ</span>
+        <p class="qdone__t" id="qfDoneT">ぼうけんの しょを おくった！</p>
+        <p class="qdone__p">ご相談を受け取りました。いただいたメールアドレスへ、inforkus から返信します。</p>
+      </div>
     </section>
 
     <footer class="ft"><img src="assets/inforkus-logo-full-white.svg" alt="inforkus" width="110" height="28"><span>© 2026 inforkus</span></footer>
@@ -1207,6 +1433,13 @@ body.is-menu{overflow:hidden}
 (() => {
   const $ = (s, r = document) => r.querySelector(s);
   const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+  /* ===== v010：ご相談フォームの送り先（Google フォーム） =====
+     ・action：https://docs.google.com/forms/d/e/〈フォームのID〉/formResponse
+     ・name／email／kind／msg：各質問の 'entry.数字'（フォームの「事前入力した URL を取得」で分かる）
+     ・ご相談の種類は、Google フォーム側の選択肢の文字列を、下のラジオの value と完全に同じにする
+       （YouTube・SNS運用／写真撮影・WEB制作／AI開発プログラム／業務効率化Excel／その他）
+     ・action が空のときは、送信ボタンを止めて「フォームは準備中です」と出す */
+  const GFORM = { action: 'https://docs.google.com/forms/d/e/1FAIpQLSepdLgKCwcPGBJKYdjjmpFOfrKvU8FZFDrbHaPdpBKFR_PCcw/formResponse', name: 'entry.627087360', email: 'entry.877501291', kind: 'entry.649553071', msg: 'entry.1438209035' };
   const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const wait = (ms) => new Promise((r) => setTimeout(r, RM ? 0 : ms));
   /* v009：読み込み直しても、いつも先頭から始める */
@@ -1487,8 +1720,13 @@ body.is-menu{overflow:hidden}
   const NS = 'http://www.w3.org/2000/svg';
   const mk = (tag, attrs, parent) => { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; };
   const locked = () => document.body.classList.contains('is-locked');
-  // 舞台（sticky）の高さぶんを引いた残りが、図解の進む距離
-  const storyV = (el, vh) => { const r = el.getBoundingClientRect(), sh = el.firstElementChild.offsetHeight; return { v: clamp(-r.top / (r.height - sh || 1)), near: r.bottom > -vh && r.top < vh * 2, top: r.top }; };
+  // v010：舞台（sticky）は内容の高さ。画面の中央に止め（T）、後ろの .story__run の長さが図解の進む距離
+  const storyV = (el, vh) => {
+    const st = el.firstElementChild, sh = st.offsetHeight, T = Math.max(64, Math.round((vh - sh) / 2));
+    if (st._t !== T) { st._t = T; st.style.setProperty('--st', T + 'px'); }
+    const r = el.getBoundingClientRect();
+    return { v: clamp((T - r.top) / (r.height - sh || 1)), near: r.bottom > -vh && r.top < vh * 2, top: r.top - T };
+  };
   const setCur = (list, k) => list.forEach((e, i) => e.classList.toggle('is-cur', i === k));
 
   /* --- About：Focus → Fork us → Info → 名前 --- */
@@ -1578,7 +1816,7 @@ body.is-menu{overflow:hidden}
     learn(name); Sound.play('skill', 0.45);
     toast(`スキル『${name}』を おぼえた！`);
     const r = (RM ? n : uFigs[k]).getBoundingClientRect(); burst(r.left + r.width / 2, r.top + r.height / 2, 24, 5);
-    $('#updVer').textContent = `1.${uDone.filter(Boolean).length}.0`;
+    [$('#updVer'), ...$$('.js-updver')].forEach((e) => { e.textContent = `1.${uDone.filter(Boolean).length}.0`; });
     gain(30);
   };
   const drawUpd = (v, top) => {
@@ -1710,18 +1948,63 @@ body.is-menu{overflow:hidden}
     { t: 'AI開発プログラム', items: ['AI を使った小さなツール', '手作業の自動化', '文書・データの整理', '使い方の手引き'] },
     { t: '業務効率化Excel', items: ['管理表の作成', '集計の自動化', 'VBA・マクロ', 'Power Query', '入力ミスの防止', '手順書づくり'] },
   ];
-  const jobBtns = $$('.job'), jobList = $('#jobList');
-  const pickJob = (k) => {
-    jobBtns.forEach((b, i) => b.setAttribute('aria-pressed', i === k));
+  // v010：PC（900px〜）は右の窓を切り替える。スマホは押したカードの直下へ窓を移して開く（もう一度押すと閉じる）
+  const jobBtns = $$('.job'), jobList = $('#jobList'), jobsBox = $('#jobs'), jobInfo = $('#jobinfo'), jobIn = $('#jobIn');
+  const mqPC = matchMedia('(min-width:900px)');
+  let jobCur = -1;
+  const fillJob = (k) => {
+    const b = jobBtns[k];
     $('#jobNo').textContent = 'JOB 0' + (k + 1);
+    $('#jobName').textContent = JOBS[k].t;
+    $('#jobP').textContent = $('.job__p', b).textContent;
+    $('#jobIc').replaceChildren($('.job__ic svg', b).cloneNode(true));
     $('#jobT').textContent = `${JOBS[k].t} で できること`;
     jobList.replaceChildren(...JOBS[k].items.map((s, i) => { const li = document.createElement('li'); li.textContent = s; li.style.setProperty('--i', i); return li; }));
+    $('#jobTags').replaceChildren(...$$('.job__tags i', b).map((t) => t.cloneNode(true)));
+    jobIn.classList.remove('is-sw'); void jobIn.offsetWidth; jobIn.classList.add('is-sw');
+  };
+  // スマホ：開いた窓が画面の下に隠れるときだけ、穏やかにスクロールする（下の HUD ぶん 100px をよける）
+  const jobReveal = (b) => {
+    if (RM) return;
+    const vh = innerHeight, c = b.getBoundingClientRect(), r = jobInfo.getBoundingClientRect(), bot = r.bottom + 12; // 開く動き（-10px）のぶんを足す
+    let d = 0;
+    if (c.top < 72) d = c.top - 72;
+    else if (bot > vh - 100) d = Math.min(c.top - 72, bot - (vh - 100));
+    if (Math.abs(d) > 4) scrollBy({ top: d, behavior: 'smooth' });
+  };
+  const pickJob = (k, opts = {}) => {
+    const pc = mqPC.matches;
+    if (!pc && k === jobCur && !opts.keep) k = -1; // スマホは同じカードで閉じる
+    if (pc && k < 0) k = 0;
+    const b = jobBtns[k], before = b ? b.getBoundingClientRect().top : 0;
+    jobBtns.forEach((x, i) => x.setAttribute('aria-expanded', i === k));
+    jobCur = k;
+    if (k < 0) { jobInfo.hidden = true; return; }
+    fillJob(k);
+    if (pc) { if (jobInfo.parentNode !== $('#biz') || jobInfo.previousElementSibling !== jobsBox) jobsBox.after(jobInfo); }
+    else b.after(jobInfo);
+    jobInfo.hidden = false;
+    if (!pc && opts.user) {
+      // 上の窓が閉じてカードが動いたぶんを戻してから、必要なら見える位置へ
+      const shift = b.getBoundingClientRect().top - before;
+      if (Math.abs(shift) > 1) scrollBy({ top: shift, behavior: 'instant' });
+      requestAnimationFrame(() => jobReveal(b));
+    }
   };
   jobBtns.forEach((b, i) => {
     b.addEventListener('mouseenter', cursor);
-    b.addEventListener('click', () => { Sound.play('confirm', 0.5); pickJob(i); });
+    b.addEventListener('click', () => { Sound.play('confirm', 0.5); pickJob(i, { user: true }); });
+    b.addEventListener('keydown', (e) => {
+      const n = jobBtns.length;
+      const to = e.key === 'ArrowDown' || e.key === 'ArrowRight' ? (i + 1) % n : e.key === 'ArrowUp' || e.key === 'ArrowLeft' ? (i + n - 1) % n : e.key === 'Home' ? 0 : e.key === 'End' ? n - 1 : -1;
+      if (to < 0) return;
+      e.preventDefault(); jobBtns[to].focus();
+      if (mqPC.matches) pickJob(to); // PC は矢印で選び替える。スマホは Enter／Space で開く
+    });
   });
-  pickJob(0);
+  const jobLayout = () => { if (mqPC.matches) pickJob(jobCur < 0 ? 0 : jobCur, { keep: true }); else if (jobCur < 0) jobInfo.hidden = true; else pickJob(jobCur, { keep: true }); };
+  mqPC.addEventListener('change', jobLayout);
+  jobLayout();
 
   /* ===== 動画と SNS =====
      ・動画：VIDEOS に { id: 'YouTube の動画ID', title: '題名' } を並べる。
@@ -1856,6 +2139,67 @@ body.is-menu{overflow:hidden}
         type($('#choiceQ'), 'だいじょうぶ。準備ができたら、いつでもここで待ってるよ。', 40);
       }
     });
+  });
+
+  /* ===== v010：ご相談フォーム ===== */
+  const qf = $('#contactForm'), qfSend = $('#qfSend'), qfNote = $('#qfNote'), qfDone = $('#qfDone');
+  const qfName = $('#qfName'), qfEmail = $('#qfEmail'), qfMsg = $('#qfMsg'), qfKind = $('#qfKind');
+  const qfReady = !!GFORM.action;
+  if (!qfReady) { qfSend.disabled = true; qfNote.textContent = 'フォームは準備中です'; }
+  // 「相談フォームへ」：フォームまでスクロールして、最初の欄へ
+  $('#closeCta').addEventListener('click', (e) => {
+    e.preventDefault();
+    Sound.play('confirm', 0.4);
+    const target = qf.hidden ? qfDone : qf;
+    target.scrollIntoView({ behavior: RM ? 'auto' : 'smooth', block: 'start' });
+    if (!qf.hidden) setTimeout(() => qfName.focus({ preventScroll: true }), RM ? 0 : 700);
+  });
+  const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const setErr = (el, errId, msg) => {
+    $('#' + errId).textContent = msg;
+    if (msg) el.setAttribute('aria-invalid', 'true'); else el.removeAttribute('aria-invalid');
+    return !msg;
+  };
+  const kindVal = () => { const r = $('input[name="kind"]:checked', qf); return r ? r.value : ''; };
+  const checkName = () => setErr(qfName, 'qfNameErr', qfName.value.trim() ? '' : 'お名前を 入れてください');
+  const checkEmail = () => { const v = qfEmail.value.trim(); return setErr(qfEmail, 'qfEmailErr', !v ? 'メールアドレスを 入れてください' : EMAIL.test(v) ? '' : 'メールアドレスの形を 確かめてください（例：example@mail.com）'); };
+  const checkKind = () => setErr(qfKind, 'qfKindErr', kindVal() ? '' : 'ご相談の種類を 選んでください');
+  const checkMsg = () => setErr(qfMsg, 'qfMsgErr', qfMsg.value.trim() ? '' : 'ご相談内容を 書いてください');
+  // 一度まちがいを出した欄は、直したらすぐ消す
+  [[qfName, checkName], [qfEmail, checkEmail], [qfMsg, checkMsg]].forEach(([el, fn]) => el.addEventListener('input', () => { if (el.hasAttribute('aria-invalid')) fn(); }));
+  $$('input[name="kind"]', qf).forEach((r) => { r.addEventListener('change', () => { Sound.play('cursor', 0.25); if (qfKind.hasAttribute('aria-invalid')) checkKind(); }); });
+  let qfBusy = false;
+  qf.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!qfReady || qfBusy) return;
+    const oks = [checkName(), checkEmail(), checkKind(), checkMsg()];
+    if (oks.includes(false)) {
+      const first = [qfName, qfEmail, $('input[name="kind"]', qf), qfMsg][oks.indexOf(false)];
+      first.focus();
+      qfNote.textContent = '直してほしい欄が あります';
+      return;
+    }
+    qfBusy = true; qfSend.disabled = true; qfNote.textContent = 'おくっています…';
+    const body = new URLSearchParams();
+    body.append(GFORM.name, qfName.value.trim());
+    body.append(GFORM.email, qfEmail.value.trim());
+    body.append(GFORM.kind, kindVal());
+    body.append(GFORM.msg, qfMsg.value.trim());
+    try {
+      // Google フォームは返事を読めない（no-cors）。届いたかは分からないので、通信の例外がなければ送れた扱いにする
+      await fetch(GFORM.action, { method: 'POST', mode: 'no-cors', body });
+      qf.hidden = true; qfDone.hidden = false; qfNote.textContent = '';
+      $('#closeCta').textContent = '送ったご相談を見る ↓';
+      Sound.play('save', 0.5);
+      const r = qfDone.getBoundingClientRect(); burst(r.left + r.width / 2, r.top + 30, 50, 7);
+      learn('ぼうけんの しょ');
+      qfDone.focus({ preventScroll: true });
+      qfDone.scrollIntoView({ behavior: RM ? 'auto' : 'smooth', block: 'center' });
+      type($('#qfDoneT'), 'ぼうけんの しょを おくった！', 45);
+    } catch (err) {
+      qfNote.textContent = 'うまく おくれませんでした。通信を確かめて、もう一度 おくってください。';
+      qfSend.disabled = false;
+    } finally { qfBusy = false; }
   });
 
 })();
