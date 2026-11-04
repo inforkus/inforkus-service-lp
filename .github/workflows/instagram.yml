@@ -3,6 +3,11 @@ on:
   schedule:
     - cron: '0 0 * * *'   # 毎日 9:00（日本時間）
   workflow_dispatch:
+    inputs:
+      refresh:
+        description: 'トークンを今すぐ延ばす'
+        type: boolean
+        default: false
 permissions:
   contents: write
   pages: write
@@ -26,13 +31,17 @@ jobs:
           git commit -m "Instagram の投稿を更新"
           git push
           gh api -X POST "repos/$GITHUB_REPOSITORY/pages/builds" >/dev/null || true
-      - name: トークンの期限を延ばす（月曜だけ。GH_PAT を登録したときだけ）
+      - name: トークンの残り日数を確かめる（残り7日以下で赤い ✕ にしてメールで知らせる）
         env:
           IG_TOKEN: ${{ secrets.IG_TOKEN }}
+        run: python3 scripts/ig_token.py check
+      - name: トークンを延ばす（月曜か手動のときだけ。3つの Secret を登録したときだけ）
+        if: ${{ always() && (github.event_name == 'schedule' || inputs.refresh) }}
+        env:
+          IG_TOKEN: ${{ secrets.IG_TOKEN }}
+          META_APP_ID: ${{ secrets.META_APP_ID }}
+          META_APP_SECRET: ${{ secrets.META_APP_SECRET }}
           GH_TOKEN: ${{ secrets.GH_PAT }}
         run: |
-          if [ -z "$IG_TOKEN" ] || [ -z "$GH_TOKEN" ] || [ "$(date -u +%u)" != 1 ]; then echo "省略"; exit 0; fi
-          NEW=$(curl -sf "https://graph.instagram.com/refresh_access_token?grant_type=ig_refresh_token&access_token=$IG_TOKEN" | python3 -c "import sys,json;print(json.load(sys.stdin)['access_token'])")
-          echo "::add-mask::$NEW"
-          gh secret set IG_TOKEN --body "$NEW" --repo "$GITHUB_REPOSITORY"
-          echo "延長しました"
+          if [ "${{ github.event.inputs.refresh }}" != "true" ] && [ "$(date -u +%u)" != 1 ]; then echo "月曜ではないため省略"; exit 0; fi
+          python3 scripts/ig_token.py refresh
