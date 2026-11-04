@@ -3,6 +3,29 @@ import os, sys, json, subprocess, urllib.request, urllib.parse, urllib.error, da
 
 API = 'https://graph.facebook.com/v26.0/'
 tok = os.environ.get('IG_TOKEN')
+if sys.argv[1:] == ['pat']:
+    # GH_PAT の期限は、GitHub の応答のヘッダーに入っている
+    pat = os.environ.get('GH_TOKEN')
+    if not pat:
+        print('GH_PAT が未登録のため省略'); sys.exit(0)
+    req = urllib.request.Request('https://api.github.com/repos/' + os.environ['GITHUB_REPOSITORY'],
+                                 headers={'Authorization': 'Bearer ' + pat})
+    try:
+        h = urllib.request.urlopen(req, timeout=30).headers.get('github-authentication-token-expiration')
+    except urllib.error.HTTPError as e:
+        print(f'::error::GH_PAT が使えません（HTTP {e.code}）。作り直してください'); sys.exit(1)
+    if not h:
+        print('GH_PAT の期限：なし'); sys.exit(0)
+    d, t, z = h.split()
+    end = datetime.datetime.fromisoformat(f'{d}T{t}' + ('+00:00' if z == 'UTC' else f'{z[:3]}:{z[3:]}'))
+    jst = datetime.timezone(datetime.timedelta(hours=9))
+    left = (end - datetime.datetime.now(jst)).days
+    print(f'GH_PAT の期限：{end.astimezone(jst):%Y-%m-%d %H:%M}（日本時間）／残り {left} 日')
+    if left <= 7:
+        print(f'::error::GH_PAT が残り {left} 日です。作り直して登録し直してください'); sys.exit(1)
+    if left <= 14:
+        print(f'::warning::GH_PAT が残り {left} 日です')
+    sys.exit(0)
 if not tok:
     print('IG_TOKEN が未登録のため終了'); sys.exit(0)
 

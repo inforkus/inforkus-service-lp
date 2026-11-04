@@ -37,6 +37,11 @@ jobs:
           META_APP_ID: ${{ secrets.META_APP_ID }}
           META_APP_SECRET: ${{ secrets.META_APP_SECRET }}
         run: python3 scripts/ig_token.py check
+      - name: GH_PAT の残り日数を確かめる（残り7日以下で赤い ✕）
+        if: ${{ always() }}
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+        run: python3 scripts/ig_token.py pat
       - name: トークンを延ばす（月曜か手動のときだけ。3つの Secret を登録したときだけ）
         if: ${{ always() && (github.event_name == 'schedule' || inputs.refresh) }}
         env:
