@@ -1,0 +1,38 @@
+name: Instagram の投稿を取得
+on:
+  schedule:
+    - cron: '0 0 * * *'   # 毎日 9:00（日本時間）
+  workflow_dispatch:
+permissions:
+  contents: write
+  pages: write
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: 投稿を取得
+        env:
+          IG_TOKEN: ${{ secrets.IG_TOKEN }}
+        run: python3 scripts/fetch_instagram.py
+      - name: 変わっていれば保存して公開し直す
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git add -A instagram.json ig 2>/dev/null || true
+          if git diff --cached --quiet; then echo "変更なし"; exit 0; fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Instagram の投稿を更新"
+          git push
+          gh api -X POST "repos/$GITHUB_REPOSITORY/pages/builds" >/dev/null || true
+      - name: トークンの期限を延ばす（月曜だけ。GH_PAT を登録したときだけ）
+        env:
+          IG_TOKEN: ${{ secrets.IG_TOKEN }}
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+        run: |
+          if [ -z "$IG_TOKEN" ] || [ -z "$GH_TOKEN" ] || [ "$(date -u +%u)" != 1 ]; then echo "省略"; exit 0; fi
+          NEW=$(curl -sf "https://graph.instagram.com/refresh_access_token?grant_type=ig_refresh_token&access_token=$IG_TOKEN" | python3 -c "import sys,json;print(json.load(sys.stdin)['access_token'])")
+          echo "::add-mask::$NEW"
+          gh secret set IG_TOKEN --body "$NEW" --repo "$GITHUB_REPOSITORY"
+          echo "延長しました"

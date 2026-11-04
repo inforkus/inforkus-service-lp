@@ -14,6 +14,7 @@
   --paper:#FFFFFF;--ink:#2B2825;--core:#1C6047;--accent:#C15332;--muted:#A7A196;
   --line:rgba(43,40,37,.08);--line-d:rgba(255,255,255,.07);
   --core-10:rgba(28,96,71,.10);--ink-60:rgba(43,40,37,.6);
+  --tint-c:color-mix(in srgb,var(--core) 7%,var(--paper));--tint-k:color-mix(in srgb,var(--ink) 4%,var(--paper));
   --sans:"Noto Sans JP",system-ui,sans-serif;--dot:"DotGothic16",var(--sans);
   --mono:"JetBrains Mono",ui-monospace,monospace;--serif:var(--sans);--en:"Inter",var(--sans);
   --col:440px;--ease:cubic-bezier(.2,.7,.2,1);--pop:cubic-bezier(.3,1.6,.5,1);
@@ -45,7 +46,7 @@ html{scroll-padding-top:72px}
 .hd__cta{margin-left:auto;padding:10px 18px;border-radius:999px;background:var(--accent);color:var(--paper);font:700 13px/1 var(--sans);transition:transform .2s var(--pop)}
 .hd__cta:hover{transform:translateY(-2px)}
 @media (min-width:900px){.hd__nav{display:flex}.hd__cta{margin-left:8px}}
-.hd__bar{position:absolute;left:0;right:0;bottom:-1px;height:2px;background:linear-gradient(90deg,var(--core),var(--accent));transform:scaleX(0);transform-origin:left}
+.hd__bar{position:absolute;left:0;right:0;bottom:-1px;height:2px;background:var(--core);transform:scaleX(0);transform-origin:left}
 .hd__menu{position:relative;flex:none;width:44px;height:44px;margin-left:-8px;border-radius:50%;border:2px solid var(--ink);background:var(--paper);transition:background .25s}
 .hd__menu:hover{background:var(--core-10)}
 .hd__menu span{position:absolute;left:11px;right:11px;height:2px;background:var(--ink);border-radius:2px;transition:transform .4s var(--ease),opacity .2s}
@@ -68,7 +69,7 @@ body.is-menu{overflow:hidden}
 .menu__list li{opacity:0;transform:translateX(28px);transition:opacity .4s var(--ease),transform .5s var(--ease)}
 .is-menu .menu__list li{opacity:1;transform:none;transition-delay:calc(.12s + var(--i) * 55ms)}
 .menu__list a{position:relative;display:flex;align-items:center;gap:18px;padding:18px 8px 18px 30px;border-bottom:1px solid rgba(255,255,255,.14)}
-.menu__list a::before{content:"▶";position:absolute;left:4px;top:50%;font:400 13px/1 var(--dot);color:var(--accent);opacity:0;transform:translate(-6px,-50%);transition:opacity .25s,transform .25s var(--ease)}
+.menu__list a::before{content:"▶";position:absolute;left:4px;top:50%;font:400 13px/1 var(--dot);color:var(--paper);opacity:0;transform:translate(-6px,-50%);transition:opacity .25s,transform .25s var(--ease)}
 .menu__list a:hover::before,.menu__list a:focus-visible::before{opacity:1;transform:translate(0,-50%)}
 .menu__list b{font:700 12px/1 var(--mono);letter-spacing:.1em;color:var(--muted)}
 .menu__list span{font:800 30px/1 var(--en);letter-spacing:-.02em;transition:transform .3s var(--ease)}
@@ -80,21 +81,23 @@ body.is-menu{overflow:hidden}
 .menu__note{margin-top:24px;font-size:12px;line-height:1.8;color:var(--muted)}
 
 /* ---------- スクロールに合わせた演出（--p は 0→1） ---------- */
-.en{opacity:calc(.08 + var(--p,1) * .92);transform:translateY(calc((1 - var(--p,1)) * 40px));letter-spacing:calc(-.03em + (1 - var(--p,1)) * .14em)}
+/* v009：英字の大見出しは、ぼかしから くっきり＋左から拭き取るマスク */
+.en{opacity:calc(.15 + var(--p,1) * .85);transform:translateY(calc((1 - var(--p,1)) * 28px));letter-spacing:calc(-.03em + (1 - var(--p,1)) * .1em);filter:blur(calc((1 - var(--p,1)) * 10px));
+  -webkit-mask-image:linear-gradient(100deg,#000 calc(var(--p,1) * 150% - 50%),transparent calc(var(--p,1) * 150%));mask-image:linear-gradient(100deg,#000 calc(var(--p,1) * 150% - 50%),transparent calc(var(--p,1) * 150%))}
+.en{width:fit-content;padding-right:.08em}
+#contact .en{margin-inline:auto}
 .en::after{transform:scaleX(var(--p,1));transform-origin:left}
 #contact .en::after{transform-origin:center}
-.grid-d[data-sp]{clip-path:inset(0 calc((1 - var(--p,1)) * 6%) round calc((1 - var(--p,1)) * 48px))}
 .chap__line{transform:scaleX(var(--p,1));transform-origin:right}
 .chap__line:last-child{transform-origin:left}
 .chap__t{opacity:var(--p,1);transform:scale(calc(.85 + var(--p,1) * .15))}
 .car[data-sp]{transform:translateX(calc((1 - var(--p,1)) * 90px))}
-.quest::after{content:"";position:absolute;left:23px;top:20px;width:2px;height:calc((100% - 40px) * var(--p,1));background:var(--core)}
 .close__art img{transform:translateY(calc((1 - var(--p,1)) * 70px)) scale(calc(.88 + var(--p,1) * .12))}
 .fv__h.is-in,.fv__p.is-in{transform:translateY(calc(var(--up,0) * -1px));opacity:calc(1 - var(--up,0) / 700)}
 
 /* ---------- 全幅の1段組（本文は中央 720px） ---------- */
 .shell{min-height:100vh}
-.lp{position:relative;overflow:hidden}
+.lp{position:relative;overflow-x:clip}
 .sec,.fv{padding-inline:max(20px,calc((100% - 720px) / 2))}
 @media (min-width:768px){.name{grid-template-columns:repeat(3,1fr)}.stat{grid-template-columns:1fr;text-align:left}}
 
@@ -124,13 +127,37 @@ body.is-menu{overflow:hidden}
 .eq i:nth-child(2){animation-delay:-.3s!important}.eq i:nth-child(3){animation-delay:-.6s!important}.eq i:nth-child(4){animation-delay:-.15s!important}
 @keyframes eq{0%,100%{height:25%}50%{height:100%}}
 
-/* スマホ下部の HUD */
-.hud-m{position:fixed;z-index:40;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom));display:flex;align-items:center;gap:12px;padding:8px 8px 8px 14px;border-radius:12px;outline-width:2px;border-width:2px}
-.hud-m .lv{font-size:16px;white-space:nowrap}
-@media (min-width:768px){.hud-m{right:auto;left:20px;bottom:20px;width:400px}}
-.hud-m .bar{flex:1;margin:0}
-.hud-m .snd{height:36px;padding:0 12px;border-color:var(--paper);background:transparent;color:var(--paper)}
-.hud-m .snd[aria-pressed="true"]{background:var(--paper);color:var(--ink)}
+/* v009：下部の HUD ＝ BGM の小さな再生プレーヤー（線＝曲の再生位置） */
+.hud-m{position:fixed;z-index:40;left:10px;right:10px;bottom:calc(10px + env(safe-area-inset-bottom));padding:7px 8px 6px;border-radius:12px;outline-width:2px;border-width:2px}
+@media (min-width:768px){.hud-m{right:auto;left:20px;bottom:20px;width:440px;padding:8px 12px 7px}}
+.hud-m__row{display:flex;align-items:center;gap:8px}
+.pp{flex:none;display:grid;place-items:center;width:36px;height:36px;border-radius:50%;background:var(--paper);color:var(--ink);transition:transform .2s var(--pop)}
+.pp:active{transform:scale(.9)}
+.pp svg{width:14px;height:14px;fill:currentColor}
+.pp .i-pause,.pp[aria-pressed="true"] .i-play{display:none}
+.pp[aria-pressed="true"] .i-pause{display:block}
+.np{flex:1;min-width:0}
+.np__t{display:flex;align-items:center;gap:6px;overflow:hidden;font:400 12px/1.3 var(--dot);white-space:nowrap}
+.np__t span{overflow:hidden;text-overflow:ellipsis}
+.np__t .eq{flex:none;height:10px;color:var(--muted)}
+.pp[aria-pressed="true"]~.np .np__t .eq i{animation:eq .9s ease-in-out infinite}
+.seek{position:relative;height:16px;touch-action:none;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.seek[aria-disabled="true"]{cursor:default;opacity:.5}
+.seek:focus-visible{outline:2px solid var(--paper);outline-offset:1px;border-radius:4px}
+.seek__rail{position:absolute;left:0;right:0;top:6px;height:4px;border-radius:2px;background:rgba(255,255,255,.18);transition:height .2s,top .2s}
+.seek:hover .seek__rail,.seek.is-drag .seek__rail{top:5px;height:6px}
+.seek__fill{position:absolute;inset:0 auto 0 0;width:calc(var(--sk,0) * 100%);border-radius:2px;background:var(--paper)}
+.seek__thumb{position:absolute;top:8px;left:calc(var(--sk,0) * 100%);width:12px;height:12px;translate:-50% -50%;border-radius:50%;background:var(--paper);box-shadow:0 0 0 3px var(--ink);scale:.7;transition:scale .2s var(--pop)}
+.seek:hover .seek__thumb,.seek.is-drag .seek__thumb{scale:1.15}
+.seek__tip{position:absolute;bottom:calc(100% + 8px);left:clamp(22px,calc(var(--sk,0) * 100%),calc(100% - 22px));translate:-50% 0;padding:4px 8px;border-radius:6px;background:var(--paper);color:var(--ink);font:700 12px/1.2 var(--mono);white-space:nowrap;opacity:0;transform:translateY(6px);transition:opacity .2s,transform .2s var(--ease);pointer-events:none}
+.seek.is-drag .seek__tip{opacity:1;transform:none}
+.np__time{display:flex;justify-content:space-between;font:700 10px/1 var(--mono);color:var(--muted);font-variant-numeric:tabular-nums}
+.hlv{flex:none;width:52px;display:grid;gap:5px}
+.hud-m .lv{font-size:11px;line-height:1;white-space:nowrap;color:var(--muted)}
+.hud-m .lv .js-lv{color:var(--paper)}
+.hud-m .hlv .bar{height:3px;margin:0}
+.hud-m .hlv .bar i::after{display:none}
+.hud-m .snd{flex:none;gap:6px;height:32px;padding:0 10px;border-color:var(--paper);background:transparent;color:var(--paper)}
 .se{gap:6px}
 .se .lvl{display:flex;gap:2px;align-items:flex-end;height:12px}
 .se .lvl i{width:3px;background:currentColor;opacity:.25;border-radius:1px}
@@ -142,7 +169,7 @@ body.is-menu{overflow:hidden}
 .en{display:block;margin-bottom:12px;font:800 46px/1 var(--en);letter-spacing:-.03em;color:var(--ink)}
 .grid-d .en{color:var(--paper)}
 .en::after{content:"";display:block;width:40px;height:3px;margin-top:14px;background:var(--core)}
-.grid-d .en::after{background:var(--accent)}
+.grid-d .en::after{background:var(--muted)}
 @media (min-width:768px){.en{font-size:64px}}
 #contact .en::after{margin-inline:auto}
 .eyebrow{display:inline-flex;align-items:center;gap:8px;font:700 12px/1 var(--mono);letter-spacing:.2em;color:var(--core)}
@@ -155,7 +182,7 @@ body.is-menu{overflow:hidden}
 .bars{display:flex;flex-direction:column;align-items:flex-start;gap:0;font:900 30px/1.45 var(--sans);letter-spacing:.02em}
 .bars .b{display:inline-block;opacity:0;transform:translateY(10px);transition:opacity .6s var(--ease),transform .6s var(--ease),background-size .9s var(--ease) .3s}
 .bars .b--core{color:var(--core);background:linear-gradient(var(--core),var(--core)) no-repeat 0 92%/0 3px}
-.grid-d .bars .b--core{color:var(--paper);background-image:linear-gradient(var(--accent),var(--accent))}
+.grid-d .bars .b--core{color:var(--paper);background-image:linear-gradient(var(--muted),var(--muted))}
 .is-in .bars .b,.bars.is-in .b{opacity:1;transform:none}
 .bars .ch{display:inline-block;opacity:0;transform:translateY(.45em);transition:opacity .5s var(--ease),transform .5s var(--ease);transition-delay:calc(var(--i) * 28ms)}
 .is-in .bars .ch,.bars.is-in .ch{opacity:1;transform:none}
@@ -185,7 +212,7 @@ body.is-menu{overflow:hidden}
 /* ---------- 章の区切り：灯りが線を走る ---------- */
 .chap{display:flex;align-items:center;gap:14px;padding:22px max(20px,calc((100% - 720px) / 2));background:var(--paper)}
 .chap__line{position:relative;flex:1;height:1px;background:var(--muted);overflow:hidden}
-.chap__line::after{content:"";position:absolute;top:-1px;left:-30%;width:30%;height:3px;background:linear-gradient(90deg,transparent,var(--accent),transparent);animation:run 3.6s ease-in-out infinite}
+.chap__line::after{content:"";position:absolute;top:-1px;left:-30%;width:30%;height:3px;background:linear-gradient(90deg,transparent,var(--run,var(--core)),transparent);animation:run 3.6s ease-in-out infinite}
 .chap__line:last-child::after{animation-delay:1.8s}
 @keyframes run{to{left:100%}}
 .chap__t{display:flex;align-items:center;gap:8px;font:400 14px/1 var(--dot);white-space:nowrap}
@@ -309,12 +336,12 @@ body.is-menu{overflow:hidden}
 .node.is-on{border-color:var(--paper);background:rgba(255,255,255,.07);transform:scale(1.02)}
 .node.is-on::before{content:"✓";background:var(--paper);color:var(--ink);border-color:var(--paper);font:700 13px/1 var(--mono)}
 .node__tag{display:inline-block;padding:2px 8px;border-radius:4px;background:rgba(255,255,255,.12);font:700 11px/1.6 var(--mono);letter-spacing:.1em;color:var(--muted)}
-.node.is-on .node__tag{background:var(--accent);color:var(--paper)}
+.node.is-on .node__tag{background:var(--core);color:var(--paper)}
 .node.is-on .node__tag::after{content:" NEW"}
 .node__en{margin-top:8px;font:900 italic 24px/1.1 var(--en)}
 .node__pair{margin-top:4px;font:400 15px/1.4 var(--dot);color:var(--muted)}
 .node__pair span{color:var(--paper)}
-.node__p{margin-top:8px;font-size:13px;line-height:1.75;color:#EDEBE7}
+.node__p{margin-top:8px;font-size:13px;line-height:1.75;color:rgba(255,255,255,.86)}
 .patch{margin-top:28px;padding:18px 16px 14px;font-size:13px}
 .patch li{display:flex;gap:10px;padding:6px 0;border-bottom:1px dashed rgba(255,255,255,.18);line-height:1.6}
 .patch li:last-child{border:0}
@@ -375,7 +402,7 @@ body.is-menu{overflow:hidden}
 .close{padding-bottom:0;text-align:center}
 .close .bars{align-items:center}
 .close .bars .b--plain{color:var(--paper)}
-.close__p{margin-top:18px;font-size:14px;color:#EDEBE7}
+.close__p{margin-top:18px;font-size:14px;color:rgba(255,255,255,.86)}
 .choice{margin:28px auto 0;max-width:360px;text-align:left;padding:18px 16px 12px}
 .choice__q{font-size:16px;line-height:1.7;min-height:3.4em}
 .choice__btns{display:grid;gap:4px;margin-top:8px}
@@ -418,12 +445,229 @@ body.is-menu{overflow:hidden}
 .toast{position:fixed;z-index:92;left:50%;bottom:84px;translate:-50% 0;width:min(380px,calc(100% - 24px));font-size:15px;opacity:0;transform:translateY(16px);transition:.35s var(--ease);pointer-events:none}
 .toast.is-on{opacity:1;transform:none}
 
+/* =================== v009 =================== */
+/* 節ごとの面：前の節の色の上に、自分の色が広がって出る（--p） */
+.lp .sec{background:var(--prev,var(--paper));isolation:isolate}
+.sec::before{content:"";position:absolute;inset:0;z-index:-1;background:var(--bg,var(--paper));clip-path:inset(0 calc((1 - var(--p,1)) * 5%) round calc((1 - var(--p,1)) * 44px))}
+#about{--prev:var(--paper);--bg:var(--tint-c)}
+#update{--prev:var(--tint-c);--bg:radial-gradient(ellipse 70% 30% at 50% 0%,rgba(255,255,255,.07),transparent 70%) var(--ink)}
+#service{--prev:var(--ink);--bg:radial-gradient(ellipse 70% 40% at 50% 0%,rgba(255,255,255,.14),transparent 70%) var(--core)}
+#business{--prev:var(--core);--bg:var(--tint-k)}
+#flow{--prev:var(--tint-k);--bg:var(--paper)}
+#contact{--prev:var(--paper);--bg:radial-gradient(ellipse 70% 30% at 50% 0%,rgba(255,255,255,.07),transparent 70%) var(--ink)}
+/* 章の区切りは、前の節の色で閉じる */
+.chap{position:relative;background:var(--cb,var(--paper));color:var(--ct,var(--ink))}
+.chap--c{--cb:var(--tint-c)}
+.chap--k{--cb:var(--tint-k)}
+.chap--d{--cb:var(--ink);--ct:var(--paper);--run:var(--paper)}
+.chap--g{--cb:var(--core);--ct:var(--paper);--run:var(--paper)}
+.chap--d .chap__line,.chap--g .chap__line{background:rgba(255,255,255,.3)}
+.chap--d .chap__t b{color:var(--muted)}
+.chap--g .chap__t b{color:rgba(255,255,255,.75)}
+.chap--d .chap__t img,.chap--g .chap__t img{filter:brightness(0) invert(1)}
+
+/* 見出し：1字ずつ、ぼかしから */
+.h2.rv{opacity:1;transform:none}
+.h2 .ch{display:inline-block;opacity:0;transform:translateY(.5em) rotate(6deg);filter:blur(6px);transition:opacity .5s var(--ease),transform .6s var(--pop),filter .5s var(--ease);transition-delay:calc(var(--i) * 30ms)}
+.h2.is-in .ch{opacity:1;transform:none;filter:none}
+.bars .ch{filter:blur(4px);transition-property:opacity,transform,filter}
+.is-in .bars .ch,.bars.is-in .ch{filter:none}
+/* 小見出し：字間が締まり、印が弾み、線が伸びる */
+.rv.eyebrow,.rv .eyebrow{letter-spacing:.6em;transition:letter-spacing 1s var(--ease),opacity .6s var(--ease)}
+.rv.eyebrow.is-in,.rv.is-in .eyebrow{letter-spacing:.2em}
+.eyebrow::after{content:"";width:28px;height:2px;background:currentColor;opacity:.6;transform:scaleX(0);transform-origin:left;transition:transform .8s var(--ease) .35s}
+.is-in.eyebrow::after,.is-in .eyebrow::after{transform:none}
+.rv.eyebrow::before,.rv .eyebrow::before{transform:scale(0);transition:transform .5s var(--pop) .15s}
+.rv.eyebrow.is-in::before,.rv.is-in .eyebrow::before{transform:none}
+
+/* スクロールで進む図解（sticky の舞台） */
+.story{--vu:min(1vh,11px);position:relative;height:calc(var(--sh,320) * var(--vu));margin:36px calc(50% - min(540px,50vw - 20px)) 0}
+@supports (height:1svh){.story{--vu:min(1svh,11px)}}
+.story--upd{--sh:330}
+@media (max-width:767px){.story{--sh:240}.story--upd{--sh:260}}
+.story__stage{position:sticky;top:0;height:calc(100 * var(--vu));display:flex;flex-direction:column;justify-content:center;gap:14px;padding:76px 0 104px}
+.steps{display:flex;gap:6px}
+.step{flex:1;min-width:0;padding-top:7px;border-top:3px solid rgba(43,40,37,.12);font:700 10px/1.3 var(--mono);letter-spacing:.1em;color:var(--ink-60);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:border-color .4s,color .4s}
+.step.is-on{border-color:var(--core);color:var(--core)}
+.grid-d .step{border-color:rgba(255,255,255,.16);color:var(--muted)}
+.grid-d .step.is-on{border-color:var(--paper);color:var(--paper)}
+.step.is-lock::after{content:" ・LOCK"}
+.step.is-on.is-lock::after{content:" ✓"}
+.story__body{display:grid;gap:14px;align-items:center}
+@media (min-width:900px){.story__body{grid-template-columns:1.35fr 1fr;gap:40px}}
+.story__fig{position:relative;display:grid}
+.story__fig>*{grid-area:1/1}
+.story__fig svg{display:block;width:100%;height:auto;max-height:calc(50 * var(--vu))}
+.caps{display:grid}
+.caps>*{grid-area:1/1;opacity:0;transform:translateY(14px);transition:opacity .5s var(--ease),transform .5s var(--ease);pointer-events:none}
+.caps>.is-cur{opacity:1;transform:none;pointer-events:auto}
+.cap__no{font:700 11px/1 var(--mono);letter-spacing:.16em;color:var(--core)}
+.cap__en{margin-top:8px;font:900 italic 28px/1.1 var(--en)}
+.cap__ja{margin-top:4px;font:700 15px/1.5 var(--sans);color:var(--core)}
+.cap__p{margin-top:6px;font-size:14px;line-height:1.8}
+.cap--fin .cap__en{font-style:normal;letter-spacing:-.01em}
+/* About：inforkus の図 */
+.brand .b-dot{fill:var(--core)}
+.brand .b-lens{fill:none;stroke:var(--core);stroke-width:2;stroke-dasharray:6 8}
+.brand .b-br{fill:none;stroke:var(--core);stroke-width:3;stroke-linecap:round}
+.brand .b-br.b-br2{stroke-width:2}
+.brand .b-tip{fill:var(--paper);stroke:var(--core);stroke-width:2.5}
+.brand .b-pulse{fill:var(--core)}
+.brand .b-halo{fill:var(--core)}
+.brand .b-core{fill:var(--core)}
+.brand .b-word text{font:700 56px var(--mono);fill:var(--ink)}
+.brand .b-brk{fill:none;stroke:var(--core);stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+.brand .b-word .b-lab{font:800 21px var(--en);fill:var(--core)}
+.brand .b-word .b-sub{font:500 16px var(--sans);fill:var(--ink-60)}
+/* Update：三つの軸の図 */
+.ufig{opacity:0;transition:opacity .5s var(--ease)}
+.ufig.is-cur{opacity:1}
+.ufig .ln{fill:none;stroke:var(--paper);stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+.ufig .lm{fill:none;stroke:var(--muted);stroke-width:1.5;stroke-dasharray:4 6}
+.ufig .tx{font:400 19px var(--dot);fill:var(--muted)}
+.ufig .tw{font:400 19px var(--dot);fill:var(--paper)}
+.ufig .fl{fill:var(--paper)}
+.ufig .fc{fill:var(--core);stroke:var(--paper);stroke-width:2.5}
+.ufig .cone{fill:rgba(255,255,255,.08);stroke:var(--muted);stroke-width:1.5;stroke-dasharray:4 5}
+.ufig .sq{fill:var(--ink);stroke:var(--paper);stroke-width:2;transition:fill .25s}
+.ufig .sq.is-lit{fill:var(--paper)}
+.story .node{transform:none;padding:16px 16px 14px}
+.story .node::before{display:none}
+.story .node.is-on{transform:none}
+
+/* バトル：コマンドの図 */
+.cmd__panel{grid-template-columns:1fr;gap:12px}
+@media (min-width:640px){.cmd__panel{grid-template-columns:minmax(0,290px) 1fr;align-items:start}}
+.cmd__list{display:grid;grid-template-columns:1fr 1fr;gap:6px 10px;align-content:start}
+.cmdfig{padding:8px 10px 10px;border:1.5px dashed rgba(255,255,255,.28);border-radius:8px}
+.cmdfig svg{display:block;width:100%;height:auto}
+.cmdfig figcaption{margin-top:6px;font:400 12px/1.6 var(--sans);color:rgba(255,255,255,.86)}
+.cf *{transform-box:fill-box;transform-origin:center}
+.cf .ln{fill:none;stroke:var(--paper);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.cf .bx{fill:var(--ink);stroke:var(--paper);stroke-width:2}
+.cf .bc{fill:var(--core);stroke:var(--paper);stroke-width:2}
+.cf .fl{fill:var(--paper)}
+.cf .mu{fill:none;stroke:var(--muted);stroke-width:1.5;stroke-dasharray:3 4}
+.cf .tx{font:400 12px var(--dot);fill:var(--paper)}
+.cf .tm{font:400 11px var(--dot);fill:var(--muted)}
+.cf-a .w{animation:cfSort .9s var(--ease) both;animation-delay:calc(var(--d,0) * 90ms + .1s)}
+@keyframes cfSort{from{transform:translate(var(--x),var(--y)) rotate(var(--r))}}
+.cf .dr{stroke-dasharray:1;animation:cfDraw .5s var(--ease) both;animation-delay:calc(1s + var(--d,0) * 110ms)}
+@keyframes cfDraw{from{stroke-dashoffset:1}}
+.cf-b .tg{opacity:0;stroke-dasharray:1;animation:cfUn 1.4s var(--ease) both}
+@keyframes cfUn{0%,30%{opacity:1;stroke-dashoffset:0}100%{opacity:0;stroke-dashoffset:-1}}
+.cf .pop{animation:cfPop .5s var(--pop) both;animation-delay:calc(.9s + var(--d,0) * 130ms)}
+@keyframes cfPop{from{opacity:0;transform:scale(.4)}}
+.cf-c .pk{opacity:0;animation:cfSend .9s var(--ease) both;animation-delay:calc(.3s + var(--d,0) * 170ms)}
+@keyframes cfSend{0%{opacity:1;transform:translate(var(--x),var(--y)) scale(.8)}85%{opacity:1}100%{opacity:0;transform:none}}
+.cf-c .src{animation:cfPulse .8s ease-in-out .1s 2}
+@keyframes cfPulse{50%{transform:scale(1.12)}}
+
+/* 事業内容：ジョブを選ぶ画面 */
+.jobs{display:grid;gap:14px;margin-top:28px}
+@media (min-width:640px){.jobs{grid-template-columns:1fr 1fr}}
+@media (min-width:1080px){.jobs{grid-template-columns:repeat(4,1fr);margin-inline:calc(50% - min(540px,50vw - 20px))}}
+.job{position:relative;display:grid;grid-template-columns:76px 1fr;gap:4px 14px;align-content:start;padding:16px;border:2px solid var(--ink);border-radius:14px;background:var(--paper);box-shadow:4px 4px 0 var(--ink);text-align:left;transition:transform .25s var(--pop),box-shadow .25s,border-color .25s,opacity .6s var(--ease)}
+.job:hover{transform:translateY(-3px);box-shadow:6px 7px 0 var(--ink)}
+.job[aria-pressed="true"]{border-color:var(--core);box-shadow:4px 4px 0 var(--core)}
+.job.rv:not(.is-in){transform:translateY(18px)}
+.job__no{grid-column:1/-1;font:700 11px/1 var(--mono);letter-spacing:.16em;color:var(--core)}
+.job__ic{grid-row:2/span 3;display:grid;place-items:center;width:76px;height:76px;border-radius:12px;background:var(--tint-c)}
+.job__ic svg{width:58px;height:58px;overflow:visible}
+.job__name{font:900 16px/1.4 var(--sans)}
+.job__p{font-size:13px;line-height:1.7}
+.job__tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}
+.job__tags i{padding:4px 6px;border-radius:4px;background:var(--tint-k);color:var(--ink-60);font:700 10px/1 var(--mono);font-style:normal}
+.job__sel{position:absolute;top:12px;right:12px;padding:4px 7px;border-radius:4px;background:var(--core);color:var(--paper);font:400 11px/1 var(--dot);opacity:0;transform:scale(.6);transition:.3s var(--pop)}
+.job[aria-pressed="true"] .job__sel{opacity:1;transform:none}
+@media (min-width:1080px){.job{grid-template-columns:1fr}.job__ic{grid-row:auto;width:100%;height:100px;margin:6px 0 8px}}
+.ji *{transform-box:fill-box;transform-origin:center}
+.ji .s{fill:none;stroke:var(--core);stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.ji .f{fill:var(--core)}
+.ji .w{fill:var(--paper)}
+.ji .play{animation:jiPulse 2.2s ease-in-out infinite}
+@keyframes jiPulse{50%{transform:scale(1.18)}}
+.ji .up{animation:jiUp 2.6s ease-out infinite;animation-delay:calc(var(--d,0) * .8s)}
+@keyframes jiUp{0%{opacity:0;transform:translateY(8px)}30%{opacity:1}100%{opacity:0;transform:translateY(-14px)}}
+.ji .flash{opacity:0;animation:jiFlash 3.2s ease-out infinite}
+@keyframes jiFlash{0%,82%{opacity:0}86%{opacity:.9}100%{opacity:0}}
+.ji .spin{animation:spin 6s linear infinite}
+.ji .blink{animation:jiBlink 1.8s ease-in-out infinite;animation-delay:calc(var(--d,0) * .3s)}
+@keyframes jiBlink{0%,100%{opacity:.25}40%{opacity:1}}
+.ji .cell{animation:jiCell 3.6s ease-in-out infinite;animation-delay:calc(var(--d,0) * .18s)}
+@keyframes jiCell{0%,8%{opacity:.15}28%,78%{opacity:1}100%{opacity:.15}}
+.jobinfo{margin-top:26px;padding:20px 16px 14px}
+.jobinfo__t{font-size:16px;line-height:1.6}
+.jobinfo ul{display:grid;grid-template-columns:1fr 1fr;gap:4px 12px;margin-top:10px}
+@media (min-width:768px){.jobinfo ul{grid-template-columns:repeat(3,1fr)}}
+.jobinfo li{position:relative;padding-left:16px;font:400 14px/1.6 var(--dot);animation:pop .35s var(--pop) both;animation-delay:calc(var(--i) * 40ms)}
+.jobinfo li::before{content:"・";position:absolute;left:0}
+.media{display:grid;gap:28px;margin-top:40px}
+.media[hidden],.vids[hidden],.sns[hidden],.insta[hidden]{display:none}
+.media__lead{font:900 clamp(20px,2.4vw,26px)/1.5 var(--sans)}
+.insta__list{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
+@media (min-width:640px){.insta__list{grid-template-columns:repeat(6,1fr)}}
+.igc{position:relative;display:block;aspect-ratio:1;overflow:hidden;border:2px solid var(--ink);border-radius:10px;background:var(--tint-c)}
+.igc img{width:100%;height:100%;object-fit:cover;transition:transform .4s var(--ease)}
+.igc:hover img{transform:scale(1.06)}
+.media__ttl{font:800 22px/1.2 var(--en)}
+.media__ttl small{margin-left:10px;font:500 12px/1 var(--sans);color:var(--ink-60)}
+.vids__list{display:grid;gap:14px;margin-top:12px}
+@media (min-width:640px){.vids__list{grid-template-columns:repeat(2,1fr)}}
+.vid{border:2px solid var(--ink);border-radius:12px;overflow:hidden;background:var(--paper);box-shadow:4px 4px 0 var(--ink)}
+.vid__btn{position:relative;display:block;width:100%;aspect-ratio:16/9;background:var(--ink)}
+.vid__btn img{width:100%;height:100%;object-fit:cover}
+.vid__play{position:absolute;left:50%;top:50%;display:grid;place-items:center;width:60px;height:42px;translate:-50% -50%;border-radius:12px;background:rgba(43,40,37,.82);transition:transform .2s var(--pop)}
+.vid__play::before{content:"";margin-left:4px;border-left:16px solid var(--paper);border-top:10px solid transparent;border-bottom:10px solid transparent}
+.vid__btn:hover .vid__play{transform:scale(1.12)}
+.vid iframe{display:block;width:100%;aspect-ratio:16/9;border:0}
+.vid__t{padding:10px 12px;font:700 13px/1.5 var(--sans)}
+.sns__list{display:grid;gap:10px;margin-top:12px}
+@media (min-width:640px){.sns__list{grid-template-columns:repeat(3,1fr)}}
+.snsc{display:flex;align-items:center;gap:12px;padding:12px 14px;border:2px solid var(--ink);border-radius:12px;background:var(--paper);box-shadow:3px 3px 0 var(--ink);transition:transform .2s var(--pop)}
+.snsc:hover{transform:translateY(-2px)}
+.snsc svg{flex:none;width:30px;height:30px;fill:none;stroke:var(--ink);stroke-width:2;stroke-linejoin:round}
+.snsc b{display:block;font:800 15px/1.2 var(--en)}
+.snsc small{font:500 12px/1.4 var(--sans);color:var(--ink-60)}
+
+/* 進め方：灯りが進む道 */
+.road{position:relative;margin-top:28px}
+.road .quest{margin-top:0}
+.road .quest::before{display:none}
+.road .q{grid-template-columns:56px 1fr}
+.road .q__no{margin-left:4px}
+.road__svg{position:absolute;left:0;top:0;width:56px;overflow:visible;pointer-events:none}
+.road__base{fill:none;stroke:var(--muted);stroke-width:2;stroke-dasharray:4 6}
+.road__side{fill:none;stroke:var(--muted);stroke-width:1.5;stroke-linecap:round;opacity:.7;transition:stroke .5s,opacity .5s}
+.road__side.is-on{stroke:var(--core);opacity:1}
+.road__lit{fill:none;stroke:var(--core);stroke-width:4;stroke-linecap:round}
+.road__lab{font:700 8px var(--mono);letter-spacing:.08em;fill:var(--core)}
+.road__torch{position:absolute;left:0;top:0;z-index:0;width:36px;height:auto;translate:-50% -55%;pointer-events:none;filter:drop-shadow(0 0 8px rgba(28,96,71,.35))}
+.road__torch::before{content:""}
+.q__no{transition:background .4s,color .4s,transform .4s var(--pop),box-shadow .4s}
+.q.is-clear .q__no{box-shadow:0 0 0 6px var(--core-10)}
+
+.ft{padding-bottom:calc(124px + env(safe-area-inset-bottom))}
+.toast{bottom:104px}
+
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none!important;transition:none!important}
   .rv{opacity:1;transform:none}
   .bars .b{opacity:1;transform:none}
   .stat__ic path{stroke-dashoffset:0}
   html{scroll-behavior:auto}
+  /* v009：動きを止め、完成した形で出す */
+  .h2 .ch,.bars .ch{opacity:1;transform:none;filter:none}
+  .en{opacity:1;transform:none;filter:none;letter-spacing:-.03em;-webkit-mask-image:none;mask-image:none}
+  .rv.eyebrow,.rv .eyebrow{letter-spacing:.2em}
+  .eyebrow::after,.rv.eyebrow::before,.rv .eyebrow::before{transform:none}
+  .sec::before{clip-path:none}
+  .chap__line,.chap__t,.car[data-sp],.close__art img{transform:none;opacity:1}
+  .story{height:auto}
+  .story__stage{position:relative;height:auto;padding:0}
+  .story__fig,.caps{gap:16px}
+  .story__fig>*,.caps>*{grid-area:auto;opacity:1;transform:none}
+  .seek__tip,.seek__rail,.seek__thumb{transition:none}
 }
 </style>
 </head>
@@ -462,6 +706,7 @@ body.is-menu{overflow:hidden}
     <a href="#about">About<small>inforkus とは</small></a>
     <a href="#update">Update<small>考え方</small></a>
     <a href="#service">Service<small>できること</small></a>
+    <a href="#business">Business<small>事業内容</small></a>
     <a href="#flow">Flow<small>進め方</small></a>
   </nav>
   <a class="hd__cta" href="#contact">相談する</a>
@@ -476,8 +721,9 @@ body.is-menu{overflow:hidden}
       <li style="--i:0"><a href="#about"><b>01</b><span>About<small>inforkus とは</small></span></a></li>
       <li style="--i:1"><a href="#update"><b>02</b><span>Update<small>考え方</small></span></a></li>
       <li style="--i:2"><a href="#service"><b>03</b><span>Service<small>できること</small></span></a></li>
-      <li style="--i:3"><a href="#flow"><b>04</b><span>Flow<small>進め方</small></span></a></li>
-      <li style="--i:4"><a href="#contact"><b>05</b><span>Contact<small>ご相談</small></span></a></li>
+      <li style="--i:3"><a href="#business"><b>04</b><span>Business<small>事業内容</small></span></a></li>
+      <li style="--i:4"><a href="#flow"><b>05</b><span>Flow<small>進め方</small></span></a></li>
+      <li style="--i:5"><a href="#contact"><b>06</b><span>Contact<small>ご相談</small></span></a></li>
     </ol>
     <a class="menu__cta" href="#contact">相談する <span aria-hidden="true">→</span></a>
     <p class="menu__note">焦点を合わせて核を見つけ、そこから広げて形にする。<br>業務の仕組みづくりと、伝わる図と動画の制作を、inforkus がひとつながりで引き受けます。</p>
@@ -488,7 +734,7 @@ body.is-menu{overflow:hidden}
   <!-- ===== 中央：本文 ===== -->
   <main class="lp" id="top">
 
-    <section class="fv grid-w" id="fv" data-sec>
+    <section class="fv grid-w" id="fv">
       <div class="fv__hd">
         <span class="fv__ver">ver.<span id="ver">1.0.0</span></span>
       </div>
@@ -534,7 +780,7 @@ body.is-menu{overflow:hidden}
     <div class="chap" aria-hidden="true" data-sp><span class="chap__line"></span><span class="chap__t"><img src="assets/inforkus-icon-torch-color.svg" alt="" width="24" height="19"><b>01</b>inforkus とは</span><span class="chap__line"></span></div>
 
     <!-- ===== ABOUT ===== -->
-    <section class="sec grid-w" id="about" data-sec data-exp="40">
+    <section class="sec" data-sp id="about" data-exp="40">
       <p class="en" data-sp>About</p>
       <p class="eyebrow rv">WHO WE ARE</p>
       <h2 class="bars rv" style="margin-top:14px">
@@ -543,6 +789,39 @@ body.is-menu{overflow:hidden}
         <span class="b">核を見つける。</span>
       </h2>
       <p class="lead rv">名前には三つの意味を重ねています。収束して終わらず、発散し続けもしない。その往復から、次の理解やつながりが生まれます。</p>
+
+      <!-- v009：スクロールで進む図解（Focus → Fork us → Info → 名前） -->
+      <div class="story" id="aboutStory">
+        <div class="story__stage">
+          <ol class="steps" aria-hidden="true"><li class="step">01 FOCUS</li><li class="step">02 FORK US</li><li class="step">03 INFO</li><li class="step">04 NAME</li></ol>
+          <div class="story__body">
+            <div class="story__fig">
+              <svg class="brand" id="brand" viewBox="0 0 640 410" role="img" aria-label="散らばった点が一点に集まり、そこから枝が広がり、往復の中で核が光り、inforkus の名前になる図">
+                <circle class="b-lens" id="bLens" cx="320" cy="140" r="150"/>
+                <g id="bBr"></g>
+                <g id="bDots"></g>
+                <g id="bPulse"></g>
+                <circle class="b-halo" id="bHalo" cx="320" cy="140" r="14" opacity="0"/>
+                <circle class="b-core" id="bCore" cx="320" cy="140" r="9"/>
+                <g class="b-word" id="bWord" opacity="0">
+                  <path class="b-brk" id="bBrk1" pathLength="1" d="M244 316 V304 H476 V316"/>
+                  <text class="b-lab" x="360" y="292" text-anchor="middle">Fork us</text>
+                  <text x="320" y="360" text-anchor="middle" textLength="320" lengthAdjust="spacingAndGlyphs">inforkus</text>
+                  <path class="b-brk" id="bBrk2" pathLength="1" d="M164 370 V382 H316 V370"/>
+                  <text class="b-lab" x="240" y="406" text-anchor="middle">Info</text>
+                  <text class="b-sub" x="560" y="406" text-anchor="middle">読むと Focus</text>
+                </g>
+              </svg>
+            </div>
+            <div class="caps" aria-live="polite">
+              <div class="cap"><p class="cap__no">STEP 01</p><p class="cap__en">Focus</p><p class="cap__ja">焦点を合わせる</p><p class="cap__p">散らばった情報から、いま見るべき一点を決める。</p></div>
+              <div class="cap"><p class="cap__no">STEP 02</p><p class="cap__en">Fork us</p><p class="cap__ja">分かれて、広がる</p><p class="cap__p">その一点から、別の見方や隣の分野へ道を開く。</p></div>
+              <div class="cap"><p class="cap__no">STEP 03</p><p class="cap__en">Info</p><p class="cap__ja">核となる情報</p><p class="cap__p">集めては広げる。その往復の中で、大事な情報が光る。</p></div>
+              <div class="cap cap--fin"><p class="cap__no">STEP 04</p><p class="cap__en">inforkus</p><p class="cap__ja">三つを、ひとつの名前に</p><p class="cap__p">Info と Fork us が重なり、読むと Focus。集めて、広げて、核を見つけて、伝わる形にします。</p></div>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <ul class="name">
         <li class="stat rv">
@@ -602,37 +881,101 @@ body.is-menu{overflow:hidden}
       </div>
     </section>
 
-    <div class="chap" aria-hidden="true" data-sp><span class="chap__line"></span><span class="chap__t"><img src="assets/inforkus-icon-torch-color.svg" alt="" width="24" height="19"><b>02</b>考え方</span><span class="chap__line"></span></div>
+    <div class="chap chap--c" aria-hidden="true" data-sp><span class="chap__line"></span><span class="chap__t"><img src="assets/inforkus-icon-torch-color.svg" alt="" width="24" height="19"><b>02</b>考え方</span><span class="chap__line"></span></div>
 
     <!-- ===== アップデートのお知らせ（三つの軸） ===== -->
-    <section class="sec grid-d" data-sp id="update" data-sec data-exp="40">
+    <section class="sec grid-d" data-sp id="update" data-exp="40">
       <div class="upd__head rv">
         <img src="assets/item_scroll_HO11.webp" alt="" width="96" height="96">
         <div><p class="eyebrow">UPDATE NOTE</p><p class="upd__ver">ver.<b id="updVer">1.0.0</b></p></div>
       </div>
       <p class="en" data-sp style="margin-top:28px">Update</p>
       <h2 class="h2 rv">考え方が<br><em>アップデート</em>されました。</h2>
-      <p class="lead rv" style="color:#EDEBE7">一度やれば終わる工程ではなく、捉え直しながら往復する三つの軸。スクロールすると順に解放されます。</p>
+      <p class="lead rv" style="color:rgba(255,255,255,.86)">一度やれば終わる工程ではなく、捉え直しながら往復する三つの軸。スクロールすると順に解放されます。</p>
 
-      <div class="tree" id="tree">
-        <span class="tree__fill" id="treeFill"></span>
-        <div class="node" data-skill="Perspective">
-          <span class="node__tag">SKILL 01</span>
-          <p class="node__en">Perspective</p>
-          <p class="node__pair"><span>具体</span> ⇄ <span>抽象</span></p>
-          <p class="node__p">現場の具体を知り、全体の構造を捉える。視座を上げ下げして、多方面から見る。</p>
-        </div>
-        <div class="node" data-skill="Core">
-          <span class="node__tag">SKILL 02</span>
-          <p class="node__en">Core</p>
-          <p class="node__pair"><span>定数</span> ⇄ <span>変数</span></p>
-          <p class="node__p">変えてはいけないものと、変えてよいものを見極める。ぶれない核を決めてから、変化に合わせる。</p>
-        </div>
-        <div class="node" data-skill="Design">
-          <span class="node__tag">SKILL 03</span>
-          <p class="node__en">Design</p>
-          <p class="node__pair"><span>想像</span> ⇄ <span>創造</span></p>
-          <p class="node__p">頭の中で描いたものを、相手に伝わる形として創る。図・動き・言葉を組み合わせて届ける。</p>
+      <!-- v009：スクロールで進む図解（三つの軸） -->
+      <div class="story story--upd" id="updStory">
+        <div class="story__stage">
+          <ol class="steps" aria-hidden="true"><li class="step is-lock">01 Perspective</li><li class="step is-lock">02 Core</li><li class="step is-lock">03 Design</li></ol>
+          <div class="story__body">
+            <div class="story__fig">
+              <svg class="ufig" id="ufA" viewBox="0 0 640 360" role="img" aria-label="視点が具体と抽象のあいだを往復し、高く上がるほど広く見える図">
+                <line class="lm" x1="48" y1="44" x2="48" y2="316" style="stroke-dasharray:none"/>
+                <path class="ln" d="M40 54 L48 42 L56 54"/>
+                <text class="tw" x="48" y="30" text-anchor="middle">抽象</text>
+                <text class="tw" x="48" y="346" text-anchor="middle">具体</text>
+                <g id="uaTop" opacity=".4">
+                  <rect class="lm" x="170" y="40" width="420" height="46" rx="10"/>
+                  <path class="ln" d="M232 63 H368 M392 63 H528"/>
+                  <circle class="ln" cx="220" cy="63" r="11"/><circle class="ln" cx="380" cy="63" r="11"/><circle class="ln" cx="540" cy="63" r="11"/>
+                  <text class="tx" x="600" y="70">全体</text>
+                </g>
+                <g id="uaSq"></g>
+                <polygon class="cone" id="uaCone" points="0,0 0,0 0,0"/>
+                <path class="lm" d="M110 270 C150 270 160 110 200 110 S260 270 300 270 S360 110 400 110 S460 270 500 270 S560 110 580 110"/>
+                <path class="ln" id="uaTrail" pathLength="1" style="stroke-dasharray:1" d="M110 270 C150 270 160 110 200 110 S260 270 300 270 S360 110 400 110 S460 270 500 270 S560 110 580 110"/>
+                <g id="uaEye"><circle class="fl" r="12"/><circle r="5" style="fill:var(--ink)"/><text class="tw" y="-20" text-anchor="middle">視点</text></g>
+              </svg>
+              <svg class="ufig" id="ufB" viewBox="0 0 640 360" role="img" aria-label="変えない核のまわりを、変えてよいものが動く図">
+                <ellipse class="lm" cx="320" cy="170" rx="150" ry="86"/>
+                <ellipse class="lm" cx="320" cy="170" rx="256" ry="138"/>
+                <circle class="lm" cx="320" cy="170" r="56"/>
+                <g id="ubVars">
+                  <g><rect class="ln" x="-11" y="-11" width="22" height="22" rx="3"/></g>
+                  <g><circle class="fl" r="10"/></g>
+                  <g><polygon class="ln" points="0,-13 12,9 -12,9"/></g>
+                  <g><rect class="fl" x="-9" y="-9" width="18" height="18" rx="2"/></g>
+                  <g><circle class="ln" r="12"/></g>
+                  <g><polygon class="fl" points="0,-12 11,8 -11,8"/></g>
+                </g>
+                <circle class="fc" cx="320" cy="170" r="40"/>
+                <text class="tw" x="320" y="177" text-anchor="middle">定数</text>
+                <text class="tx" x="24" y="346">定数＝変えない核</text>
+                <text class="tx" x="616" y="346" text-anchor="end">変数＝変えてよいもの</text>
+              </svg>
+              <svg class="ufig" id="ufC" viewBox="0 0 640 360" role="img" aria-label="頭の中の形が、図・動き・言葉になって外へ出ていく図">
+                <text class="tw" x="165" y="40" text-anchor="middle">想像</text>
+                <circle class="ln" cx="165" cy="170" r="86"/>
+                <path class="ln" d="M95 330 Q165 268 235 330"/>
+                <polygon class="lm" id="ucIdea" points="165,128 176,158 208,160 183,180 192,211 165,193 138,211 147,180 122,160 154,158"/>
+                <text class="tw" x="510" y="28" text-anchor="middle">創造</text>
+                <path class="ln" id="ucL0" pathLength="1" style="stroke-dasharray:1" d="M252 160 C320 160 340 76 418 76"/>
+                <path class="ln" id="ucL1" pathLength="1" style="stroke-dasharray:1" d="M252 172 C320 172 340 180 418 180"/>
+                <path class="ln" id="ucL2" pathLength="1" style="stroke-dasharray:1" d="M252 184 C320 184 340 284 418 284"/>
+                <g id="ucC0"><rect class="ln" x="420" y="40" width="180" height="72" rx="10"/><text class="tw" x="438" y="83">図</text>
+                  <rect class="fl" x="500" y="82" width="12" height="18"/><rect class="fl" x="522" y="68" width="12" height="32"/><rect class="fl" x="544" y="58" width="12" height="42"/><rect class="fl" x="566" y="74" width="12" height="26"/></g>
+                <g id="ucC1"><rect class="ln" x="420" y="144" width="180" height="72" rx="10"/><text class="tw" x="438" y="187">動き</text>
+                  <polygon class="fl" points="498,166 498,194 520,180"/><path class="ln" d="M532 180 q8 -16 16 0 t16 0 t16 0"/></g>
+                <g id="ucC2"><rect class="ln" x="420" y="248" width="180" height="72" rx="10"/><text class="tw" x="438" y="291">言葉</text>
+                  <path class="ln" d="M500 270 H580 M500 284 H570 M500 298 H548"/></g>
+                <g id="ucFly">
+                  <polygon class="fl" points="0,-12 4,-4 12,-4 6,2 8,11 0,6 -8,11 -6,2 -12,-4 -4,-4"/>
+                  <polygon class="fl" points="0,-12 4,-4 12,-4 6,2 8,11 0,6 -8,11 -6,2 -12,-4 -4,-4"/>
+                  <polygon class="fl" points="0,-12 4,-4 12,-4 6,2 8,11 0,6 -8,11 -6,2 -12,-4 -4,-4"/>
+                </g>
+              </svg>
+            </div>
+            <div class="caps" aria-live="polite">
+              <div class="node" data-skill="Perspective">
+                <span class="node__tag">SKILL 01</span>
+                <p class="node__en">Perspective</p>
+                <p class="node__pair"><span>具体</span> ⇄ <span>抽象</span></p>
+                <p class="node__p">現場の具体を知り、全体の構造を捉える。視点を上げ下げして、いろいろな方向から見る。</p>
+              </div>
+              <div class="node" data-skill="Core">
+                <span class="node__tag">SKILL 02</span>
+                <p class="node__en">Core</p>
+                <p class="node__pair"><span>定数</span> ⇄ <span>変数</span></p>
+                <p class="node__p">変えてはいけないものと、変えてよいものを見極める。ぶれない核を決めてから、変化に合わせる。</p>
+              </div>
+              <div class="node" data-skill="Design">
+                <span class="node__tag">SKILL 03</span>
+                <p class="node__en">Design</p>
+                <p class="node__pair"><span>想像</span> ⇄ <span>創造</span></p>
+                <p class="node__p">頭の中で描いたものを、相手に伝わる形として創る。図・動き・言葉を組み合わせて届ける。</p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -647,10 +990,10 @@ body.is-menu{overflow:hidden}
       </div>
     </section>
 
-    <div class="chap" aria-hidden="true" data-sp><span class="chap__line"></span><span class="chap__t"><img src="assets/inforkus-icon-torch-color.svg" alt="" width="24" height="19"><b>03</b>できること</span><span class="chap__line"></span></div>
+    <div class="chap chap--d" aria-hidden="true" data-sp><span class="chap__line"></span><span class="chap__t"><img src="assets/inforkus-icon-torch-color.svg" alt="" width="24" height="19"><b>03</b>できること</span><span class="chap__line"></span></div>
 
     <!-- ===== 対応範囲（バトル） ===== -->
-    <section class="sec grid-d forest" data-sp id="service" data-sec data-exp="40">
+    <section class="sec grid-d forest" data-sp id="service" data-exp="40">
       <p class="en" data-sp>Service</p>
       <p class="eyebrow rv">SERVICE</p>
       <h2 class="h2 rv">困りごとを、<br>コマンドで片づける。</h2>
@@ -672,29 +1015,127 @@ body.is-menu{overflow:hidden}
             <button type="button" role="tab" id="tab-b" aria-controls="pb" aria-selected="false" data-dmg="33" data-say="「伝える」！ 見えなかった関係が 見えた！">伝える<small>図と動画</small></button>
             <button type="button" role="tab" id="tab-c" aria-controls="pc" aria-selected="false" data-dmg="33" data-say="「届ける」！ 必要な人のもとへ 届いた！">届ける<small>発信</small></button>
           </div>
-          <ul class="cmd__panel" id="pa" role="tabpanel" aria-labelledby="tab-a" hidden>
-            <li>業務フローの整理</li><li>Excel 管理表</li><li>VBA・マクロ</li><li>Power Query</li><li>AI で仕組み化</li><li>データ集計・分析</li>
-          </ul>
-          <ul class="cmd__panel" id="pb" role="tabpanel" aria-labelledby="tab-b" hidden>
-            <li>図解の制作</li><li>ショート動画</li><li>解説動画（横長）</li><li>動画編集</li><li>商品・人物の撮影</li><li>画像の修正</li>
-          </ul>
-          <ul class="cmd__panel" id="pc" role="tabpanel" aria-labelledby="tab-c" hidden>
-            <li>LP 制作</li><li>HTML メール</li><li>MA・CRM の運用</li><li>SNS 用の画像</li><li>サムネイル</li><li>ほか ご相談</li>
-          </ul>
+          <div class="cmd__panel" id="pa" role="tabpanel" aria-labelledby="tab-a" hidden>
+            <figure class="cmdfig">
+              <svg class="cf cf-a" viewBox="0 0 320 130" role="img" aria-label="ばらばらの作業が並んで、ひとつの流れになる図">
+                <g class="w" style="--x:-6px;--y:-34px;--r:-24deg;--d:0"><rect class="bx" x="8" y="50" width="44" height="30" rx="5"/><path class="ln" d="M17 60 H43 M17 70 H35"/></g>
+                <g class="w" style="--x:22px;--y:36px;--r:18deg;--d:1"><rect class="bx" x="70" y="50" width="44" height="30" rx="5"/><path class="ln" d="M79 60 H105 M79 70 H97"/></g>
+                <g class="w" style="--x:-14px;--y:-40px;--r:30deg;--d:2"><rect class="bx" x="132" y="50" width="44" height="30" rx="5"/><path class="ln" d="M141 60 H167 M141 70 H159"/></g>
+                <g class="w" style="--x:18px;--y:34px;--r:-16deg;--d:3"><rect class="bx" x="194" y="50" width="44" height="30" rx="5"/><path class="ln" d="M203 60 H229 M203 70 H221"/></g>
+                <g class="w" style="--x:-20px;--y:-30px;--r:22deg;--d:4"><rect class="bc" x="256" y="50" width="56" height="30" rx="5"/><path class="ln" d="M268 65 l6 6 l12 -12"/></g>
+                <path class="ln dr" pathLength="1" style="--d:0" d="M54 65 H66 M62 61 l4 4 l-4 4"/>
+                <path class="ln dr" pathLength="1" style="--d:1" d="M116 65 H128 M124 61 l4 4 l-4 4"/>
+                <path class="ln dr" pathLength="1" style="--d:2" d="M178 65 H190 M186 61 l4 4 l-4 4"/>
+                <path class="ln dr" pathLength="1" style="--d:3" d="M240 65 H252 M248 61 l4 4 l-4 4"/>
+                <text class="tm" x="8" y="112">ばらばらの作業</text><text class="tx" x="312" y="112" text-anchor="end">ひとつの流れ</text>
+              </svg>
+              <figcaption>ばらばらの作業を並べて、ひとつの流れにします。</figcaption>
+            </figure>
+            <ul class="cmd__list"><li>業務フローの整理</li><li>Excel 管理表</li><li>VBA・マクロ</li><li>Power Query</li><li>AI で仕組み化</li><li>データ集計・分析</li></ul>
+          </div>
+          <div class="cmd__panel" id="pb" role="tabpanel" aria-labelledby="tab-b" hidden>
+            <figure class="cmdfig">
+              <svg class="cf cf-b" viewBox="0 0 320 130" role="img" aria-label="絡まった線がほどけて、すっきりした図になる図">
+                <path class="ln tg" pathLength="1" d="M30 70 C60 10 90 120 120 50 S170 110 150 40 S90 30 200 90 S260 20 230 60 S170 110 290 70 C250 30 210 120 180 60 S120 20 100 100 S60 60 40 40"/>
+                <path class="ln dr" pathLength="1" style="--d:0" d="M160 38 V52 M160 52 H90 V68 M160 52 H230 V68 M160 52 V68"/>
+                <g class="pop" style="--d:0"><rect class="bc" x="132" y="12" width="56" height="26" rx="5"/><text class="tx" x="160" y="30" text-anchor="middle">目的</text></g>
+                <g class="pop" style="--d:1"><rect class="bx" x="62" y="70" width="56" height="26" rx="5"/><text class="tx" x="90" y="88" text-anchor="middle">原因</text></g>
+                <g class="pop" style="--d:2"><rect class="bx" x="132" y="70" width="56" height="26" rx="5"/><text class="tx" x="160" y="88" text-anchor="middle">手順</text></g>
+                <g class="pop" style="--d:3"><rect class="bx" x="202" y="70" width="56" height="26" rx="5"/><text class="tx" x="230" y="88" text-anchor="middle">結果</text></g>
+                <text class="tm" x="8" y="122">絡まった関係</text><text class="tx" x="312" y="122" text-anchor="end">一目でわかる図</text>
+              </svg>
+              <figcaption>絡まった関係をほどいて、一目でわかる図と動画にします。</figcaption>
+            </figure>
+            <ul class="cmd__list"><li>図解の制作</li><li>ショート動画</li><li>解説動画（横長）</li><li>動画編集</li><li>商品・人物の撮影</li><li>画像の修正</li></ul>
+          </div>
+          <div class="cmd__panel" id="pc" role="tabpanel" aria-labelledby="tab-c" hidden>
+            <figure class="cmdfig">
+              <svg class="cf cf-c" viewBox="0 0 320 130" role="img" aria-label="ひとつの形が、LP・メール・SNS へ届く図">
+                <path class="mu" d="M78 65 C130 65 140 22 196 22 M78 65 H196 M78 65 C130 65 140 108 196 108"/>
+                <g class="src"><rect class="bc" x="22" y="41" width="56" height="48" rx="8"/><path class="ln" d="M36 56 H64 M36 66 H58 M36 76 H50"/></g>
+                <rect class="pk fl" x="192" y="18" width="8" height="8" rx="2" style="--x:-150px;--y:43px;--d:0"/>
+                <rect class="pk fl" x="192" y="61" width="8" height="8" rx="2" style="--x:-150px;--y:0px;--d:1"/>
+                <rect class="pk fl" x="192" y="104" width="8" height="8" rx="2" style="--x:-150px;--y:-43px;--d:2"/>
+                <g class="pop" style="--d:0"><rect class="bx" x="204" y="8" width="40" height="28" rx="4"/><path class="ln" d="M204 15 H244"/><text class="tx" x="252" y="27">LP</text></g>
+                <g class="pop" style="--d:1"><rect class="bx" x="204" y="52" width="40" height="26" rx="3"/><path class="ln" d="M204 53 L224 67 L244 53"/><text class="tx" x="252" y="70">メール</text></g>
+                <g class="pop" style="--d:2"><rect class="bx" x="212" y="92" width="24" height="34" rx="5"/><circle class="fl" cx="224" cy="104" r="4"/><text class="tx" x="252" y="114">SNS</text></g>
+              </svg>
+              <figcaption>ひとつの形から、LP・メール・SNS へ届けます。</figcaption>
+            </figure>
+            <ul class="cmd__list"><li>LP 制作</li><li>HTML メール</li><li>MA・CRM の運用</li><li>SNS 用の画像</li><li>サムネイル</li><li>ほか ご相談</li></ul>
+          </div>
         </div>
       </div>
       <p class="svc__etc">ほか ご相談ください</p>
     </section>
 
-    <!-- ===== 進め方（クエスト） ===== -->
-    <div class="chap" aria-hidden="true" data-sp><span class="chap__line"></span><span class="chap__t"><img src="assets/inforkus-icon-torch-color.svg" alt="" width="24" height="19"><b>04</b>進め方</span><span class="chap__line"></span></div>
+    <div class="chap chap--g" aria-hidden="true" data-sp><span class="chap__line"></span><span class="chap__t"><img src="assets/inforkus-icon-torch-color.svg" alt="" width="24" height="19"><b>04</b>事業内容</span><span class="chap__line"></span></div>
 
-    <section class="sec grid-w" id="flow" data-sec data-exp="40">
+    <!-- ===== v009：事業内容（ジョブを選ぶ画面） ===== -->
+    <section class="sec" data-sp id="business" data-exp="40">
+      <p class="en" data-sp>Business</p>
+      <p class="eyebrow rv">BUSINESS</p>
+      <h2 class="h2 rv">四つの仕事から、<br>合うものを選ぶ。</h2>
+      <p class="lead rv">カードを選ぶと、その仕事でできることが下に出ます。</p>
+
+      <div class="jobs" id="jobs">
+        <button class="job rv" type="button" data-job="0" aria-pressed="true">
+          <span class="job__no">JOB 01</span><span class="job__sel">選択中</span>
+          <span class="job__ic"><svg class="ji" viewBox="0 0 60 60" aria-hidden="true"><rect class="s" x="6" y="14" width="40" height="30" rx="7"/><polygon class="f play" points="21,22 21,36 33,29"/><circle class="f up" cx="52" cy="20" r="3" style="--d:0"/><circle class="f up" cx="48" cy="34" r="2.5" style="--d:1"/><circle class="f up" cx="54" cy="44" r="2" style="--d:2"/><path class="s" d="M14 52 H38"/></svg></span>
+          <span class="job__name">YouTube・SNS運用</span>
+          <span class="job__p">YouTube のショートと通常の動画を、企画から投稿まで。2026年10月から続けています。</span>
+          <span class="job__tags"><i>#YouTube</i><i>#ショート</i><i>#X</i><i>#Instagram</i></span>
+        </button>
+        <button class="job rv" type="button" data-job="1" aria-pressed="false">
+          <span class="job__no">JOB 02</span><span class="job__sel">選択中</span>
+          <span class="job__ic"><svg class="ji" viewBox="0 0 60 60" aria-hidden="true"><rect class="s" x="4" y="10" width="52" height="40" rx="5"/><path class="s" d="M4 19 H56"/><circle class="f" cx="10" cy="14.5" r="1.6"/><circle class="f" cx="15" cy="14.5" r="1.6"/><path class="s" d="M10 44 L22 31 L30 38 L38 28 L50 44"/><circle class="s spin" cx="44" cy="27" r="4" style="stroke-dasharray:4 3"/><rect class="w flash" x="5" y="20" width="50" height="29"/></svg></span>
+          <span class="job__name">写真撮影・WEB制作</span>
+          <span class="job__p">商品・広報の撮影と画像の修正。LP や HTML メールも作ります。</span>
+          <span class="job__tags"><i>#撮影</i><i>#LP</i><i>#WEB</i><i>#HTMLメール</i></span>
+        </button>
+        <button class="job rv" type="button" data-job="2" aria-pressed="false">
+          <span class="job__no">JOB 03</span><span class="job__sel">選択中</span>
+          <span class="job__ic"><svg class="ji" viewBox="0 0 60 60" aria-hidden="true"><rect class="s" x="12" y="12" width="36" height="36" rx="6"/><path class="s" d="M20 6 V12 M30 6 V12 M40 6 V12 M20 48 V54 M30 48 V54 M40 48 V54 M6 22 H12 M6 38 H12 M48 22 H54 M48 38 H54"/><path class="s" d="M22 36 L30 24 L38 36 Z" style="stroke-width:2"/><circle class="f blink" cx="30" cy="24" r="3.5" style="--d:0"/><circle class="f blink" cx="22" cy="36" r="3.5" style="--d:1"/><circle class="f blink" cx="38" cy="36" r="3.5" style="--d:2"/></svg></span>
+          <span class="job__name">AI開発プログラム</span>
+          <span class="job__p">AI を使った、業務用の小さなツールを作ります。いまは自分の仕事で使うものが中心です。</span>
+          <span class="job__tags"><i>#AI</i><i>#自動化</i><i>#ツール開発</i></span>
+        </button>
+        <button class="job rv" type="button" data-job="3" aria-pressed="false">
+          <span class="job__no">JOB 04</span><span class="job__sel">選択中</span>
+          <span class="job__ic"><svg class="ji" viewBox="0 0 60 60" aria-hidden="true"><rect class="s" x="6" y="8" width="48" height="44" rx="5"/><path class="s" d="M6 20 H54 M6 32 H54 M22 8 V52 M38 8 V52" style="stroke-width:2"/><rect class="f cell" x="25" y="23" width="10" height="6" style="--d:0"/><rect class="f cell" x="41" y="23" width="10" height="6" style="--d:1"/><rect class="f cell" x="25" y="35" width="10" height="6" style="--d:2"/><rect class="f cell" x="41" y="35" width="10" height="6" style="--d:3"/><rect class="f cell" x="25" y="44" width="26" height="5" style="--d:5"/></svg></span>
+          <span class="job__name">業務効率化Excel</span>
+          <span class="job__p">Excel・VBA・Power Query で、管理表と作業の自動化。</span>
+          <span class="job__tags"><i>#Excel</i><i>#VBA</i><i>#PowerQuery</i></span>
+        </button>
+      </div>
+
+      <div class="win jobinfo rv" aria-live="polite">
+        <span class="win__ttl" id="jobNo">JOB 01</span>
+        <p class="jobinfo__t" id="jobT">YouTube・SNS運用 で できること</p>
+        <ul id="jobList"></ul>
+      </div>
+
+      <!-- 動画と SNS（中身は下のスクリプトの VIDEOS / SNS、latest.json と instagram.json。空なら隠す） -->
+      <div class="media" id="media" hidden>
+        <p class="media__lead rv">日々の小さな発見を、次の誰かの灯りに。</p>
+        <div class="vids" id="vids" hidden><p class="media__ttl">YouTube<small>作った動画</small></p><div class="vids__list" id="vidsList"></div></div>
+        <div class="insta" id="insta" hidden><p class="media__ttl">Instagram<small>最近の投稿</small></p><div class="insta__list" id="instaList"></div></div>
+        <div class="sns" id="sns" hidden><p class="media__ttl">SNS<small>プロフィールへ</small></p><div class="sns__list" id="snsList"></div></div>
+      </div>
+    </section>
+
+    <!-- ===== 進め方（クエスト） ===== -->
+    <div class="chap chap--k" aria-hidden="true" data-sp><span class="chap__line"></span><span class="chap__t"><img src="assets/inforkus-icon-torch-color.svg" alt="" width="24" height="19"><b>05</b>進め方</span><span class="chap__line"></span></div>
+
+    <section class="sec" data-sp id="flow" data-exp="40">
       <p class="en" data-sp>Flow</p>
       <p class="eyebrow rv">QUEST LOG</p>
       <h2 class="h2 rv">ご相談から、<br>形になるまでの冒険。</h2>
       <p class="lead rv">焦点を合わせる（収束）と、広げて考える（発散）を往復しながら進みます。</p>
-      <ol class="quest" data-sp="track">
+      <div class="road" id="road">
+      <svg class="road__svg" id="roadSvg" aria-hidden="true"></svg>
+      <img class="road__torch" id="torch" src="assets/inforkus-icon-torch-color.svg" alt="" width="36" height="29">
+      <ol class="quest">
         <li class="q"><span class="q__no">01</span><div class="q__card"><span class="q__stamp">CLEAR</span><p class="q__tag">CONTACT</p><h3 class="q__ttl">お問い合わせ</h3><p class="q__txt">困っていることや作りたいものを、一言でお送りください。まとまっていなくても大丈夫です。</p></div></li>
         <li class="q"><span class="q__no">02</span><div class="q__card"><span class="q__stamp">CLEAR</span><p class="q__tag">FOCUS</p><h3 class="q__ttl">ヒアリング</h3><p class="q__txt">オンラインで現状と目的を伺い、いちばん効くところに焦点を合わせます。</p></div></li>
         <li class="q"><span class="q__no">03</span><div class="q__card"><span class="q__stamp">CLEAR</span><p class="q__tag">FORK</p><h3 class="q__ttl">広げて考える</h3><p class="q__txt">仕組みで解くか、図や動画で伝えるか。いくつかの道筋を並べて比べます。</p></div></li>
@@ -703,12 +1144,13 @@ body.is-menu{overflow:hidden}
         <li class="q q--goal" data-goal><span class="q__no">06</span><div class="q__card"><span class="q__stamp">LEVEL UP</span><p class="q__tag">LOOP</p><h3 class="q__ttl">振り返って、次のレベルへ</h3><p class="q__txt">使って分かったことを持ち寄り、次の改善へつなげます。</p>
           <div class="goal__art" aria-hidden="true"><img src="assets/akari_good_AK09_v2.webp" alt="" width="560" height="840" loading="lazy"><img src="assets/aoi_jump_E05.webp" alt="" width="560" height="850" loading="lazy"></div></div></li>
       </ol>
+      </div>
     </section>
 
-    <div class="chap" aria-hidden="true" data-sp><span class="chap__line"></span><span class="chap__t"><img src="assets/inforkus-icon-torch-color.svg" alt="" width="24" height="19"><b>05</b>ご相談</span><span class="chap__line"></span></div>
+    <div class="chap" aria-hidden="true" data-sp><span class="chap__line"></span><span class="chap__t"><img src="assets/inforkus-icon-torch-color.svg" alt="" width="24" height="19"><b>06</b>ご相談</span><span class="chap__line"></span></div>
 
     <!-- ===== 締め ===== -->
-    <section class="sec grid-d close" data-sp id="contact" data-sec data-exp="40">
+    <section class="sec grid-d close" data-sp id="contact" data-exp="40">
       <p class="en" data-sp>Contact</p>
       <p class="eyebrow rv">CONTACT</p>
       <h2 class="bars rv" style="margin-top:14px">
@@ -743,12 +1185,22 @@ body.is-menu{overflow:hidden}
 
 </div>
 
-<!-- スマホ下部の HUD -->
-<div class="win hud-m" aria-label="ステータスと音">
-  <span class="lv">Lv.<span class="js-lv">1</span></span>
-  <div class="bar"><i class="js-exp"></i></div>
-  <button class="snd js-snd" type="button" aria-pressed="false" aria-label="BGM のオンオフ"><span class="eq"><i></i><i></i><i></i><i></i></span><span class="snd__txt">OFF</span></button>
-  <button class="snd se js-se" type="button" data-lv="1" aria-label="効果音の大きさ（押すたびに 小・中・大・なし）"><span class="lvl"><i></i><i></i><i></i></span><span class="se__txt">小</span></button>
+<!-- 下部の HUD（v009：BGM の小さな再生プレーヤー。線を押す・ドラッグすると、その位置から再生） -->
+<div class="win hud-m" aria-label="BGM とステータス">
+  <div class="hud-m__row">
+    <button class="pp js-snd" type="button" aria-pressed="false" aria-label="BGM を再生"><svg class="i-play" viewBox="0 0 14 14" aria-hidden="true"><polygon points="3,1 13,7 3,13"/></svg><svg class="i-pause" viewBox="0 0 14 14" aria-hidden="true"><rect x="2" y="1" width="3.6" height="12" rx="1"/><rect x="8.4" y="1" width="3.6" height="12" rx="1"/></svg></button>
+    <div class="np">
+      <p class="np__t"><span class="eq" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span>これもレベルアップ</span></p>
+      <div class="seek" id="seek" role="slider" tabindex="0" aria-label="BGM の再生位置" aria-valuemin="0" aria-valuemax="0" aria-valuenow="0" aria-valuetext="0:00">
+        <div class="seek__rail"><i class="seek__fill"></i></div>
+        <span class="seek__thumb"></span>
+        <span class="seek__tip" id="seekTip">0:00</span>
+      </div>
+      <p class="np__time"><span id="tCur">0:00</span><span id="tDur">-:--</span></p>
+    </div>
+    <div class="hlv"><span class="lv">Lv.<span class="js-lv">1</span></span><div class="bar"><i class="js-exp"></i></div></div>
+    <button class="snd se js-se" type="button" data-lv="1" aria-label="効果音の大きさ（押すたびに 小・中・大・なし）"><span class="lvl"><i></i><i></i><i></i></span><span class="se__txt">小</span></button>
+  </div>
 </div>
 
 <script>
@@ -757,6 +1209,10 @@ body.is-menu{overflow:hidden}
   const $$ = (s, r = document) => [...r.querySelectorAll(s)];
   const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const wait = (ms) => new Promise((r) => setTimeout(r, RM ? 0 : ms));
+  /* v009：読み込み直しても、いつも先頭から始める */
+  if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+  const toTop = () => scrollTo({ top: 0, behavior: 'instant' });
+  toTop(); addEventListener('load', toTop);
 
   /* ===== 音：BGM「これもレベルアップ」と効果音（inforkus_se_rpg_v1） ===== */
   /* v004：http で開いたときは Web Audio で鳴らす（iPhone は audio 要素の音量を変えられず、操作のあとの音も止められるため） */
@@ -795,7 +1251,8 @@ body.is-menu{overflow:hidden}
       $$('.js-snd').forEach((b) => {
         b.setAttribute('aria-pressed', on);
         const t = b.querySelector('.snd__txt');
-        t.textContent = b.closest('.hud-m') ? (on ? 'ON' : 'OFF') : (on ? 'BGM ON' : 'BGM OFF');
+        if (t) t.textContent = on ? 'BGM ON' : 'BGM OFF';
+        else b.setAttribute('aria-label', on ? 'BGM を一時停止' : 'BGM を再生');
       });
     },
     setSe(lv) {
@@ -833,7 +1290,7 @@ body.is-menu{overflow:hidden}
   let parts = [], raf = 0;
   const fit = () => { cv.width = innerWidth * devicePixelRatio; cv.height = innerHeight * devicePixelRatio; };
   fit(); addEventListener('resize', fit);
-  const COLORS = ['#1C6047', '#C15332', '#A7A196', '#2B2825'];
+  const COLORS = ['#1C6047', '#A7A196', '#2B2825', '#1C6047'];
   function burst(x, y, n = 60, spread = 9) {
     if (RM) return;
     for (let i = 0; i < n; i++) {
@@ -940,6 +1397,7 @@ body.is-menu{overflow:hidden}
       $('#flash').classList.add('is-on');
       $('#start').classList.add('is-out');
       document.body.classList.remove('is-locked');
+      toTop();
       setTimeout(heroSequence, RM ? 0 : 500);
     });
   });
@@ -956,7 +1414,7 @@ body.is-menu{overflow:hidden}
     if (e.isIntersecting && !document.body.classList.contains('is-locked')) {
       gain(+e.target.dataset.exp); ioExp.unobserve(e.target);
     }
-  }), { threshold: 0.25 });
+  }), { rootMargin: '0px 0px -35% 0px' }); // v009：図解で背の高い節もあるので、割合ではなく「画面の上 65% に入ったら」
   $$('[data-exp]').forEach((el) => ioExp.observe(el));
 
   /* ===== パーティのカルーセル ===== */
@@ -981,15 +1439,26 @@ body.is-menu{overflow:hidden}
   new IntersectionObserver((es) => { cVis = es[0].isIntersecting; if (cVis) { car.classList.add('is-ready'); onCar(); } }, { threshold: 0.5 }).observe(car);
   setInterval(() => { if (cVis && !RM && !document.hidden && Date.now() - cHold > 6000) go(1); }, 4500);
 
-  /* ===== 見出しを1字ずつ ===== */
-  $$('.bars .b').forEach((b) => {
+  /* ===== 見出しを1字ずつ（v009：節の見出しにも。改行と強調はそのまま残す） ===== */
+  const splitCh = (root) => {
     let i = 0;
-    b.innerHTML = [...b.textContent].map((c) => `<span class="ch" style="--i:${i++}">${c}</span>`).join('');
-  });
+    const walk = (node) => [...node.childNodes].forEach((c) => {
+      if (c.nodeType === 3) {
+        const f = document.createDocumentFragment();
+        [...c.textContent].forEach((ch) => {
+          if (/\s/.test(ch)) { f.append(ch); return; }
+          const s = document.createElement('span'); s.className = 'ch'; s.style.setProperty('--i', i++); s.textContent = ch; f.append(s);
+        });
+        c.replaceWith(f);
+      } else if (c.nodeType === 1 && c.tagName !== 'BR') walk(c);
+    });
+    walk(root);
+  };
+  $$('.bars .b').forEach(splitCh);
+  $$('.h2').forEach((h) => { h.setAttribute('aria-label', h.textContent.replace(/\s+/g, '')); splitCh(h); [...h.children].forEach((c) => c.setAttribute('aria-hidden', 'true')); });
 
-  /* ===== ヘッダー：下へ進むと隠れ、上へ戻ると出る。いまの節に下線 ===== */
+  /* ===== ヘッダー：いまの節に下線（隠す・出すはスクロールの処理の中） ===== */
   const hd = $('#hd'); let lastY = 0;
-  addEventListener('scroll', () => { const y = scrollY; if (Math.abs(y - lastY) > 6) { hd.classList.toggle('is-hide', y > 240 && y > lastY); lastY = y; } }, { passive: true });
   const navs = $$('.hd__nav a');
   const ioNav = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) navs.forEach((a) => a.classList.toggle('is-cur', a.hash === '#' + e.target.id)); }), { rootMargin: '-45% 0px -50% 0px' });
   $$('main section[id]').forEach((el) => ioNav.observe(el));
@@ -1010,47 +1479,334 @@ body.is-menu{overflow:hidden}
   addEventListener('keydown', (e) => { if (e.key === 'Escape' && isMenu()) { setMenu(false); menuBtn.focus(); } });
 
   /* ===== スクロールに合わせた演出：画面に入る量を --p（0→1）で渡す ===== */
-  const sps = $$('[data-sp]'), hdBar = $('#hdBar'), fvTxt = $$('.fv__h, .fv__p');
+  /* v009：ヘッダーの出し入れ・絵の奥行き・図解・道のり・再生バーも、この1つの rAF でまとめて動かす */
+  const sps = $$('[data-sp]'), hdBar = $('#hdBar'), fvTxt = $$('.fv__h, .fv__p'), fvImg = $('.fv__stage img');
   const clamp = (v) => Math.max(0, Math.min(1, v));
+  const seg = (v, a, b) => clamp((v - a) / (b - a));
+  const ease = (t) => (t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2);
+  const NS = 'http://www.w3.org/2000/svg';
+  const mk = (tag, attrs, parent) => { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; };
+  const locked = () => document.body.classList.contains('is-locked');
+  // 舞台（sticky）の高さぶんを引いた残りが、図解の進む距離
+  const storyV = (el, vh) => { const r = el.getBoundingClientRect(), sh = el.firstElementChild.offsetHeight; return { v: clamp(-r.top / (r.height - sh || 1)), near: r.bottom > -vh && r.top < vh * 2, top: r.top }; };
+  const setCur = (list, k) => list.forEach((e, i) => e.classList.toggle('is-cur', i === k));
+
+  /* --- About：Focus → Fork us → Info → 名前 --- */
+  const aSt = $('#aboutStory'), aCaps = $$('.cap', aSt), aSteps = $$('.step', aSt);
+  const CX = 320, CY = 140;
+  const bDots = [...Array(18)].map((_, i) => {
+    const a = i * 2.399, rr = 120 + ((i * 47) % 150);
+    return { el: mk('circle', { class: 'b-dot', r: 4 + (i % 3) }, $('#bDots')), x: CX + Math.cos(a) * rr * 1.02, y: CY + Math.sin(a) * rr * 0.5 };
+  });
+  const bBr = [];
+  [-90, -30, 30, 90, 150, 210].forEach((deg, i) => {
+    const a = deg * Math.PI / 180, x1 = CX + Math.cos(a) * 14, y1 = CY + Math.sin(a) * 14, x2 = CX + Math.cos(a) * 86, y2 = CY + Math.sin(a) * 86;
+    bBr.push({ el: mk('path', { class: 'b-br', d: `M${x1} ${y1} L${x2} ${y2}`, pathLength: 1, 'stroke-dasharray': 1 }, $('#bBr')), k: i, lv: 1, a });
+    [-25, 25].forEach((d, j) => {
+      const b = a + d * Math.PI / 180, x3 = x2 + Math.cos(b) * 48, y3 = y2 + Math.sin(b) * 48;
+      bBr.push({ el: mk('path', { class: 'b-br b-br2', d: `M${x2} ${y2} L${x3} ${y3}`, pathLength: 1, 'stroke-dasharray': 1 }, $('#bBr')), k: i * 2 + j, lv: 2,
+        tip: mk('circle', { class: 'b-tip', cx: x3, cy: y3, r: 5 }, $('#bBr')) });
+    });
+  });
+  const bPulse = bBr.filter((b) => b.lv === 1).map((b) => ({ el: mk('circle', { class: 'b-pulse', r: 4, opacity: 0 }, $('#bPulse')), a: b.a }));
+  const bLens = $('#bLens'), bHalo = $('#bHalo'), bCore = $('#bCore'), bWord = $('#bWord'), bBrk = [$('#bBrk1'), $('#bBrk2')];
+  bBrk.forEach((p) => p.setAttribute('stroke-dasharray', 1));
+  const drawAbout = (v) => {
+    bDots.forEach((d, i) => {
+      const f = ease(seg(v, 0.02 + i * 0.004, 0.19 + i * 0.004));
+      d.el.setAttribute('cx', (d.x + (CX - d.x) * f).toFixed(1)); d.el.setAttribute('cy', (d.y + (CY - d.y) * f).toFixed(1));
+      d.el.setAttribute('opacity', (1 - seg(f, 0.85, 1)).toFixed(2));
+    });
+    const f = ease(seg(v, 0.02, 0.22));
+    bLens.setAttribute('r', (150 - 128 * f).toFixed(1)); bLens.setAttribute('opacity', (1 - seg(v, 0.22, 0.3)).toFixed(2));
+    const g = seg(v, 0.27, 0.47);
+    bBr.forEach((b) => {
+      const t = b.lv === 1 ? ease(seg(g, b.k * 0.05, 0.45 + b.k * 0.05)) : ease(seg(g, 0.5 + b.k * 0.025, 0.72 + b.k * 0.025));
+      b.el.setAttribute('stroke-dashoffset', (1 - t).toFixed(3));
+      if (b.tip) b.tip.setAttribute('opacity', seg(t, 0.85, 1).toFixed(2));
+    });
+    const h = seg(v, 0.52, 0.72);
+    bPulse.forEach((p, i) => {
+      const x = (h * 2 + i / 6) % 1, tri = 1 - Math.abs(2 * x - 1), rr = 14 + tri * 72;
+      p.el.setAttribute('cx', (CX + Math.cos(p.a) * rr).toFixed(1)); p.el.setAttribute('cy', (CY + Math.sin(p.a) * rr).toFixed(1));
+      p.el.setAttribute('opacity', h > 0 && h < 1 ? Math.sin(Math.PI * h).toFixed(2) : 0);
+    });
+    bHalo.setAttribute('r', (14 + 26 * h).toFixed(1)); bHalo.setAttribute('opacity', (0.22 * h).toFixed(2));
+    bCore.setAttribute('r', (9 + 5 * f + 4 * h).toFixed(1));
+    const n = ease(seg(v, 0.77, 0.92));
+    bWord.setAttribute('opacity', n.toFixed(2)); bWord.setAttribute('transform', `translate(0 ${((1 - n) * 16).toFixed(1)})`);
+    bBrk.forEach((p, i) => p.setAttribute('stroke-dashoffset', (1 - ease(seg(v, 0.84 + i * 0.05, 0.94 + i * 0.05))).toFixed(3)));
+    const k = Math.min(3, Math.floor(v * 4));
+    setCur(aCaps, k); aSteps.forEach((s, i) => s.classList.toggle('is-on', i <= k));
+  };
+
+  /* --- Update：三つの軸（段ごとにスキルを解放） --- */
+  const uSt = $('#updStory'), uFigs = $$('.ufig', uSt), uNodes = $$('.node', uSt), uSteps = $$('.step', uSt);
+  const uaTrail = $('#uaTrail'), uaL = uaTrail.getTotalLength(), uaEye = $('#uaEye'), uaCone = $('#uaCone'), uaTop = $('#uaTop');
+  const uaSq = [...Array(12)].map((_, i) => ({ x: 110 + i * 42, el: mk('rect', { class: 'sq', x: 101 + i * 42, y: 298, width: 18, height: 18, rx: 3 }, $('#uaSq')) }));
+  const drawA = (t) => {
+    const p = uaTrail.getPointAtLength(t * uaL), k = clamp((270 - p.y) / 160), w = 22 + 120 * k;
+    uaTrail.style.strokeDashoffset = 1 - t;
+    uaEye.setAttribute('transform', `translate(${p.x.toFixed(1)} ${p.y.toFixed(1)})`);
+    uaCone.setAttribute('points', `${p.x},${p.y} ${p.x - w},298 ${p.x + w},298`);
+    uaSq.forEach((s) => s.el.classList.toggle('is-lit', Math.abs(s.x - p.x) < w));
+    uaTop.setAttribute('opacity', (0.3 + 0.7 * k).toFixed(2));
+  };
+  const ubVars = [...$('#ubVars').children];
+  const drawB = (t) => ubVars.forEach((g, i) => {
+    const inner = i % 2 === 0, rx = inner ? 150 : 256, ry = inner ? 86 : 138;
+    const a = (i / 6) * Math.PI * 2 + t * Math.PI * 2 * (inner ? 1 : -0.6);
+    g.setAttribute('transform', `translate(${(320 + Math.cos(a) * rx).toFixed(1)} ${(170 + Math.sin(a) * ry).toFixed(1)}) rotate(${(t * 360 * (inner ? 1 : -1)).toFixed(0)})`);
+  });
+  const ucL = [0, 1, 2].map((i) => $('#ucL' + i)), ucC = [0, 1, 2].map((i) => $('#ucC' + i)), ucFly = [...$('#ucFly').children], ucIdea = $('#ucIdea');
+  const drawC = (t) => {
+    ucIdea.setAttribute('opacity', (0.5 + 0.5 * seg(t, 0, 0.15)).toFixed(2));
+    ucL.forEach((l, i) => {
+      const s = ease(seg(t, 0.1 + i * 0.14, 0.45 + i * 0.14)), L = l.getTotalLength(), p = l.getPointAtLength(s * L);
+      l.style.strokeDashoffset = 1 - s;
+      ucFly[i].setAttribute('transform', `translate(${p.x.toFixed(1)} ${p.y.toFixed(1)}) scale(${(0.6 + 0.4 * Math.sin(Math.PI * s)).toFixed(2)})`);
+      ucFly[i].setAttribute('opacity', s > 0 && s < 1 ? 1 : 0);
+      ucC[i].setAttribute('opacity', (0.25 + 0.75 * seg(t, 0.4 + i * 0.14, 0.52 + i * 0.14)).toFixed(2));
+    });
+  };
+  const uDone = [false, false, false];
+  const unlockU = (k) => {
+    if (uDone[k] || locked()) return;
+    uDone[k] = true;
+    const n = uNodes[k], name = n.dataset.skill;
+    n.classList.add('is-on'); uSteps[k].classList.add('is-on');
+    learn(name); Sound.play('skill', 0.45);
+    toast(`スキル『${name}』を おぼえた！`);
+    const r = (RM ? n : uFigs[k]).getBoundingClientRect(); burst(r.left + r.width / 2, r.top + r.height / 2, 24, 5);
+    $('#updVer').textContent = `1.${uDone.filter(Boolean).length}.0`;
+    gain(30);
+  };
+  const drawUpd = (v, top) => {
+    const tt = [0, 1, 2].map((i) => clamp(v * 3 - i));
+    drawA(tt[0]); drawB(tt[1]); drawC(tt[2]);
+    const k = Math.min(2, Math.floor(v * 3));
+    setCur(uFigs, k); setCur(uNodes, k);
+    if (top <= 0) for (let i = 0; i < 3; i++) if (v >= i / 3 + 0.04) unlockU(i);
+  };
+  if (RM) {
+    drawAbout(1); drawA(1); drawB(0.15); drawC(1);
+    const ioU = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting && !locked()) { unlockU(uNodes.indexOf(e.target)); ioU.unobserve(e.target); } }), { threshold: 0.7 });
+    uNodes.forEach((n) => ioU.observe(n));
+  }
+
+  /* --- 進め方：たいまつが道を進み、通った手順が CLEAR になる --- */
+  const road = $('#road'), roadSvg = $('#roadSvg'), torch = $('#torch'), qs = $$('.q', road), qNos = qs.map((q) => $('.q__no', q));
+  const rBase = mk('path', { class: 'road__base' }, roadSvg), rLit = mk('path', { class: 'road__lit' }, roadSvg);
+  // 01→02 収束、02→03 発散、03→04 収束、04→05 まっすぐ、05→06 往復（ループ）
+  const SHAPE = ['in', 'out', 'in', '', 'loop'];
+  const rSide = SHAPE.map((s) => (s ? [mk('path', { class: 'road__side' }, roadSvg), mk('path', { class: 'road__side' }, roadSvg)] : []));
+  const qClear = qs.map(() => false);
+  const clearQ = (i) => {
+    if (qClear[i] || locked()) return;
+    qClear[i] = true; const q = qs[i]; q.classList.add('is-clear');
+    if (q.hasAttribute('data-goal')) {
+      Sound.play('clear', 0.5);
+      const r = q.getBoundingClientRect(); burst(r.left + r.width / 2, r.top + 40, 60, 8);
+      learn('クエストの進め方'); gain(60);
+    } else { Sound.play('coin', 0.2); gain(15); }
+  };
+  const drawRoad = (vh) => {
+    const rr = road.getBoundingClientRect();
+    if (rr.bottom < -vh || rr.top > vh * 2) return;
+    const pts = qNos.map((n) => { const r = n.getBoundingClientRect(); return { x: r.left + r.width / 2 - rr.left, y: r.top + r.height / 2 - rr.top }; });
+    const x = pts[0].x, y0 = pts[0].y, yN = pts[pts.length - 1].y, w = 17;
+    roadSvg.setAttribute('height', rr.height); roadSvg.style.height = rr.height + 'px';
+    rBase.setAttribute('d', `M${x} ${y0} V${yN}`);
+    SHAPE.forEach((s, i) => {
+      if (!s) return;
+      const a = pts[i].y + 30, b = pts[i + 1].y - 30, m = (a + b) / 2;
+      rSide[i].forEach((p, j) => {
+        const sx = j ? x + w : x - w;
+        const d = s === 'in' ? `M${sx} ${a} C${sx} ${m} ${x} ${m} ${x} ${b}`
+          : s === 'out' ? `M${x} ${a} C${x} ${m} ${sx} ${m} ${sx} ${b}`
+          : j ? `M${x} ${a} C${x + 2.4 * w} ${a} ${x + 2.4 * w} ${b} ${x} ${b}` : `M${x} ${b} C${x - 2.4 * w} ${b} ${x - 2.4 * w} ${a} ${x} ${a}`;
+        p.setAttribute('d', d);
+      });
+    });
+    // たいまつは番号の箱の下をくぐる。始まりは 01 の上、終わりは 06 の下
+    const reach = vh * 0.62 - rr.top, ty = RM ? yN + 50 : Math.max(y0 - 36, Math.min(yN + 50, reach));
+    rLit.setAttribute('d', `M${x} ${y0} V${Math.max(y0, Math.min(yN, ty))}`);
+    torch.style.transform = `translate(${x}px, ${ty}px)`;
+    pts.forEach((p, i) => { if (reach >= p.y) clearQ(i); });
+    SHAPE.forEach((s, i) => rSide[i].forEach((p) => p.classList.toggle('is-on', reach >= pts[i + 1].y)));
+  };
+
+  /* --- 下の再生プレーヤー：BGM の再生位置（Sound.bgm は audio 要素。Web Audio のときも同じ要素を通すので currentTime で動かせる） --- */
+  const seek = $('#seek'), seekTip = $('#seekTip'), tCur = $('#tCur'), tDur = $('#tDur'), bgm = Sound.bgm;
+  const fmt = (t) => { t = Math.max(0, Math.floor(t || 0)); return `${Math.floor(t / 60)}:${String(t % 60).padStart(2, '0')}`; };
+  const dur = () => (isFinite(bgm.duration) && bgm.duration > 0 ? bgm.duration : 0);
+  let drag = false, dragF = 0;
+  const showPos = (f) => {
+    const d = dur(), t = f * d;
+    seek.style.setProperty('--sk', f.toFixed(4));
+    tCur.textContent = fmt(t); seekTip.textContent = fmt(t);
+    seek.setAttribute('aria-valuenow', Math.floor(t)); seek.setAttribute('aria-valuetext', `${fmt(t)} / ${fmt(d)}`);
+  };
+  const onMeta = () => { const d = dur(); tDur.textContent = d ? fmt(d) : '-:--'; seek.setAttribute('aria-valuemax', Math.floor(d)); seek.setAttribute('aria-disabled', !d); if (!drag) showPos(d ? bgm.currentTime / d : 0); };
+  ['loadedmetadata', 'durationchange'].forEach((e) => bgm.addEventListener(e, onMeta));
+  bgm.addEventListener('timeupdate', () => { if (!drag && dur()) showPos(bgm.currentTime / dur()); });
+  onMeta();
+  // 押した位置・離した位置から再生（止まっていれば再生を始める）
+  const playAt = (f) => {
+    const d = dur(); if (!d) return;
+    bgm.currentTime = Math.min(d - 0.05, f * d); showPos(f);
+    if (!Sound.on) Sound.set(true);
+  };
+  const fAt = (x) => { const r = seek.getBoundingClientRect(); return clamp((x - r.left) / r.width); };
+  seek.addEventListener('pointerdown', (e) => {
+    if (!dur()) return;
+    drag = true; seek.setPointerCapture(e.pointerId); seek.classList.add('is-drag');
+    dragF = fAt(e.clientX); showPos(dragF); e.preventDefault();
+  });
+  seek.addEventListener('pointermove', (e) => { if (drag) { dragF = fAt(e.clientX); showPos(dragF); } });
+  const endDrag = (ok) => { if (!drag) return; drag = false; seek.classList.remove('is-drag'); if (ok) playAt(dragF); };
+  seek.addEventListener('pointerup', () => endDrag(true));
+  seek.addEventListener('pointercancel', () => endDrag(false));
+  seek.addEventListener('lostpointercapture', () => endDrag(true));
+  seek.addEventListener('keydown', (e) => {
+    const d = dur(); if (!d) return;
+    const map = { ArrowRight: 5, ArrowUp: 5, ArrowLeft: -5, ArrowDown: -5, PageUp: 30, PageDown: -30 };
+    let t = null;
+    if (e.key in map) t = bgm.currentTime + map[e.key]; else if (e.key === 'Home') t = 0; else if (e.key === 'End') t = d - 1;
+    if (t !== null) { e.preventDefault(); playAt(clamp(t / d)); }
+  });
+
   let spRaf = 0;
   const spTick = () => {
     spRaf = 0;
-    const vh = innerHeight, de = document.documentElement;
-    hdBar.style.transform = `scaleX(${clamp(scrollY / (de.scrollHeight - vh || 1))})`;
+    const vh = innerHeight, y = scrollY;
+    hdBar.style.transform = `scaleX(${clamp(y / (document.documentElement.scrollHeight - vh || 1))})`;
+    if (Math.abs(y - lastY) > 6) { hd.classList.toggle('is-hide', y > 240 && y > lastY); lastY = y; }
     sps.forEach((el) => {
       const r = el.getBoundingClientRect();
       if (r.bottom < -200 || r.top > vh + 200) return;
-      const v = RM ? 1 : el.dataset.sp === 'track' ? clamp((vh * 0.7 - r.top) / r.height) : clamp((vh - r.top) / (vh * 0.55));
+      const v = RM ? 1 : el.dataset.sp === 'track' ? clamp((vh * 0.7 - r.top) / r.height) : clamp((vh - r.top) / (Math.min(vh, 1100) * 0.55));
       el.style.setProperty('--p', v.toFixed(3));
     });
-    if (!RM) fvTxt.forEach((el, i) => el.style.setProperty('--up', Math.min(scrollY, 700) * (0.08 + i * 0.05)));
+    if (!RM) {
+      fvTxt.forEach((el, i) => el.style.setProperty('--up', Math.min(y, 700) * (0.08 + i * 0.05)));
+      if (fvImg && y < 900) fvImg.style.transform = `translateY(${y * 0.12}px)`;
+      const a = storyV(aSt, vh); if (a.near) drawAbout(a.v);
+      const u = storyV(uSt, vh); if (u.near) drawUpd(u.v, u.top); else if (u.v >= 1) [0, 1, 2].forEach(unlockU);
+    }
+    drawRoad(vh);
   };
+  const reflow = spTick;
   addEventListener('scroll', () => { if (!spRaf) spRaf = requestAnimationFrame(spTick); }, { passive: true });
-  addEventListener('resize', spTick); spTick();
+  addEventListener('resize', reflow);
+  new ResizeObserver(() => { if (!spRaf) spRaf = requestAnimationFrame(reflow); }).observe(document.body);
+  if (document.fonts) document.fonts.ready.then(reflow);
+  reflow();
 
-  /* ===== 最初の絵：少しだけ奥行き ===== */
-  const fvImg = $('.fv__stage img');
-  if (!RM && fvImg) addEventListener('scroll', () => { if (scrollY < 900) fvImg.style.transform = `translateY(${scrollY * 0.12}px)`; }, { passive: true });
+  /* ===== 事業内容：ジョブを選ぶ ===== */
+  const JOBS = [
+    { t: 'YouTube・SNS運用', items: ['企画・台本', '撮影・編集', 'ショート動画', 'サムネイル', '投稿と運用', 'X・Instagram の運用'] },
+    { t: '写真撮影・WEB制作', items: ['商品の撮影', '広報の写真', '画像の修正', 'LP 制作', 'HTML メール', 'WEB ページ'] },
+    { t: 'AI開発プログラム', items: ['AI を使った小さなツール', '手作業の自動化', '文書・データの整理', '使い方の手引き'] },
+    { t: '業務効率化Excel', items: ['管理表の作成', '集計の自動化', 'VBA・マクロ', 'Power Query', '入力ミスの防止', '手順書づくり'] },
+  ];
+  const jobBtns = $$('.job'), jobList = $('#jobList');
+  const pickJob = (k) => {
+    jobBtns.forEach((b, i) => b.setAttribute('aria-pressed', i === k));
+    $('#jobNo').textContent = 'JOB 0' + (k + 1);
+    $('#jobT').textContent = `${JOBS[k].t} で できること`;
+    jobList.replaceChildren(...JOBS[k].items.map((s, i) => { const li = document.createElement('li'); li.textContent = s; li.style.setProperty('--i', i); return li; }));
+  };
+  jobBtns.forEach((b, i) => {
+    b.addEventListener('mouseenter', cursor);
+    b.addEventListener('click', () => { Sound.play('confirm', 0.5); pickJob(i); });
+  });
+  pickJob(0);
 
-  /* ===== スキルツリー（三つの軸） ===== */
-  const nodes = $$('.node'), fill = $('#treeFill'), tree = $('#tree');
-  let unlocked = 0;
-  const ioNode = new IntersectionObserver((es) => es.forEach((e) => {
-    if (!e.isIntersecting || e.target.classList.contains('is-on')) return;
-    e.target.classList.add('is-on'); ioNode.unobserve(e.target); unlocked++;
-    const r = e.target.getBoundingClientRect(), tr = tree.getBoundingClientRect();
-    fill.style.height = (r.top - tr.top + 24) + 'px';
-    const name = e.target.dataset.skill;
-    learn(name); Sound.play('skill', 0.45);
-    toast(`スキル『${name}』を おぼえた！`);
-    burst(r.left + 20, r.top + 20, 24, 5);
-    $('#updVer').textContent = `1.${unlocked}.0`;
-    gain(30);
-  }), { threshold: 0.7 });
-  nodes.forEach((n) => ioNode.observe(n));
+  /* ===== 動画と SNS =====
+     ・動画：VIDEOS に { id: 'YouTube の動画ID', title: '題名' } を並べる。
+       同じ場所に latest.json（[{ "id", "title", "published" }]）を置けば、そちらを優先して新しい順に出す。
+     ・SNS：URL を入れたものだけカードになる。空のものは出ない。
+     ・Instagram：同じ場所の instagram.json（[{ "permalink", "image", "caption", "timestamp" }]、image は "ig/ID.jpg" のような相対パス）を読み、最大6枚を並べる。読めなければ出さない。
+     ・どれも空なら、この欄ごと出さない。 */
+  const VIDEOS = [
+    { id: 'PL4149DOAkM', title: '私が買ったのは1つだけ｜10月のApple新製品まとめ' },
+    { id: '2K7YfBg6qOM', title: 'これもレベルアップ｜オリジナルMV' },
+    { id: 'B9wpUv3WD8E', title: 'Granolaの無料音声入力を使ってみた' },
+    { id: 'e07rAhZFwnc', title: '紅葉の黄色と赤は何が違う？' },
+    { id: '2jrNIdAyBDo', title: '構図は、撮った後でも選べる｜名画に隠れた構図5つ' },
+    { id: '4Y3hoD90r2c', title: 'AIの「できます」は、なぜこんなに面白い？' },
+  ];
+  const SNS = { youtube: 'https://www.youtube.com/@inforkus_fla', x: 'https://x.com/inforkus', instagram: 'https://www.instagram.com/inforkus/' };
+  const SNS_META = {
+    youtube: { n: 'YouTube', svg: '<rect x="3" y="7" width="26" height="18" rx="6"/><polygon points="13,11 13,21 21,16"/>' },
+    x: { n: 'X', svg: '<path d="M7 6 L25 26 M25 6 L7 26"/>' },
+    instagram: { n: 'Instagram', svg: '<rect x="5" y="5" width="22" height="22" rx="7"/><circle cx="16" cy="16" r="5"/><circle cx="22.5" cy="9.5" r="1"/>' },
+  };
+  const okId = (s) => typeof s === 'string' && /^[\w-]{6,20}$/.test(s);
+  const media = $('#media'), vidsBox = $('#vids'), snsBox = $('#sns');
+  const instaBox = $('#insta');
+  const showMedia = () => { media.hidden = vidsBox.hidden && snsBox.hidden && instaBox.hidden; };
+  const renderVids = (list) => {
+    list = (Array.isArray(list) ? list : []).filter((v) => v && okId(v.id));
+    if (list.some((v) => v.published)) list.sort((a, b) => String(b.published || '').localeCompare(String(a.published || '')));
+    list = list.slice(0, 6);
+    vidsBox.hidden = !list.length; showMedia();
+    if (!list.length) return false;
+    $('#vidsList').replaceChildren(...list.map((v) => {
+      const title = String(v.title || 'YouTube の動画');
+      const card = document.createElement('div'); card.className = 'vid';
+      const btn = document.createElement('button'); btn.type = 'button'; btn.className = 'vid__btn'; btn.setAttribute('aria-label', `動画を再生：${title}`);
+      const img = document.createElement('img'); img.src = `https://i.ytimg.com/vi/${v.id}/hqdefault.jpg`; img.alt = ''; img.loading = 'lazy'; img.width = 480; img.height = 360;
+      const pl = document.createElement('span'); pl.className = 'vid__play'; pl.setAttribute('aria-hidden', 'true');
+      btn.append(img, pl);
+      const t = document.createElement('p'); t.className = 'vid__t'; t.textContent = title;
+      btn.addEventListener('click', () => {
+        Sound.play('confirm', 0.5);
+        const f = document.createElement('iframe');
+        f.src = `https://www.youtube-nocookie.com/embed/${v.id}?autoplay=1`; f.title = title;
+        f.allow = 'autoplay; encrypted-media; picture-in-picture'; f.allowFullscreen = true;
+        btn.replaceWith(f);
+      });
+      card.append(btn, t); return card;
+    }));
+    return true;
+  };
+  if (location.protocol === 'file:') renderVids(VIDEOS);
+  else fetch('latest.json', { cache: 'no-store' }).then((r) => (r.ok ? r.json() : Promise.reject()))
+    .then((d) => { if (!renderVids(d)) renderVids(VIDEOS); }).catch(() => renderVids(VIDEOS));
+  const snsCards = Object.entries(SNS).filter(([k, u]) => SNS_META[k] && /^https:\/\//.test(u)).map(([k, u]) => {
+    const a = document.createElement('a'); a.className = 'snsc'; a.href = u; a.target = '_blank'; a.rel = 'noopener';
+    a.innerHTML = `<svg viewBox="0 0 32 32" aria-hidden="true">${SNS_META[k].svg}</svg><span><b></b><small>プロフィールを見る</small></span>`;
+    $('b', a).textContent = SNS_META[k].n;
+    a.addEventListener('mouseenter', cursor);
+    return a;
+  });
+  $('#snsList').replaceChildren(...snsCards); snsBox.hidden = !snsCards.length; showMedia();
+  const okImg = (p) => typeof p === 'string' && /^[\w-]+(\/[\w-]+)*\.(jpe?g|png|webp)$/i.test(p);
+  const okLink = (u) => typeof u === 'string' && /^https:\/\/www\.instagram\.com\/[\w\/-]+\/?$/.test(u);
+  if (location.protocol !== 'file:') fetch('instagram.json', { cache: 'no-store' }).then((r) => (r.ok ? r.json() : Promise.reject()))
+    .then((d) => {
+      const list = (Array.isArray(d) ? d : []).filter((p) => p && okImg(p.image) && okLink(p.permalink))
+        .sort((a, b) => String(b.timestamp || '').localeCompare(String(a.timestamp || ''))).slice(0, 6);
+      if (!list.length) return;
+      $('#instaList').replaceChildren(...list.map((p) => {
+        const a = document.createElement('a'); a.className = 'igc'; a.href = p.permalink; a.target = '_blank'; a.rel = 'noopener';
+        const cap = String(p.caption || '').replace(/\s+/g, ' ').slice(0, 60);
+        a.setAttribute('aria-label', cap ? `Instagram の投稿：${cap}` : 'Instagram の投稿');
+        const img = document.createElement('img'); img.src = p.image; img.alt = ''; img.loading = 'lazy'; img.width = 320; img.height = 320;
+        a.append(img); a.addEventListener('mouseenter', cursor); return a;
+      }));
+      instaBox.hidden = false; showMedia();
+    }).catch(() => {});
 
   /* ===== バトル（対応範囲のタブ） ===== */
   let hp = 100, won = false;
+  /* v009：HP の段階でスライムの絵を替える（差分の画像が読めたときだけ。無ければ今の絵のまま） */
+  const SLIME = [[66, 'enemy_slime_HO09_dmg1.webp'], [33, 'enemy_slime_HO09_dmg2.webp'], [0, 'enemy_slime_HO09_down.webp']];
+  const slimeOk = {};
+  SLIME.forEach(([k, f]) => { const im = new Image(); im.onload = () => { slimeOk[k] = im.src; }; im.src = 'assets/' + f; });
+  const slimeFor = (h) => slimeOk[h === 0 ? 0 : h <= 33 ? 33 : h <= 66 ? 66 : -1];
   const tabs = $$('.cmd__tabs [role="tab"]');
   const log = $('#log');
   tabs.forEach((t) => {
@@ -1065,6 +1821,7 @@ body.is-menu{overflow:hidden}
       const n = document.createElement('span'); n.className = 'dmg'; n.textContent = dmg;
       $('.field').appendChild(n); setTimeout(() => n.remove(), 1000);
       $('#hpN').textContent = hp; $('#hpBar').style.width = hp + '%';
+      const img = slimeFor(hp); if (img) en.src = img;
       log.textContent = t.dataset.say;
       if (hp === 0) {
         won = true; await wait(900);
@@ -1084,18 +1841,6 @@ body.is-menu{overflow:hidden}
       }
     });
   });
-
-  /* ===== クエスト ===== */
-  const ioQ = new IntersectionObserver((es) => es.forEach((e) => {
-    if (!e.isIntersecting) return;
-    const q = e.target; q.classList.add('is-clear'); ioQ.unobserve(q);
-    if (q.hasAttribute('data-goal')) {
-      Sound.play('clear', 0.5);
-      const r = q.getBoundingClientRect(); burst(r.left + r.width / 2, r.top + 40, 60, 8);
-      learn('クエストの進め方'); gain(60);
-    } else { Sound.play('coin', 0.2); gain(15); }
-  }), { threshold: 0.8 });
-  $$('.q').forEach((q) => ioQ.observe(q));
 
   /* ===== はい／いいえ ===== */
   let saidYes = false;
