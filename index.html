@@ -45,6 +45,52 @@ html{scroll-padding-top:72px}
 .hd__cta{margin-left:auto;padding:10px 18px;border-radius:999px;background:var(--accent);color:var(--paper);font:700 13px/1 var(--sans);transition:transform .2s var(--pop)}
 .hd__cta:hover{transform:translateY(-2px)}
 @media (min-width:900px){.hd__nav{display:flex}.hd__cta{margin-left:8px}}
+.hd__bar{position:absolute;left:0;right:0;bottom:-1px;height:2px;background:linear-gradient(90deg,var(--core),var(--accent));transform:scaleX(0);transform-origin:left}
+.hd__menu{position:relative;flex:none;width:44px;height:44px;margin-left:-8px;border-radius:50%;border:2px solid var(--ink);background:var(--paper);transition:background .25s}
+.hd__menu:hover{background:var(--core-10)}
+.hd__menu span{position:absolute;left:11px;right:11px;height:2px;background:var(--ink);border-radius:2px;transition:transform .4s var(--ease),opacity .2s}
+.hd__menu span:nth-child(1){top:13px}.hd__menu span:nth-child(2){top:19px}.hd__menu span:nth-child(3){top:25px}
+.is-menu .hd__menu span:nth-child(1){transform:translateY(6px) rotate(45deg)}
+.is-menu .hd__menu span:nth-child(2){opacity:0;transform:scaleX(0)}
+.is-menu .hd__menu span:nth-child(3){transform:translateY(-6px) rotate(-45deg)}
+body.is-menu{overflow:hidden}
+.is-menu .hd{transform:none}
+
+/* ---------- メニュー（右から出る墨の面） ---------- */
+.menu{position:fixed;z-index:58;inset:0;visibility:hidden;pointer-events:none;transition:visibility 0s .5s}
+.is-menu .menu{visibility:visible;pointer-events:auto;transition:none}
+.menu__bg{position:absolute;inset:0;background:rgba(43,40,37,.45);opacity:0;transition:opacity .4s}
+.is-menu .menu__bg{opacity:1}
+.menu__panel{position:absolute;top:0;right:0;bottom:0;width:min(440px,100%);padding:92px 28px 32px;overflow:auto;background:var(--ink);color:var(--paper);transform:translateX(100%);transition:transform .5s var(--ease)}
+.is-menu .menu__panel{transform:none}
+.menu__ttl{font:700 11px/1 var(--mono);letter-spacing:.2em;color:var(--muted)}
+.menu__list{list-style:none;margin:14px 0 0;padding:0;border-top:1px solid rgba(255,255,255,.14)}
+.menu__list li{opacity:0;transform:translateX(28px);transition:opacity .4s var(--ease),transform .5s var(--ease)}
+.is-menu .menu__list li{opacity:1;transform:none;transition-delay:calc(.12s + var(--i) * 55ms)}
+.menu__list a{position:relative;display:flex;align-items:center;gap:18px;padding:18px 8px 18px 30px;border-bottom:1px solid rgba(255,255,255,.14)}
+.menu__list a::before{content:"▶";position:absolute;left:4px;top:50%;font:400 13px/1 var(--dot);color:var(--accent);opacity:0;transform:translate(-6px,-50%);transition:opacity .25s,transform .25s var(--ease)}
+.menu__list a:hover::before,.menu__list a:focus-visible::before{opacity:1;transform:translate(0,-50%)}
+.menu__list b{font:700 12px/1 var(--mono);letter-spacing:.1em;color:var(--muted)}
+.menu__list span{font:800 30px/1 var(--en);letter-spacing:-.02em;transition:transform .3s var(--ease)}
+.menu__list a:hover span{transform:translateX(4px)}
+.menu__list small{display:block;margin-top:7px;font:500 12px/1 var(--sans);letter-spacing:0;color:var(--muted)}
+.menu__cta{display:flex;justify-content:center;gap:10px;margin-top:28px;padding:17px;border-radius:999px;background:var(--accent);color:var(--paper);font:700 15px/1 var(--sans);opacity:0;transition:opacity .4s .45s,transform .2s var(--pop)}
+.is-menu .menu__cta{opacity:1}
+.menu__cta:hover{transform:translateY(-2px)}
+.menu__note{margin-top:24px;font-size:12px;line-height:1.8;color:var(--muted)}
+
+/* ---------- スクロールに合わせた演出（--p は 0→1） ---------- */
+.en{opacity:calc(.08 + var(--p,1) * .92);transform:translateY(calc((1 - var(--p,1)) * 40px));letter-spacing:calc(-.03em + (1 - var(--p,1)) * .14em)}
+.en::after{transform:scaleX(var(--p,1));transform-origin:left}
+#contact .en::after{transform-origin:center}
+.grid-d[data-sp]{clip-path:inset(0 calc((1 - var(--p,1)) * 6%) round calc((1 - var(--p,1)) * 48px))}
+.chap__line{transform:scaleX(var(--p,1));transform-origin:right}
+.chap__line:last-child{transform-origin:left}
+.chap__t{opacity:var(--p,1);transform:scale(calc(.85 + var(--p,1) * .15))}
+.car[data-sp]{transform:translateX(calc((1 - var(--p,1)) * 90px))}
+.quest::after{content:"";position:absolute;left:23px;top:20px;width:2px;height:calc((100% - 40px) * var(--p,1));background:var(--core)}
+.close__art img{transform:translateY(calc((1 - var(--p,1)) * 70px)) scale(calc(.88 + var(--p,1) * .12))}
+.fv__h.is-in,.fv__p.is-in{transform:translateY(calc(var(--up,0) * -1px));opacity:calc(1 - var(--up,0) / 700)}
 
 /* ---------- 全幅の1段組（本文は中央 720px） ---------- */
 .shell{min-height:100vh}
@@ -419,7 +465,24 @@ html{scroll-padding-top:72px}
     <a href="#flow">Flow<small>進め方</small></a>
   </nav>
   <a class="hd__cta" href="#contact">相談する</a>
+  <button class="hd__menu" id="menuBtn" type="button" aria-expanded="false" aria-controls="menu" aria-label="メニューを開く"><span></span><span></span><span></span></button>
+  <span class="hd__bar" id="hdBar" aria-hidden="true"></span>
 </header>
+<div class="menu" id="menu" aria-hidden="true">
+  <div class="menu__bg" data-close></div>
+  <nav class="menu__panel" aria-label="メニュー">
+    <p class="menu__ttl">MENU</p>
+    <ol class="menu__list">
+      <li style="--i:0"><a href="#about"><b>01</b><span>About<small>inforkus とは</small></span></a></li>
+      <li style="--i:1"><a href="#update"><b>02</b><span>Update<small>考え方</small></span></a></li>
+      <li style="--i:2"><a href="#service"><b>03</b><span>Service<small>できること</small></span></a></li>
+      <li style="--i:3"><a href="#flow"><b>04</b><span>Flow<small>進め方</small></span></a></li>
+      <li style="--i:4"><a href="#contact"><b>05</b><span>Contact<small>ご相談</small></span></a></li>
+    </ol>
+    <a class="menu__cta" href="#contact">相談する <span aria-hidden="true">→</span></a>
+    <p class="menu__note">焦点を合わせて核を見つけ、そこから広げて形にする。<br>業務の仕組みづくりと、伝わる図と動画の制作を、inforkus がひとつながりで引き受けます。</p>
+  </nav>
+</div>
 <div class="shell">
 
   <!-- ===== 中央：本文 ===== -->
@@ -468,11 +531,11 @@ html{scroll-padding-top:72px}
       </div>
     </section>
 
-    <div class="chap" aria-hidden="true"><span class="chap__line"></span><span class="chap__t"><img src="assets/inforkus-icon-torch-color.svg" alt="" width="24" height="19"><b>01</b>inforkus とは</span><span class="chap__line"></span></div>
+    <div class="chap" aria-hidden="true" data-sp><span class="chap__line"></span><span class="chap__t"><img src="assets/inforkus-icon-torch-color.svg" alt="" width="24" height="19"><b>01</b>inforkus とは</span><span class="chap__line"></span></div>
 
     <!-- ===== ABOUT ===== -->
     <section class="sec grid-w" id="about" data-sec data-exp="40">
-      <p class="en rv">About</p>
+      <p class="en" data-sp>About</p>
       <p class="eyebrow rv">WHO WE ARE</p>
       <h2 class="bars rv" style="margin-top:14px">
         <span class="b b--plain">inforkus とは？</span>
@@ -501,7 +564,7 @@ html{scroll-padding-top:72px}
           <p class="party__ttl">Party<small>案内する4人のなかま</small></p>
           <div class="car__nav"><button class="car__btn" type="button" data-dir="-1" aria-label="前のなかま">←</button><button class="car__btn" type="button" data-dir="1" aria-label="次のなかま">→</button></div>
         </div>
-        <div class="car" id="car" tabindex="0" aria-roledescription="カルーセル" aria-label="パーティのなかま">
+        <div class="car" id="car" data-sp tabindex="0" aria-roledescription="カルーセル" aria-label="パーティのなかま">
           <article class="mem" aria-roledescription="スライド">
           <div class="mem__art"><span class="mem__job">#案内役</span><span class="mem__lv">Lv.12</span><img src="assets/aoi_HT01.webp" alt="手のひらで示して案内する aoi" width="640" height="960"></div>
           <div class="mem__body">
@@ -539,15 +602,15 @@ html{scroll-padding-top:72px}
       </div>
     </section>
 
-    <div class="chap" aria-hidden="true"><span class="chap__line"></span><span class="chap__t"><img src="assets/inforkus-icon-torch-color.svg" alt="" width="24" height="19"><b>02</b>考え方</span><span class="chap__line"></span></div>
+    <div class="chap" aria-hidden="true" data-sp><span class="chap__line"></span><span class="chap__t"><img src="assets/inforkus-icon-torch-color.svg" alt="" width="24" height="19"><b>02</b>考え方</span><span class="chap__line"></span></div>
 
     <!-- ===== アップデートのお知らせ（三つの軸） ===== -->
-    <section class="sec grid-d" id="update" data-sec data-exp="40">
+    <section class="sec grid-d" data-sp id="update" data-sec data-exp="40">
       <div class="upd__head rv">
         <img src="assets/item_scroll_HO11.webp" alt="" width="96" height="96">
         <div><p class="eyebrow">UPDATE NOTE</p><p class="upd__ver">ver.<b id="updVer">1.0.0</b></p></div>
       </div>
-      <p class="en rv" style="margin-top:28px">Update</p>
+      <p class="en" data-sp style="margin-top:28px">Update</p>
       <h2 class="h2 rv">考え方が<br><em>アップデート</em>されました。</h2>
       <p class="lead rv" style="color:#EDEBE7">一度やれば終わる工程ではなく、捉え直しながら往復する三つの軸。スクロールすると順に解放されます。</p>
 
@@ -584,11 +647,11 @@ html{scroll-padding-top:72px}
       </div>
     </section>
 
-    <div class="chap" aria-hidden="true"><span class="chap__line"></span><span class="chap__t"><img src="assets/inforkus-icon-torch-color.svg" alt="" width="24" height="19"><b>03</b>できること</span><span class="chap__line"></span></div>
+    <div class="chap" aria-hidden="true" data-sp><span class="chap__line"></span><span class="chap__t"><img src="assets/inforkus-icon-torch-color.svg" alt="" width="24" height="19"><b>03</b>できること</span><span class="chap__line"></span></div>
 
     <!-- ===== 対応範囲（バトル） ===== -->
-    <section class="sec grid-d forest" id="service" data-sec data-exp="40">
-      <p class="en rv">Service</p>
+    <section class="sec grid-d forest" data-sp id="service" data-sec data-exp="40">
+      <p class="en" data-sp>Service</p>
       <p class="eyebrow rv">SERVICE</p>
       <h2 class="h2 rv">困りごとを、<br>コマンドで片づける。</h2>
       <p class="lead rv">コマンドを選ぶと、その領域でできることが出てきます。三つ全部を選ぶと…？</p>
@@ -624,14 +687,14 @@ html{scroll-padding-top:72px}
     </section>
 
     <!-- ===== 進め方（クエスト） ===== -->
-    <div class="chap" aria-hidden="true"><span class="chap__line"></span><span class="chap__t"><img src="assets/inforkus-icon-torch-color.svg" alt="" width="24" height="19"><b>04</b>進め方</span><span class="chap__line"></span></div>
+    <div class="chap" aria-hidden="true" data-sp><span class="chap__line"></span><span class="chap__t"><img src="assets/inforkus-icon-torch-color.svg" alt="" width="24" height="19"><b>04</b>進め方</span><span class="chap__line"></span></div>
 
     <section class="sec grid-w" id="flow" data-sec data-exp="40">
-      <p class="en rv">Flow</p>
+      <p class="en" data-sp>Flow</p>
       <p class="eyebrow rv">QUEST LOG</p>
       <h2 class="h2 rv">ご相談から、<br>形になるまでの冒険。</h2>
       <p class="lead rv">焦点を合わせる（収束）と、広げて考える（発散）を往復しながら進みます。</p>
-      <ol class="quest">
+      <ol class="quest" data-sp="track">
         <li class="q"><span class="q__no">01</span><div class="q__card"><span class="q__stamp">CLEAR</span><p class="q__tag">CONTACT</p><h3 class="q__ttl">お問い合わせ</h3><p class="q__txt">困っていることや作りたいものを、一言でお送りください。まとまっていなくても大丈夫です。</p></div></li>
         <li class="q"><span class="q__no">02</span><div class="q__card"><span class="q__stamp">CLEAR</span><p class="q__tag">FOCUS</p><h3 class="q__ttl">ヒアリング</h3><p class="q__txt">オンラインで現状と目的を伺い、いちばん効くところに焦点を合わせます。</p></div></li>
         <li class="q"><span class="q__no">03</span><div class="q__card"><span class="q__stamp">CLEAR</span><p class="q__tag">FORK</p><h3 class="q__ttl">広げて考える</h3><p class="q__txt">仕組みで解くか、図や動画で伝えるか。いくつかの道筋を並べて比べます。</p></div></li>
@@ -642,11 +705,11 @@ html{scroll-padding-top:72px}
       </ol>
     </section>
 
-    <div class="chap" aria-hidden="true"><span class="chap__line"></span><span class="chap__t"><img src="assets/inforkus-icon-torch-color.svg" alt="" width="24" height="19"><b>05</b>ご相談</span><span class="chap__line"></span></div>
+    <div class="chap" aria-hidden="true" data-sp><span class="chap__line"></span><span class="chap__t"><img src="assets/inforkus-icon-torch-color.svg" alt="" width="24" height="19"><b>05</b>ご相談</span><span class="chap__line"></span></div>
 
     <!-- ===== 締め ===== -->
-    <section class="sec grid-d close" id="contact" data-sec data-exp="40">
-      <p class="en rv">Contact</p>
+    <section class="sec grid-d close" data-sp id="contact" data-sec data-exp="40">
+      <p class="en" data-sp>Contact</p>
       <p class="eyebrow rv">CONTACT</p>
       <h2 class="bars rv" style="margin-top:14px">
         <span class="b b--plain">小さな光を、</span>
@@ -672,7 +735,7 @@ html{scroll-padding-top:72px}
       </div>
       <a class="btn btn--accent close__cta" id="closeCta" href="#">相談フォームへ <span aria-hidden="true">→</span></a>
 
-      <div class="close__art rv"><img src="assets/close_G06_v2.webp" alt="笑顔で手を振るあかり・トーチ・aoi" width="1200" height="795" loading="lazy"></div>
+      <div class="close__art rv" data-sp><img src="assets/close_G06_v2.webp" alt="笑顔で手を振るあかり・トーチ・aoi" width="1200" height="795" loading="lazy"></div>
     </section>
 
     <footer class="ft"><img src="assets/inforkus-logo-full-white.svg" alt="inforkus" width="110" height="28"><span>© 2026 inforkus</span></footer>
@@ -930,6 +993,40 @@ html{scroll-padding-top:72px}
   const navs = $$('.hd__nav a');
   const ioNav = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) navs.forEach((a) => a.classList.toggle('is-cur', a.hash === '#' + e.target.id)); }), { rootMargin: '-45% 0px -50% 0px' });
   $$('main section[id]').forEach((el) => ioNav.observe(el));
+
+  /* ===== メニュー ===== */
+  const menuBtn = $('#menuBtn'), menu = $('#menu');
+  const isMenu = () => document.body.classList.contains('is-menu');
+  const setMenu = (on) => {
+    document.body.classList.toggle('is-menu', on);
+    menuBtn.setAttribute('aria-expanded', on); menuBtn.setAttribute('aria-label', on ? 'メニューを閉じる' : 'メニューを開く');
+    menu.setAttribute('aria-hidden', !on);
+    Sound.play('cursor', 0.4);
+    if (on) setTimeout(() => $('.menu__list a', menu).focus({ preventScroll: true }), 300);
+  };
+  menuBtn.addEventListener('click', () => setMenu(!isMenu()));
+  $$('[data-close], a', menu).forEach((el) => el.addEventListener('click', () => setMenu(false)));
+  $$('.menu__list a', menu).forEach((a) => a.addEventListener('mouseenter', cursor));
+  addEventListener('keydown', (e) => { if (e.key === 'Escape' && isMenu()) { setMenu(false); menuBtn.focus(); } });
+
+  /* ===== スクロールに合わせた演出：画面に入る量を --p（0→1）で渡す ===== */
+  const sps = $$('[data-sp]'), hdBar = $('#hdBar'), fvTxt = $$('.fv__h, .fv__p');
+  const clamp = (v) => Math.max(0, Math.min(1, v));
+  let spRaf = 0;
+  const spTick = () => {
+    spRaf = 0;
+    const vh = innerHeight, de = document.documentElement;
+    hdBar.style.transform = `scaleX(${clamp(scrollY / (de.scrollHeight - vh || 1))})`;
+    sps.forEach((el) => {
+      const r = el.getBoundingClientRect();
+      if (r.bottom < -200 || r.top > vh + 200) return;
+      const v = RM ? 1 : el.dataset.sp === 'track' ? clamp((vh * 0.7 - r.top) / r.height) : clamp((vh - r.top) / (vh * 0.55));
+      el.style.setProperty('--p', v.toFixed(3));
+    });
+    if (!RM) fvTxt.forEach((el, i) => el.style.setProperty('--up', Math.min(scrollY, 700) * (0.08 + i * 0.05)));
+  };
+  addEventListener('scroll', () => { if (!spRaf) spRaf = requestAnimationFrame(spTick); }, { passive: true });
+  addEventListener('resize', spTick); spTick();
 
   /* ===== 最初の絵：少しだけ奥行き ===== */
   const fvImg = $('.fv__stage img');
