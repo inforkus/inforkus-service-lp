@@ -14,9 +14,12 @@ def get(path, **q):
         except Exception: msg = ''
         print(f'HTTP {e.code}: {msg}'); return None
 
+app, sec = os.environ.get('META_APP_ID'), os.environ.get('META_APP_SECRET')
+
 if sys.argv[1:] == ['check']:
-    d = get('debug_token', input_token=tok, access_token=tok)
-    d = (d or {}).get('data')
+    if not (app and sec):
+        print('::warning::META_APP_ID と META_APP_SECRET が未登録のため、期限を確かめられません'); sys.exit(0)
+    d = (get('debug_token', input_token=tok, access_token=f'{app}|{sec}') or {}).get('data')
     if not d:
         print('::warning::トークンの期限を確かめられませんでした'); sys.exit(0)
     exp = d.get('expires_at') or 0
@@ -33,7 +36,6 @@ if sys.argv[1:] == ['check']:
         print(f'::warning::Instagram のトークンが残り {left} 日です')
 
 elif sys.argv[1:] == ['refresh']:
-    app, sec = os.environ.get('META_APP_ID'), os.environ.get('META_APP_SECRET')
     if not (app and sec and os.environ.get('GH_TOKEN')):
         print('META_APP_ID・META_APP_SECRET・GH_PAT のどれかが未登録のため省略'); sys.exit(0)
     r = get('oauth/access_token', grant_type='fb_exchange_token', client_id=app, client_secret=sec,
