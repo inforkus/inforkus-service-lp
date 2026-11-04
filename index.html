@@ -7,7 +7,7 @@
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Inter:ital,wght@1,800;1,900&family=JetBrains+Mono:wght@500;700&family=Noto+Sans+JP:wght@400;500;700;900&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Inter:ital,wght@1,800;1,900&family=JetBrains+Mono:wght@500;700&family=Noto+Sans+JP:wght@400;500;700;900&family=Noto+Serif+JP:wght@600;700&display=swap">
 <style>
 /* 色だけ inforkusデザインシステムの採用5色。ほかは v002 の試作値 */
 :root{
@@ -15,7 +15,7 @@
   --line:rgba(43,40,37,.08);--line-d:rgba(255,255,255,.07);
   --core-10:rgba(28,96,71,.10);--ink-60:rgba(43,40,37,.6);
   --sans:"Noto Sans JP",system-ui,sans-serif;--dot:"DotGothic16",var(--sans);
-  --mono:"JetBrains Mono",ui-monospace,monospace;--en:"Inter",var(--sans);
+  --mono:"JetBrains Mono",ui-monospace,monospace;--serif:"Noto Serif JP",serif;--en:"Inter",var(--sans);
   --col:440px;--ease:cubic-bezier(.2,.7,.2,1);--pop:cubic-bezier(.3,1.6,.5,1);
 }
 *{box-sizing:border-box;margin:0;padding:0}
@@ -28,25 +28,15 @@ ul,ol{list-style:none}
 button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 :focus-visible{outline:3px solid var(--core);outline-offset:3px}
 
-/* ---------- 背景の方眼 ---------- */
-.grid-w{background-color:var(--paper);background-image:linear-gradient(to right,var(--line) 1px,transparent 1px),linear-gradient(to bottom,var(--line) 1px,transparent 1px);background-size:24px 24px}
-.grid-d{background-color:var(--ink);color:var(--paper);background-image:linear-gradient(to right,var(--line-d) 1px,transparent 1px),linear-gradient(to bottom,var(--line-d) 1px,transparent 1px);background-size:24px 24px}
+/* ---------- 面：白と、灯りのにじむ墨 ---------- */
+.grid-w{background:var(--paper)}
+.grid-d{background:var(--ink) radial-gradient(ellipse 70% 50% at 50% 0%,rgba(255,255,255,.07),transparent 70%);color:var(--paper)}
 
-/* ---------- PC の3列（左：ステータス／中央：本文／右：マップ） ---------- */
+/* ---------- 全幅の1段組（本文は中央 720px） ---------- */
 .shell{min-height:100vh}
-.side{display:none}
-.lp{position:relative;max-width:var(--col);margin:0 auto;background:var(--paper);overflow:hidden}
-@media (min-width:1080px){
-  .shell{display:grid;grid-template-columns:1fr var(--col) 1fr}
-  .lp{border-inline:2px solid var(--ink);width:100%}
-  .side{display:flex;flex-direction:column;justify-content:center;gap:28px;position:sticky;top:0;height:100vh;padding:40px clamp(24px,3vw,56px)}
-  .side--l{align-items:flex-end;text-align:right}
-  .side--r{align-items:flex-start}
-  .hud-m{display:none!important}
-}
-.side__logo img{width:200px}
-.side__catch{font:900 26px/1.5 var(--sans);letter-spacing:.02em}
-.side__catch b{color:var(--core)}
+.lp{position:relative;overflow:hidden}
+.sec,.fv{padding-inline:max(20px,calc((100% - 720px) / 2))}
+@media (min-width:768px){.name{grid-template-columns:repeat(3,1fr)}.stat{grid-template-columns:1fr;text-align:left}}
 
 /* ---------- RPG のウィンドウ ---------- */
 .win{position:relative;background:var(--ink);color:var(--paper);border:3px solid var(--paper);outline:3px solid var(--ink);border-radius:10px;font-family:var(--dot);padding:14px 16px}
@@ -74,25 +64,13 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .eq i:nth-child(2){animation-delay:-.3s!important}.eq i:nth-child(3){animation-delay:-.6s!important}.eq i:nth-child(4){animation-delay:-.15s!important}
 @keyframes eq{0%,100%{height:25%}50%{height:100%}}
 
-/* 右のマップ */
-.map{font-family:var(--dot)}
-.map__ttl{font:700 12px/1 var(--mono);letter-spacing:.2em;color:var(--core)}
-.map ol{margin-top:14px;display:grid;gap:6px}
-.map a{display:flex;align-items:center;gap:8px;font-size:16px;color:var(--ink-60);transition:color .2s,transform .2s var(--ease)}
-.map a::before{content:"▶";font-size:11px;opacity:0;transform:translateX(-6px);transition:.2s var(--ease)}
-.map a:hover,.map a.is-cur{color:var(--ink);transform:translateX(4px)}
-.map a.is-cur::before,.map a:hover::before{opacity:1;transform:none}
-.map a.is-cur::before{animation:blink 1s steps(2) infinite}
-.side__cta{display:inline-flex;align-items:center;gap:8px;height:52px;padding:0 24px;border-radius:999px;background:var(--core);color:var(--paper);font:700 15px/1 var(--sans);transition:transform .2s var(--ease)}
-.side__cta:hover{transform:translateY(-2px)}
-
 /* スマホ下部の HUD */
 .hud-m{position:fixed;z-index:40;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom));display:flex;align-items:center;gap:12px;padding:8px 8px 8px 14px;border-radius:12px;outline-width:2px;border-width:2px}
 .hud-m .lv{font-size:16px;white-space:nowrap}
+@media (min-width:768px){.hud-m{right:auto;left:20px;bottom:20px;width:400px}}
 .hud-m .bar{flex:1;margin:0}
 .hud-m .snd{height:36px;padding:0 12px;border-color:var(--paper);background:transparent;color:var(--paper)}
 .hud-m .snd[aria-pressed="true"]{background:var(--paper);color:var(--ink)}
-.side__snd{display:flex;gap:8px;justify-content:flex-end}
 .se{gap:6px}
 .se .lvl{display:flex;gap:2px;align-items:flex-end;height:12px}
 .se .lvl i{width:3px;background:currentColor;opacity:.25;border-radius:1px}
@@ -100,20 +78,21 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .se[data-lv="1"] .lvl i:nth-child(1),.se[data-lv="2"] .lvl i:nth-child(-n+2),.se[data-lv="3"] .lvl i{opacity:1}
 
 /* ---------- 共通部品 ---------- */
-.sec{position:relative;padding:72px 20px}
+.sec{position:relative;padding:72px max(20px,calc((100% - 720px) / 2))}
 .eyebrow{display:inline-flex;align-items:center;gap:8px;font:700 12px/1 var(--mono);letter-spacing:.2em;color:var(--core)}
 .grid-d .eyebrow{color:var(--muted)}
-.eyebrow::before{content:"";width:8px;height:8px;background:currentColor;transform:rotate(45deg)}
-.h2{margin-top:14px;font:900 28px/1.45 var(--sans);letter-spacing:.01em}
+.eyebrow::before{content:"";width:10px;height:10px;border-radius:50%;border:2px solid currentColor;box-shadow:inset 0 0 0 2px var(--paper),inset 0 0 0 5px currentColor}
+.grid-d .eyebrow::before{box-shadow:inset 0 0 0 2px var(--ink),inset 0 0 0 5px currentColor}
+.h2{margin-top:14px;font:700 26px/1.55 var(--serif);letter-spacing:.04em}
 .lead{margin-top:14px}
-/* 帯の見出し */
-.bars{display:flex;flex-direction:column;align-items:flex-start;gap:6px}
-.bars .b{display:inline-block;padding:2px 10px;background:var(--ink);color:var(--paper);font:900 26px/1.4 var(--sans);transform-origin:left;clip-path:inset(0 100% 0 0);transition:clip-path .6s var(--ease)}
-.bars .b--core{background:var(--core)}
-.bars .b--plain{background:none;color:var(--ink);padding-inline:0}
-.is-in .bars .b,.bars.is-in .b{clip-path:inset(0 0 0 0)}
-.bars .b:nth-child(2){transition-delay:.15s}.bars .b:nth-child(3){transition-delay:.3s}
-
+/* 見出し：明朝に、常磐の下線が引かれる */
+.bars{display:flex;flex-direction:column;align-items:flex-start;gap:2px;font:700 28px/1.5 var(--serif);letter-spacing:.04em}
+.bars .b{display:inline-block;opacity:0;transform:translateY(10px);transition:opacity .6s var(--ease),transform .6s var(--ease),background-size .9s var(--ease) .3s}
+.bars .b--core{color:var(--core);background:linear-gradient(var(--core),var(--core)) no-repeat 0 92%/0 3px}
+.grid-d .bars .b--core{color:var(--paper);background-image:linear-gradient(var(--accent),var(--accent))}
+.is-in .bars .b,.bars.is-in .b{opacity:1;transform:none}
+.is-in .bars .b--core,.bars.is-in .b--core{background-size:100% 3px}
+.bars .b:nth-child(2){transition-delay:.12s,.12s,.4s}.bars .b:nth-child(3){transition-delay:.24s}
 .btn{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:10px;height:60px;padding:0 28px;border-radius:999px;font:700 16px/1 var(--sans);overflow:hidden;transition:transform .2s var(--ease)}
 .btn--accent{background:var(--accent);color:var(--paper);box-shadow:0 4px 0 var(--ink)}
 .btn--accent:hover{transform:translateY(-2px)}
@@ -127,15 +106,16 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 @keyframes pop{0%{opacity:0;transform:scale(.6)}100%{opacity:1;transform:none}}
 @keyframes blink{50%{opacity:0}}
 @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
-@keyframes marquee{to{transform:translateX(-50%)}}
 
-/* ---------- 流れる帯 ---------- */
-.ticker{overflow:hidden;white-space:nowrap;background:var(--ink);color:var(--paper);border-block:2px solid var(--ink)}
-.ticker--core{background:var(--core)}
-.ticker__track{display:inline-flex;animation:marquee 24s linear infinite}
-.ticker--core .ticker__track{animation-direction:reverse}
-.ticker span{display:inline-flex;align-items:center;gap:18px;padding:10px 18px;font:900 italic 20px/1 var(--en);letter-spacing:-.01em}
-.ticker span::after{content:"✦";font-style:normal;font-size:14px;color:var(--muted)}
+/* ---------- 章の区切り：灯りが線を走る ---------- */
+.chap{display:flex;align-items:center;gap:14px;padding:22px max(20px,calc((100% - 720px) / 2));background:var(--paper)}
+.chap__line{position:relative;flex:1;height:1px;background:var(--muted);overflow:hidden}
+.chap__line::after{content:"";position:absolute;top:-1px;left:-30%;width:30%;height:3px;background:linear-gradient(90deg,transparent,var(--accent),transparent);animation:run 3.6s ease-in-out infinite}
+.chap__line:last-child::after{animation-delay:1.8s}
+@keyframes run{to{left:100%}}
+.chap__t{display:flex;align-items:center;gap:8px;font:400 14px/1 var(--dot);white-space:nowrap}
+.chap__t img{width:24px}
+.chap__t b{font:700 11px/1 var(--mono);letter-spacing:.16em;color:var(--core)}
 
 /* ---------- はじめる画面 ---------- */
 .start{position:fixed;inset:0;z-index:100;display:grid;place-items:center;text-align:center;padding:24px;transition:opacity .5s,visibility .5s}
@@ -155,28 +135,25 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 @keyframes flash{0%{opacity:0}20%{opacity:1}100%{opacity:0}}
 
 /* ---------- ファーストビュー ---------- */
-.fv{padding:28px 20px 0;overflow:hidden}
+.fv{padding:28px max(20px,calc((100% - 720px) / 2)) 0;overflow:hidden}
 .fv__hd{display:flex;justify-content:space-between;align-items:center}
 .fv__hd img{width:120px}
 .fv__ver{font:700 11px/1 var(--mono);padding:6px 8px;border:1.5px solid var(--ink);border-radius:4px}
-.term{margin-top:20px;background:var(--ink);color:#EDEBE7;border-radius:10px;padding:10px 14px 14px;font:500 12px/1.8 var(--mono);box-shadow:0 10px 24px rgba(43,40,37,.25)}
-.term__dots{display:flex;gap:6px;margin-bottom:6px}
-.term__dots i{width:9px;height:9px;border-radius:50%;background:var(--muted)}
-.term__dots i:first-child{background:var(--accent)}.term__dots i:nth-child(3){background:var(--core)}
-.term .p{color:var(--muted)}
-.term .ok{color:var(--paper);font-weight:700}
-.term .cur::after{content:"▌";animation:blink 1s steps(2) infinite}
-.term__prog{display:flex;align-items:center;gap:8px}
+.sys{margin-top:24px;padding:20px 16px 14px;font-size:14px}
+.sys .ok{color:var(--paper)}
+.cur::after{content:"▌";animation:blink 1s steps(2) infinite}
+.term__prog{display:flex;align-items:center;gap:8px;margin:6px 0}
 .term__prog .bar{flex:1;margin:0;height:8px}
-.term__line{min-height:1.8em}
+.term__line{min-height:1.7em;line-height:1.7}
 .fv__h{margin-top:28px}
-.fv__h .b{font-size:32px}
+.fv__h{font-size:32px}
 .fv__p{margin-top:16px;font-weight:500}
-.fv__stage{position:relative;margin:12px -20px 0;height:330px}
+.fv__stage{position:relative;margin:12px -20px 0;aspect-ratio:1400/935}
+@media (min-width:768px){.fv__stage{margin-inline:0}}
 .fv__ring{position:absolute;left:50%;top:58%;width:300px;height:300px;translate:-50% -50%;border-radius:50%;border:2px dashed var(--muted);animation:spin 40s linear infinite}
 .fv__ring::before{content:"";position:absolute;inset:28px;border-radius:50%;border:1.5px solid var(--core-10);background:radial-gradient(circle,var(--core-10),transparent 70%)}
 @keyframes spin{to{rotate:360deg}}
-.fv__stage img{position:absolute;bottom:0;left:50%;width:106%;max-width:none;translate:-50% 0}
+.fv__stage img{position:absolute;bottom:0;left:0;width:100%}
 .spark{position:absolute;width:14px;height:14px;color:var(--core);animation:twinkle 2.4s ease-in-out infinite}
 .spark::before,.spark::after{content:"";position:absolute;left:50%;top:50%;background:currentColor;translate:-50% -50%;border-radius:2px}
 .spark::before{width:100%;height:3px}.spark::after{width:3px;height:100%}
@@ -190,6 +167,14 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .fv__cta{display:grid;gap:12px;padding:28px 0 40px}
 .fv__cta .btn{width:100%}
 .fv__cta small{text-align:center;font:400 12px/1.6 var(--dot);color:var(--ink-60)}
+@media (min-width:1080px){
+  .fv{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);grid-auto-flow:row dense;column-gap:56px;padding:32px max(48px,calc((100% - 1180px) / 2)) 0}
+  .fv__hd{grid-column:1/-1}
+  .fv>:not(.fv__hd):not(.fv__stage){grid-column:1}
+  .fv__stage{grid-column:2;grid-row:2/span 5;align-self:center;margin:0}
+  .fv__h{font-size:46px;margin-top:36px}
+  .fv__msg{margin-top:28px}
+}
 
 /* ---------- ABOUT ---------- */
 .name{display:grid;gap:12px;margin-top:28px}
@@ -205,31 +190,27 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 
 /* パーティのカルーセル */
 .party{margin-top:56px}
-.party__hd{display:flex;justify-content:space-between;align-items:flex-end}
 .party__ttl{font:400 20px/1.3 var(--dot)}
-.car__nav{display:flex;gap:8px}
-.car__btn{display:grid;place-items:center;width:40px;height:40px;border:2px solid var(--ink);border-radius:50%;background:var(--paper);transition:background .2s,color .2s}
-.car__btn:hover{background:var(--ink);color:var(--paper)}
-.car{margin:16px -20px 0;display:flex;gap:14px;padding:6px 20px 14px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;scroll-padding-inline:20px}
-.car::-webkit-scrollbar{display:none}
-.mem{flex:0 0 82%;scroll-snap-align:start;border:2px solid var(--ink);border-radius:14px;overflow:hidden;background:var(--paper);box-shadow:4px 4px 0 var(--ink)}
-.mem__art{position:relative;height:250px;display:flex;align-items:flex-end;justify-content:center;background:var(--core)}
-.mem__art::before{content:"";position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,.18) 1.5px,transparent 1.5px);background-size:14px 14px}
-.mem__art img{position:relative;height:235px;width:auto;transition:transform .5s var(--ease)}
-.mem:hover .mem__art img{transform:translateY(-6px) scale(1.03)}
+.roster{display:flex;gap:10px;margin-top:14px}
+.roster button{position:relative;width:64px;height:64px;border-radius:12px;border:2px solid var(--muted);overflow:hidden;background:var(--core-10);transition:border-color .2s,transform .2s var(--pop)}
+.roster img{width:100%;height:100%;object-fit:cover;object-position:top}
+.roster button[aria-selected="true"]{border-color:var(--core);border-width:3px;transform:translateY(-4px)}
+.roster button[aria-selected="true"]::after{content:"";position:absolute;inset:0;box-shadow:inset 0 0 0 2px var(--paper);border-radius:9px}
+.mem{margin-top:14px;border:2px solid var(--ink);border-radius:14px;overflow:hidden;background:var(--paper);animation:pop .4s var(--pop) both}
+.mem[hidden]{display:none}
+@media (min-width:768px){.mem{display:grid;grid-template-columns:1fr 1fr}.mem__art{height:auto;min-height:280px}}
+.mem__art{position:relative;height:250px;display:flex;align-items:flex-end;justify-content:center;background:var(--core) radial-gradient(circle at 50% 70%,rgba(255,255,255,.22),transparent 60%)}
+.mem__art img{position:relative;height:235px;width:auto}
 .mem__job{position:absolute;top:12px;left:12px;padding:4px 10px;background:var(--paper);color:var(--ink);border-radius:999px;font:700 12px/1.4 var(--sans)}
 .mem__lv{position:absolute;top:12px;right:12px;font:400 14px/1 var(--dot);color:var(--paper);padding:6px 8px;border:2px solid var(--paper);border-radius:6px}
-.mem__body{padding:14px 16px 18px}
-.mem__name{font:900 20px/1.3 var(--sans)}
+.mem__body{padding:14px 16px 18px;align-self:center}
+.mem__name{font:700 22px/1.3 var(--serif)}
 .mem__p{margin-top:4px;font-size:13px;line-height:1.7}
 .meter{display:grid;grid-template-columns:56px 1fr 28px;gap:8px;align-items:center;margin-top:8px;font:400 12px/1 var(--dot)}
 .meter .bar{margin:0;height:8px;background:var(--line)}
 .meter .bar i{background:var(--core)}
 .meter .bar i::after{background:repeating-linear-gradient(90deg,transparent 0 6px,rgba(255,255,255,.45) 6px 7px)}
 .meter b{font-weight:400;text-align:right}
-.car__dots{display:flex;justify-content:center;gap:8px;margin-top:4px}
-.car__dots button{width:10px;height:10px;border-radius:2px;background:var(--muted);transform:rotate(45deg);transition:background .2s,transform .2s}
-.car__dots button[aria-current="true"]{background:var(--core);transform:rotate(45deg) scale(1.3)}
 
 /* ---------- アップデートのお知らせ（三つの軸） ---------- */
 .upd__head{display:flex;gap:14px;align-items:center}
@@ -322,12 +303,13 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .close__cta{margin-top:28px;opacity:.35;pointer-events:none;transition:opacity .4s}
 .close__cta.is-on{opacity:1;pointer-events:auto}
 .close__art{position:relative;margin:36px -20px 0}
+@media (min-width:768px){.close__art{margin:36px auto 0;max-width:620px}}
+.close .status{margin:28px auto 0;width:auto;max-width:360px}
 .close__art::before{content:"";position:absolute;left:50%;top:40%;width:340px;height:340px;translate:-50% -50%;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.18),transparent 65%)}
 .close__art img{position:relative}
 
-.ft{padding:28px 20px calc(96px + env(safe-area-inset-bottom));background:var(--ink);color:var(--muted);border-top:1px solid rgba(255,255,255,.12);display:flex;justify-content:space-between;align-items:center;font:400 12px/1 var(--mono)}
+.ft{padding:28px max(20px,calc((100% - 720px) / 2)) calc(96px + env(safe-area-inset-bottom));background:var(--ink);color:var(--muted);border-top:1px solid rgba(255,255,255,.12);display:flex;justify-content:space-between;align-items:center;font:400 12px/1 var(--mono)}
 .ft img{width:110px}
-@media (min-width:1080px){.ft{padding-bottom:28px}}
 
 /* ---------- レベルアップの演出 ---------- */
 .fx{position:fixed;inset:0;z-index:90;pointer-events:none}
@@ -352,12 +334,11 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 @keyframes expf{0%{opacity:0;transform:translateY(8px)}20%{opacity:1}100%{opacity:0;transform:translateY(-36px)}}
 .toast{position:fixed;z-index:92;left:50%;bottom:84px;translate:-50% 0;width:min(380px,calc(100% - 24px));font-size:15px;opacity:0;transform:translateY(16px);transition:.35s var(--ease);pointer-events:none}
 .toast.is-on{opacity:1;transform:none}
-@media (min-width:1080px){.toast{bottom:28px}}
 
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none!important;transition:none!important}
   .rv{opacity:1;transform:none}
-  .bars .b{clip-path:none}
+  .bars .b{opacity:1;transform:none}
   .stat__ic path{stroke-dashoffset:0}
   html{scroll-behavior:auto}
 }
@@ -394,23 +375,6 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 
 <div class="shell">
 
-  <!-- ===== 左：ステータス ===== -->
-  <aside class="side side--l grid-w" aria-label="ステータス">
-    <a class="side__logo" href="#top"><img src="assets/inforkus-logo-full-color.svg" alt="inforkus" width="200" height="52"></a>
-    <p class="side__catch">見慣れたものに、<br><b>新しい見方</b>を<br>アップデート。</p>
-    <div class="win status">
-      <span class="win__ttl">STATUS</span>
-      <div class="status__row"><span>あなた</span><span class="status__lv">Lv.<span class="js-lv">1</span></span></div>
-      <div class="bar"><i class="js-exp"></i></div>
-      <p class="status__exp">EXP <span class="js-expn">0</span> / <span class="js-expmax">100</span></p>
-      <ul class="status__sk js-skills"><li class="none">まだ ありません</li></ul>
-    </div>
-    <div class="side__snd">
-      <button class="snd js-snd" type="button" aria-pressed="false" aria-label="BGM のオンオフ"><span class="eq"><i></i><i></i><i></i><i></i></span><span class="snd__txt">BGM OFF</span></button>
-      <button class="snd se js-se" type="button" data-lv="1" aria-label="効果音の大きさ（押すたびに 小・中・大・なし）"><span class="lvl"><i></i><i></i><i></i></span><span class="se__txt">SE 小</span></button>
-    </div>
-  </aside>
-
   <!-- ===== 中央：本文 ===== -->
   <main class="lp" id="top">
 
@@ -420,11 +384,10 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
         <span class="fv__ver">ver.<span id="ver">1.0.0</span></span>
       </div>
 
-      <div class="term" aria-label="アップデートの表示">
-        <div class="term__dots" aria-hidden="true"><i></i><i></i><i></i></div>
-        <div class="term__line"><span class="p">$</span> inforkus --update</div>
+      <div class="win sys" aria-label="アップデートの表示">
+        <span class="win__ttl">SYSTEM</span>
         <div class="term__line" id="t1"></div>
-        <div class="term__line term__prog"><div class="bar"><i id="tbar"></i></div><span id="tpct">0%</span></div>
+        <div class="term__prog"><div class="bar"><i id="tbar"></i></div><span id="tpct">0%</span></div>
         <div class="term__line ok" id="t2"></div>
       </div>
 
@@ -459,7 +422,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
       </div>
     </section>
 
-    <div class="ticker" aria-hidden="true"><div class="ticker__track" data-ticker="LEVEL UP,UPDATE,FOCUS,FORK US,INFO"></div></div>
+    <div class="chap" aria-hidden="true"><span class="chap__line"></span><span class="chap__t"><img src="assets/inforkus-icon-torch-color.svg" alt="" width="24" height="19"><b>CHAPTER 1</b>inforkus とは</span><span class="chap__line"></span></div>
 
     <!-- ===== ABOUT ===== -->
     <section class="sec grid-w" id="about" data-sec data-exp="40">
@@ -487,56 +450,44 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
       </ul>
 
       <div class="party rv">
-        <div class="party__hd">
-          <p class="party__ttl">パーティ紹介</p>
-          <div class="car__nav">
-            <button class="car__btn" type="button" data-car="prev" aria-label="前のメンバー"><svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M9 2 4 7l5 5" stroke="currentColor" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-            <button class="car__btn" type="button" data-car="next" aria-label="次のメンバー"><svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="m5 2 5 5-5 5" stroke="currentColor" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        <p class="party__ttl">パーティを えらぶ</p>
+        <div class="roster" role="tablist" aria-label="パーティのメンバー"><button type="button" role="tab" id="pt0" aria-controls="pm0" aria-selected="true" aria-label="aoi"><img src="assets/face_aoi_AO90.webp" alt="" width="240" height="254"></button><button type="button" role="tab" id="pt1" aria-controls="pm1" aria-selected="false" aria-label="あかり"><img src="assets/face_akari_AK90_v2.webp" alt="" width="240" height="230"></button><button type="button" role="tab" id="pt2" aria-controls="pm2" aria-selected="false" aria-label="トーチ"><img src="assets/face_torch_TC90.webp" alt="" width="240" height="241"></button><button type="button" role="tab" id="pt3" aria-controls="pm3" aria-selected="false" aria-label="助っ人ロボ"><img src="assets/item_robot_HO10.webp" alt="" width="480" height="476"></button></div>
+        <article class="mem" id="pm0" role="tabpanel" aria-labelledby="pt0">
+          <div class="mem__art"><span class="mem__job">#案内役</span><span class="mem__lv">Lv.12</span><img src="assets/aoi_HT01.webp" alt="手のひらで示して案内する aoi" width="640" height="960"></div>
+          <div class="mem__body">
+            <h3 class="mem__name">aoi</h3>
+            <p class="mem__p">見慣れたものの「いつもと違う見方」を、やさしい言葉で案内する。</p>
+            <div class="meter"><span>具体</span><div class="bar"><i data-w="70"></i></div><b>70</b></div><div class="meter"><span>ことば</span><div class="bar"><i data-w="90"></i></div><b>90</b></div>
           </div>
-        </div>
-        <div class="car" id="car" tabindex="0" aria-label="パーティのメンバー（横にスワイプ）">
-          <article class="mem">
-            <div class="mem__art"><span class="mem__job">#案内役</span><span class="mem__lv">Lv.12</span><img src="assets/aoi_HT01.webp" alt="手のひらで示して案内する aoi" width="640" height="960" loading="lazy"></div>
-            <div class="mem__body">
-              <h3 class="mem__name">aoi</h3>
-              <p class="mem__p">見慣れたものの「いつもと違う見方」を、やさしい言葉で案内する。</p>
-              <div class="meter"><span>具体</span><div class="bar"><i data-w="70"></i></div><b>70</b></div>
-              <div class="meter"><span>ことば</span><div class="bar"><i data-w="90"></i></div><b>90</b></div>
-            </div>
-          </article>
-          <article class="mem">
-            <div class="mem__art"><span class="mem__job">#解説役</span><span class="mem__lv">Lv.15</span><img src="assets/akari_AK03_v2.webp" alt="手のひらで示して解説するあかり" width="640" height="926" loading="lazy"></div>
-            <div class="mem__body">
-              <h3 class="mem__name">あかり</h3>
-              <p class="mem__p">複雑な関係や手順を、図と順番に分けて解きほぐす。</p>
-              <div class="meter"><span>抽象</span><div class="bar"><i data-w="85"></i></div><b>85</b></div>
-              <div class="meter"><span>しくみ</span><div class="bar"><i data-w="80"></i></div><b>80</b></div>
-            </div>
-          </article>
-          <article class="mem">
-            <div class="mem__art"><span class="mem__job">#灯す役</span><span class="mem__lv">Lv.??</span><img src="assets/torch_TC07.webp" alt="灯火の尾で照らすトーチ" width="640" height="731" loading="lazy" style="height:190px;margin-bottom:24px"></div>
-            <div class="mem__body">
-              <h3 class="mem__name">トーチ</h3>
-              <p class="mem__p">小さな灯火で足もとを照らし、次の一歩へつなぐ。</p>
-              <div class="meter"><span>ひかり</span><div class="bar"><i data-w="95"></i></div><b>95</b></div>
-              <div class="meter"><span>げんき</span><div class="bar"><i data-w="75"></i></div><b>75</b></div>
-            </div>
-          </article>
-          <article class="mem">
-            <div class="mem__art"><span class="mem__job">#助っ人</span><span class="mem__lv">Lv.AI</span><img src="assets/item_robot_HO10.webp" alt="書類を抱えた助っ人ロボ" width="480" height="476" loading="lazy" style="height:180px;margin-bottom:32px"></div>
-            <div class="mem__body">
-              <h3 class="mem__name">助っ人ロボ</h3>
-              <p class="mem__p">AI の力で、くり返しの作業を引き受ける。判断は人が持つ。</p>
-              <div class="meter"><span>はやさ</span><div class="bar"><i data-w="92"></i></div><b>92</b></div>
-              <div class="meter"><span>きろく</span><div class="bar"><i data-w="88"></i></div><b>88</b></div>
-            </div>
-          </article>
-        </div>
-        <div class="car__dots" id="carDots" role="tablist" aria-label="メンバーの位置"></div>
+        </article>
+        <article class="mem" id="pm1" role="tabpanel" aria-labelledby="pt1" hidden>
+          <div class="mem__art"><span class="mem__job">#解説役</span><span class="mem__lv">Lv.15</span><img src="assets/akari_AK03_v2.webp" alt="手のひらで示して解説するあかり" width="640" height="926"></div>
+          <div class="mem__body">
+            <h3 class="mem__name">あかり</h3>
+            <p class="mem__p">複雑な関係や手順を、図と順番に分けて解きほぐす。</p>
+            <div class="meter"><span>抽象</span><div class="bar"><i data-w="85"></i></div><b>85</b></div><div class="meter"><span>しくみ</span><div class="bar"><i data-w="80"></i></div><b>80</b></div>
+          </div>
+        </article>
+        <article class="mem" id="pm2" role="tabpanel" aria-labelledby="pt2" hidden>
+          <div class="mem__art"><span class="mem__job">#灯す役</span><span class="mem__lv">Lv.??</span><img src="assets/torch_TC07.webp" alt="灯火の尾で照らすトーチ" width="640" height="731" style="height:190px;margin-bottom:24px"></div>
+          <div class="mem__body">
+            <h3 class="mem__name">トーチ</h3>
+            <p class="mem__p">小さな灯火で足もとを照らし、次の一歩へつなぐ。</p>
+            <div class="meter"><span>ひかり</span><div class="bar"><i data-w="95"></i></div><b>95</b></div><div class="meter"><span>げんき</span><div class="bar"><i data-w="75"></i></div><b>75</b></div>
+          </div>
+        </article>
+        <article class="mem" id="pm3" role="tabpanel" aria-labelledby="pt3" hidden>
+          <div class="mem__art"><span class="mem__job">#助っ人</span><span class="mem__lv">Lv.AI</span><img src="assets/item_robot_HO10.webp" alt="書類を抱えた助っ人ロボ" width="480" height="476" style="height:180px;margin-bottom:32px"></div>
+          <div class="mem__body">
+            <h3 class="mem__name">助っ人ロボ</h3>
+            <p class="mem__p">AI の力で、くり返しの作業を引き受ける。判断は人が持つ。</p>
+            <div class="meter"><span>はやさ</span><div class="bar"><i data-w="92"></i></div><b>92</b></div><div class="meter"><span>きろく</span><div class="bar"><i data-w="88"></i></div><b>88</b></div>
+          </div>
+        </article>
       </div>
     </section>
 
-    <div class="ticker ticker--core" aria-hidden="true"><div class="ticker__track" data-ticker="PERSPECTIVE,CORE,DESIGN,NEW SKILL"></div></div>
+    <div class="chap" aria-hidden="true"><span class="chap__line"></span><span class="chap__t"><img src="assets/inforkus-icon-torch-color.svg" alt="" width="24" height="19"><b>CHAPTER 2</b>アップデート</span><span class="chap__line"></span></div>
 
     <!-- ===== アップデートのお知らせ（三つの軸） ===== -->
     <section class="sec grid-d" id="update" data-sec data-exp="40">
@@ -580,7 +531,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
       </div>
     </section>
 
-    <div class="ticker" aria-hidden="true"><div class="ticker__track" data-ticker="SERVICE,BATTLE,LEVEL UP,UPDATE"></div></div>
+    <div class="chap" aria-hidden="true"><span class="chap__line"></span><span class="chap__t"><img src="assets/inforkus-icon-torch-color.svg" alt="" width="24" height="19"><b>CHAPTER 3</b>バトル</span><span class="chap__line"></span></div>
 
     <!-- ===== 対応範囲（バトル） ===== -->
     <section class="sec grid-w" id="service" data-sec data-exp="40">
@@ -619,7 +570,9 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
     </section>
 
     <!-- ===== 進め方（クエスト） ===== -->
-    <section class="sec grid-w" id="flow" data-sec data-exp="40" style="border-top:2px solid var(--ink)">
+    <div class="chap" aria-hidden="true"><span class="chap__line"></span><span class="chap__t"><img src="assets/inforkus-icon-torch-color.svg" alt="" width="24" height="19"><b>CHAPTER 4</b>クエスト</span><span class="chap__line"></span></div>
+
+    <section class="sec grid-w" id="flow" data-sec data-exp="40">
       <p class="eyebrow rv">QUEST LOG</p>
       <h2 class="h2 rv">ご相談から、<br>形になるまでの冒険。</h2>
       <p class="lead rv">焦点を合わせる（収束）と、広げて考える（発散）を往復しながら進みます。</p>
@@ -634,7 +587,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
       </ol>
     </section>
 
-    <div class="ticker ticker--core" aria-hidden="true"><div class="ticker__track" data-ticker="NEXT QUEST,CONTACT,LEVEL UP"></div></div>
+    <div class="chap" aria-hidden="true"><span class="chap__line"></span><span class="chap__t"><img src="assets/inforkus-icon-torch-color.svg" alt="" width="24" height="19"><b>CHAPTER 5</b>つぎの冒険へ</span><span class="chap__line"></span></div>
 
     <!-- ===== 締め ===== -->
     <section class="sec grid-d close" id="contact" data-sec data-exp="40">
@@ -644,6 +597,14 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
         <span class="b b--core">次の誰かへ。</span>
       </h2>
       <p class="close__p rv">気づいたことを形にして渡すと、受け取った人がまた次へつないでくれる。その最初の一歩を、一緒に。</p>
+
+      <div class="win status rv">
+        <span class="win__ttl">冒険の記録</span>
+        <div class="status__row"><span>あなた</span><span class="status__lv">Lv.<span class="js-lv">1</span></span></div>
+        <div class="bar"><i class="js-exp"></i></div>
+        <p class="status__exp">EXP <span class="js-expn">0</span> / <span class="js-expmax">100</span></p>
+        <ul class="status__sk js-skills"><li class="none">まだ ありません</li></ul>
+      </div>
 
       <div class="win choice rv">
         <span class="win__ttl">？</span>
@@ -661,25 +622,10 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
     <footer class="ft"><img src="assets/inforkus-logo-full-white.svg" alt="inforkus" width="110" height="28"><span>© 2026 inforkus</span></footer>
   </main>
 
-  <!-- ===== 右：マップ ===== -->
-  <aside class="side side--r grid-w" aria-label="ページ内のマップ">
-    <nav class="map">
-      <p class="map__ttl">MAP</p>
-      <ol>
-        <li><a href="#fv">はじまりの町</a></li>
-        <li><a href="#about">inforkus とは</a></li>
-        <li><a href="#update">アップデート</a></li>
-        <li><a href="#service">バトル</a></li>
-        <li><a href="#flow">クエスト</a></li>
-        <li><a href="#contact">つぎの冒険へ</a></li>
-      </ol>
-    </nav>
-    <a class="side__cta" href="#contact">相談する <span aria-hidden="true">→</span></a>
-  </aside>
 </div>
 
 <!-- スマホ下部の HUD -->
-<div class="win hud-m" aria-label="ステータス">
+<div class="win hud-m" aria-label="ステータスと音">
   <span class="lv">Lv.<span class="js-lv">1</span></span>
   <div class="bar"><i class="js-exp"></i></div>
   <button class="snd js-snd" type="button" aria-pressed="false" aria-label="BGM のオンオフ"><span class="eq"><i></i><i></i><i></i><i></i></span><span class="snd__txt">OFF</span></button>
@@ -859,10 +805,10 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 
   /* ===== はじめる画面 → ファーストビューの演出 ===== */
   async function heroSequence() {
-    await type($('#t1'), '> 新しい見方 を ダウンロード中...', 38);
+    await type($('#t1'), '新しい見方 を よみこんでいます…', 38);
     const bar = $('#tbar'), pct = $('#tpct');
     for (let p = 0; p <= 100; p += 4) { bar.style.width = p + '%'; pct.textContent = p + '%'; await wait(28); }
-    await type($('#t2'), '> アップデート完了：ver.1.0.0 ▶ 1.1.0', 30);
+    await type($('#t2'), 'アップデート かんりょう！ ver.1.0.0 ▶ 1.1.0', 30);
     $('#ver').textContent = '1.1.0';
     Sound.play('save', 0.5);
     await type($('#heroMsg'), 'ようこそ！ スクロールすると 経験値が たまって、レベルアップしていくよ。', 40);
@@ -894,35 +840,23 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
   }), { threshold: 0.25 });
   $$('[data-exp]').forEach((el) => ioExp.observe(el));
 
-  /* ===== 流れる帯 ===== */
-  $$('[data-ticker]').forEach((t) => {
-    const words = t.dataset.ticker.split(',');
-    const html = words.map((w) => `<span>${w}</span>`).join('');
-    t.innerHTML = html.repeat(6);
+  /* ===== パーティ選択 ===== */
+  const ptabs = $$('.roster [role="tab"]');
+  const pick = (t) => {
+    ptabs.forEach((x) => { const on = x === t; x.setAttribute('aria-selected', on); $('#' + x.getAttribute('aria-controls')).hidden = !on; });
+    const card = $('#' + t.getAttribute('aria-controls'));
+    requestAnimationFrame(() => $$('.bar i', card).forEach((b) => (b.style.width = b.dataset.w + '%')));
+  };
+  ptabs.forEach((t, i) => {
+    t.addEventListener('mouseenter', cursor);
+    t.addEventListener('click', () => { Sound.play('confirm', 0.4); pick(t); });
+    t.addEventListener('keydown', (e) => {
+      if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+      const j = (i + (e.key === 'ArrowRight' ? 1 : -1) + ptabs.length) % ptabs.length; ptabs[j].focus(); pick(ptabs[j]);
+    });
   });
-
-  /* ===== パーティのカルーセル ===== */
-  const car = $('#car'), cards = $$('.mem', car), dots = $('#carDots');
-  cards.forEach((c, i) => {
-    const d = document.createElement('button');
-    d.type = 'button'; d.setAttribute('aria-label', `${i + 1}人目`);
-    d.addEventListener('click', () => go(i)); dots.appendChild(d);
-  });
-  let idx = 0;
-  const go = (i) => { idx = (i + cards.length) % cards.length; car.scrollTo({ left: cards[idx].offsetLeft - 20, behavior: RM ? 'auto' : 'smooth' }); };
-  $$('[data-car]').forEach((b) => b.addEventListener('click', () => { cursor(); go(idx + (b.dataset.car === 'next' ? 1 : -1)); }));
-  const ioCar = new IntersectionObserver((es) => es.forEach((e) => {
-    if (e.intersectionRatio > 0.6) {
-      idx = cards.indexOf(e.target);
-      $$('button', dots).forEach((d, i) => d.setAttribute('aria-current', i === idx));
-      $$('.bar i', e.target).forEach((b) => (b.style.width = b.dataset.w + '%'));
-    }
-  }), { root: car, threshold: [0.6] });
-  cards.forEach((c) => ioCar.observe(c));
-  let auto = setInterval(() => go(idx + 1), 4200);
-  const stop = () => { clearInterval(auto); auto = 0; };
-  ['pointerdown', 'focusin', 'wheel', 'touchstart'].forEach((ev) => car.addEventListener(ev, stop, { passive: true }));
-  if (RM) stop();
+  const ioParty = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { pick(ptabs.find((x) => x.getAttribute('aria-selected') === 'true')); ioParty.disconnect(); } }));
+  ioParty.observe($('.roster'));
 
   /* ===== スキルツリー（三つの軸） ===== */
   const nodes = $$('.node'), fill = $('#treeFill'), tree = $('#tree');
@@ -1005,20 +939,6 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
     });
   });
 
-  /* ===== 右のマップ：いま見ている節 ===== */
-  const links = $$('.map a'), secs = links.map((a) => $(a.getAttribute('href')));
-  let ticking = false;
-  addEventListener('scroll', () => {
-    if (ticking) return; ticking = true;
-    requestAnimationFrame(() => {
-      ticking = false;
-      const mid = innerHeight * 0.45; let cur = 0;
-      secs.forEach((s, i) => { if (s.getBoundingClientRect().top < mid) cur = i; });
-      links.forEach((a, i) => a.classList.toggle('is-cur', i === cur));
-    });
-  }, { passive: true });
-  links[0].classList.add('is-cur');
-  links.forEach((a) => a.addEventListener('mouseenter', cursor));
 })();
 </script>
 </body>
